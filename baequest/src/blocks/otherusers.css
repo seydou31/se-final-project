@@ -1,0 +1,160 @@
+/* blocks/otherusers.css */
+.others {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.others__title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.others__empty {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  padding: 40px;
+}
+
+.others__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.others__card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.others__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.others__name {
+  font-size: 1.5rem;
+  margin: 0 0 12px;
+  color: #333;
+}
+
+.others__bio {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.others__interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.others__interest {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.others__starter {
+  color: #666;
+  font-style: italic;
+  font-size: 0.95rem;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.others__checkout {
+  display: block;
+  margin: 0 auto;
+  padding: 16px 48px;
+  background: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.others__checkout:hover {
+  background: #e64a19;
+  transform: translateY(-2px);
+}
+
+/* 📱 Tablet */
+@media (max-width: 1024px) {
+  .others {
+    padding: 30px 15px;
+  }
+  
+  .others__grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+  }
+}
+
+/* 📱 Mobile */
+@media (max-width: 768px) {
+  .others {
+    padding: 20px 15px;
+  }
+  
+  .others__title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .others__grid {
+    grid-template-columns: 1fr; /* Single column */
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  
+  .others__card {
+    padding: 20px;
+  }
+  
+  .others__name {
+    font-size: 1.25rem;
+  }
+  
+  .others__checkout {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 1rem;
+  }
+}
+
+/* 📱 Small mobile */
+@media (max-width: 480px) {
+  .others {
+    padding: 15px 10px;
+  }
+  
+  .others__card {
+    padding: 16px;
+  }
+  
+  .others__interests {
+    gap: 6px;
+  }
+  
+  .others__interest {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+}
