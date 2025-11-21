@@ -1,3 +1,65 @@
+/* ===== Sophisticated Pink Theme - CSS Variables ===== */
+:root {
+  /* Primary Pink Palette - Sophisticated & Refined */
+  --pink-50: #fdf2f8;
+  --pink-100: #fce7f3;
+  --pink-200: #fbcfe8;
+  --pink-300: #f9a8d4;
+  --pink-400: #f472b6;
+  --pink-500: #ec4899;
+  --pink-600: #db2777;
+  --pink-700: #be185d;
+  --pink-800: #9d174d;
+  --pink-900: #831843;
+
+  /* Accent Colors - Complementary */
+  --rose-50: #fff1f2;
+  --rose-100: #ffe4e6;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+
+  /* Neutral Colors - Warm Grays */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+
+  /* Functional Colors */
+  --background: #fffbfc;
+  --surface: #ffffff;
+  --text-primary: #1f1f1f;
+  --text-secondary: #6b6b6b;
+  --text-muted: #9ca3af;
+
+  /* Shadows - Soft & Elegant */
+  --shadow-sm: 0 1px 2px rgba(219, 39, 119, 0.05);
+  --shadow-md: 0 4px 12px rgba(219, 39, 119, 0.08);
+  --shadow-lg: 0 8px 24px rgba(219, 39, 119, 0.12);
+  --shadow-xl: 0 16px 40px rgba(219, 39, 119, 0.15);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,39 +69,43 @@
 html, body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+  overflow-x: hidden;
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f5f5;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
 .app {
   width: 100%;
   min-height: 100vh;
   margin: 0 auto;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .app-content {
-  min-height: calc(100vh - 100px); /* Account for header */
+  min-height: calc(100vh - 100px);
   width: 100%;
 }
 
 /* Touch-friendly buttons on mobile */
 button {
-  -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
-  touch-action: manipulation; /* Prevent double-tap zoom */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  font-family: inherit;
 }
 
 /* Ensure inputs don't zoom on iOS */
 input,
 textarea,
 select {
-  font-size: 16px; /* Prevents zoom on iOS when focusing */
+  font-size: 16px;
+  font-family: inherit;
 }
 
 /* Smooth scrolling */
@@ -47,13 +113,24 @@ html {
   scroll-behavior: smooth;
 }
 
-/* 📱 Tablet (768px and below) */
+/* Selection styling */
+::selection {
+  background: var(--pink-200);
+  color: var(--pink-900);
+}
+
+/* Focus styling for accessibility */
+:focus-visible {
+  outline: 2px solid var(--pink-400);
+  outline-offset: 2px;
+}
+
+/* Tablet (768px and below) */
 @media (max-width: 768px) {
   .app-content {
-    min-height: calc(100vh - 120px); /* Adjusted for stacked header */
+    min-height: calc(100vh - 120px);
   }
-  
-  /* Ensure touch targets are at least 44x44px (iOS guideline) */
+
   button,
   a {
     min-height: 44px;
@@ -61,12 +138,12 @@ html {
   }
 }
 
-/* 📱 Mobile (480px and below) */
+/* Mobile (480px and below) */
 @media (max-width: 480px) {
   body {
-    font-size: 14px; /* Slightly smaller base font */
+    font-size: 14px;
   }
-  
+
   .app-content {
     min-height: calc(100vh - 140px);
   }
@@ -78,29 +155,45 @@ html {
   justify-content: center;
   align-items: center;
   min-height: 200px;
-  font-size: 1.2rem;
-  color: #666;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  gap: 12px;
+}
+
+.loading::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--pink-100);
+  border-top-color: var(--pink-500);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Error states */
 .error {
   padding: 20px;
-  background: #ffebee;
-  color: #c62828;
-  border-radius: 8px;
+  background: var(--rose-50);
+  color: var(--rose-600);
+  border-radius: var(--radius-md);
   margin: 20px;
   text-align: center;
+  border: 1px solid var(--rose-100);
 }
 
 /* Empty states */
 .empty {
   padding: 40px 20px;
   text-align: center;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
-/* 📱 Mobile empty states */
+/* Mobile empty states */
 @media (max-width: 768px) {
   .empty {
     padding: 30px 15px;

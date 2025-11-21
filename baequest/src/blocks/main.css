@@ -1,168 +1,224 @@
+/* ===== Hero Section ===== */
 .main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: rgb(88, 73, 73);
-  padding: 40px 20px;
+  color: var(--text-primary);
+  padding: 60px 24px;
+  background: linear-gradient(180deg, var(--pink-50) 0%, var(--background) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.main::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--pink-100) 0%, transparent 70%);
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .main__button {
-  font-size: 20px;
-  display: block;
-  background-color: deeppink;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
   border: none;
-  border-radius: 25px;
-  width: 200px;
-  height: 50px;
+  border-radius: var(--radius-full);
+  padding: 14px 36px;
   color: #fff;
   margin-bottom: 60px;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 16px rgba(219, 39, 119, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.main__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
 }
 
 .main__button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 20, 147, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(219, 39, 119, 0.4);
+}
+
+.main__button:hover::before {
+  left: 100%;
 }
 
 .main__title {
-  color: deeppink;
-  font-size: 64px;
+  font-family: var(--font-display);
+  color: var(--pink-600);
+  font-size: 4rem;
+  font-weight: 700;
   text-align: center;
   margin: 20px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
 .main__span {
   display: block;
   text-align: center;
-  font-size: 28px;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 .main__text {
   text-align: center;
-  font-size: 28px;
-  margin-top: 10px;
+  font-size: 1.25rem;
+  margin-top: 12px;
   padding: 0 20px;
+  color: var(--text-secondary);
+  max-width: 600px;
 }
 
-/* Section 1 */
+/* ===== Section 1 - Features ===== */
 .section1 {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: rgb(88, 73, 73);
-  padding: 60px 20px;
+  color: var(--text-primary);
+  padding: 80px 24px;
+  background: var(--surface);
 }
 
 .section__title {
-  font-size: 40px;
-  font-weight: bold;
-  color: deeppink;
-  margin-bottom: 15px;
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--pink-600);
+  margin-bottom: 12px;
   text-align: center;
+  letter-spacing: -0.01em;
 }
 
 .section1__text {
   text-align: center;
-  font-size: 28px;
+  font-size: 1.25rem;
   padding: 0 20px;
+  color: var(--text-secondary);
+  max-width: 700px;
 }
 
 .section1__cards {
   display: flex;
-  gap: 30px;
+  gap: 24px;
   flex-wrap: wrap;
   justify-content: center;
   max-width: 1200px;
-  margin-top: 30px;
+  margin-top: 48px;
 }
 
 .section1__card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 335px;
-  border: 0.5px solid brown;
-  padding-top: 20px;
-  border-radius: 8px;
-  color: rgb(125, 122, 122);
-  transition: transform 0.2s, box-shadow 0.2s;
+  width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--pink-100);
+  padding: 32px 24px;
+  border-radius: var(--radius-lg);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .section1__card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--pink-200);
 }
 
 .section1__card-image {
-  width: 30px;
-  height: 30px;
+  width: 48px;
+  height: 48px;
   border: none;
-  background-color: antiquewhite;
+  background: linear-gradient(135deg, var(--pink-100) 0%, var(--pink-50) 100%);
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .section1__card-list {
   padding-left: 20px;
-  margin: 10px 0 0 0;
+  margin: 16px 0 0 0;
   width: 100%;
 }
 
 .section1__card-item {
-  margin: 6px 6px;
-  padding-bottom: 5px;
-}
-
-.section2__item {
-  margin-bottom: 18px;
+  margin: 8px 0;
+  padding-bottom: 4px;
+  line-height: 1.6;
 }
 
 .section1__card-text_color_brown {
-  color: brown;
-  font-weight: bold;
+  color: var(--pink-800);
+  font-weight: 600;
 }
 
 .section1__card-text_color_pink {
-  color: deeppink;
-  font-weight: bold;
+  color: var(--pink-500);
+  font-weight: 600;
 }
 
 .section1__highlight {
-  font-size: 20px;
-  padding-top: 15px;
-  padding-bottom: 40px;
+  font-size: 1.1rem;
+  padding-top: 20px;
+  padding-bottom: 0;
+  text-align: center;
 }
 
 .section1__summary {
-  color: deeppink;
-  font-weight: bold;
+  color: var(--pink-600);
+  font-weight: 600;
 }
 
-/* Section 2 */
+/* ===== Section 2 - Steps ===== */
 .section2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: rgb(88, 73, 73);
-  padding: 60px 20px;
+  color: var(--text-primary);
+  padding: 80px 24px;
+  background: linear-gradient(180deg, var(--background) 0%, var(--pink-50) 100%);
 }
 
 .section2__list {
-  padding-bottom: 25px;
+  padding-bottom: 32px;
   counter-reset: step;
   padding-left: 0;
   margin-left: 0;
   list-style-type: none;
-  max-width: 800px;
+  max-width: 700px;
 }
 
 .section2__text {
   text-align: center;
-  font-size: 28px;
+  font-size: 1.25rem;
   padding: 0 20px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
 }
 
 .section2__span {
@@ -171,16 +227,21 @@
 }
 
 .section2__item {
-  font-size: 20px;
-  text-align: center;
+  font-size: 1.1rem;
+  text-align: left;
   position: relative;
   counter-increment: step;
-  padding-left: 72px;
-  margin-bottom: 20px;
+  padding-left: 80px;
+  margin-bottom: 28px;
+  line-height: 1.7;
+  color: var(--text-secondary);
 }
 
 .section2__list-header {
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 4px;
 }
 
 .section2__item::before {
@@ -189,48 +250,50 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: deeppink;
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
 }
 
 .section2__video {
   padding-bottom: 40px;
   max-width: 100%;
+  border-radius: var(--radius-lg);
 }
 
-/* Section 3 */
+/* ===== Section 3 - Grid Cards ===== */
 .section3 {
   display: flex;
   flex-direction: column;
-  padding: 60px 20px;
+  padding: 80px 24px;
+  background: var(--surface);
 }
 
 .section3__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  column-gap: 20px;
-  row-gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  column-gap: 24px;
+  row-gap: 24px;
   align-items: start;
-  margin: 0;
-  padding: 0;
-  max-width: 1200px;
+  max-width: 1100px;
   width: 100%;
   margin: 0 auto;
 }
 
 .section3__text {
   text-align: center;
-  font-size: 28px;
+  font-size: 1.25rem;
   padding: 0 20px;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
+  color: var(--text-secondary);
 }
 
 .section3__card {
@@ -239,74 +302,77 @@
   align-items: center;
   list-style-type: none;
   width: 100%;
-  max-width: none;
-  border: 0.1px solid gray;
-  padding: 20px 12px;
-  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  padding: 32px 24px;
+  border-radius: var(--radius-lg);
   box-sizing: border-box;
-  font-size: 16px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all var(--transition-base);
 }
 
 .section3__card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--pink-200);
 }
 
 .section3__card-title {
-  color: #000;
-  font-weight: bold;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
   text-align: center;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 
 .section3__card-image {
-  width: 60px;
-  height: 60px;
-  padding: 10px;
+  width: 64px;
+  height: 64px;
+  padding: 14px;
   box-sizing: border-box;
   border-radius: 50%;
-  background-color: deeppink;
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
 }
 
 .section3__card-par {
-  color: hsl(330 20% 45%);
+  color: var(--text-secondary);
   margin: 0;
   text-align: center;
+  line-height: 1.6;
 }
 
-/* 📱 Tablet (768px and below) */
+/* ===== Tablet (768px and below) ===== */
 @media (max-width: 768px) {
   .main {
-    padding: 30px 15px;
+    padding: 40px 20px;
   }
 
   .main__title {
-    font-size: 48px;
+    font-size: 3rem;
   }
 
   .main__span,
   .main__text {
-    font-size: 22px;
+    font-size: 1.1rem;
   }
 
   .main__button {
-    width: 180px;
-    height: 48px;
-    font-size: 18px;
+    padding: 12px 28px;
+    font-size: 1rem;
     margin-bottom: 40px;
   }
 
-  /* Section 1 */
   .section1 {
-    padding: 40px 15px;
+    padding: 60px 20px;
   }
 
   .section__title {
-    font-size: 32px;
+    font-size: 2rem;
   }
 
   .section1__text {
-    font-size: 22px;
+    font-size: 1.1rem;
   }
 
   .section1__cards {
@@ -318,75 +384,72 @@
     max-width: 400px;
   }
 
-  /* Section 2 */
   .section2 {
-    padding: 40px 15px;
+    padding: 60px 20px;
   }
 
   .section2__text {
-    font-size: 22px;
+    font-size: 1.1rem;
   }
 
   .section2__item {
-    font-size: 18px;
-    padding-left: 60px;
+    font-size: 1rem;
+    padding-left: 68px;
   }
 
   .section2__item::before {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
+    width: 46px;
+    height: 46px;
+    font-size: 1rem;
   }
 
-  /* Section 3 */
   .section3 {
-    padding: 40px 15px;
+    padding: 60px 20px;
   }
 
   .section3__text {
-    font-size: 22px;
+    font-size: 1.1rem;
   }
 
   .section3__cards {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    gap: 20px;
   }
 }
 
-/* 📱 Mobile (480px and below) */
+/* ===== Mobile (480px and below) ===== */
 @media (max-width: 480px) {
   .main {
-    padding: 20px 10px;
+    padding: 32px 16px;
   }
 
   .main__title {
-    font-size: 36px;
+    font-size: 2.25rem;
   }
 
   .main__span,
   .main__text {
-    font-size: 18px;
+    font-size: 1rem;
   }
 
   .main__button {
-    width: 90%;
-    max-width: 250px;
-    height: 48px;
-    font-size: 16px;
-    margin-bottom: 30px;
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 24px;
+    font-size: 1rem;
+    margin-bottom: 32px;
   }
 
-  /* Section 1 */
   .section1 {
-    padding: 30px 10px;
+    padding: 48px 16px;
   }
 
   .section__title {
-    font-size: 28px;
+    font-size: 1.75rem;
   }
 
   .section1__text {
-    font-size: 18px;
+    font-size: 1rem;
   }
 
   .section1__cards {
@@ -398,121 +461,119 @@
   .section1__card {
     width: 100%;
     max-width: none;
-    padding: 15px;
+    padding: 24px 20px;
   }
 
   .section1__card-list {
-    padding-left: 15px;
+    padding-left: 16px;
   }
 
   .section1__highlight {
-    font-size: 16px;
-    padding-top: 10px;
-    padding-bottom: 30px;
+    font-size: 0.95rem;
+    padding-top: 12px;
+    padding-bottom: 0;
   }
 
-  /* Section 2 - Better spacing for steps */
   .section2 {
-    padding: 30px 20px;
+    padding: 48px 16px;
   }
 
   .section2__text {
-    font-size: 18px;
-    margin-bottom: 30px;
+    font-size: 1rem;
+    margin-bottom: 24px;
   }
 
   .section2__list {
-    padding-bottom: 25px;
+    padding-bottom: 24px;
     width: 100%;
   }
 
   .section2__item {
-    font-size: 16px;
-    padding-left: 60px;
-    padding-right: 10px;
+    font-size: 0.95rem;
+    padding-left: 64px;
+    padding-right: 8px;
     text-align: left;
-    margin-bottom: 30px;
-    line-height: 1.6;
+    margin-bottom: 24px;
+    line-height: 1.7;
   }
 
   .section2__item::before {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-    left: 5px;
+    width: 44px;
+    height: 44px;
+    font-size: 0.95rem;
+    left: 0;
   }
 
   .section2__list-header {
     display: block;
-    margin-bottom: 8px;
-    font-size: 17px;
+    margin-bottom: 6px;
+    font-size: 1rem;
   }
 
   .section2__video {
-    padding-bottom: 30px;
+    padding-bottom: 24px;
     width: 100%;
   }
 
-  /* Section 3 */
   .section3 {
-    padding: 30px 10px;
+    padding: 48px 16px;
   }
 
   .section3__text {
-    font-size: 18px;
+    font-size: 1rem;
+    margin-bottom: 24px;
   }
 
   .section3__cards {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 16px;
   }
 
   .section3__card {
-    padding: 16px 10px;
-    font-size: 15px;
+    padding: 24px 20px;
   }
 
   .section3__card-image {
-    width: 50px;
-    height: 50px;
+    width: 56px;
+    height: 56px;
   }
 }
 
-/* 📱 Very small mobile (360px and below) */
+/* ===== Very small mobile (360px and below) ===== */
 @media (max-width: 360px) {
   .main__title {
-    font-size: 32px;
+    font-size: 2rem;
   }
 
   .main__span,
   .main__text {
-    font-size: 16px;
+    font-size: 0.95rem;
   }
 
   .section__title {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 
   .section1__text,
   .section2__text,
   .section3__text {
-    font-size: 16px;
+    font-size: 0.95rem;
   }
 
   .section2__item {
-    padding-left: 55px;
-    font-size: 15px;
+    padding-left: 56px;
+    font-size: 0.9rem;
     line-height: 1.7;
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
 
   .section2__item::before {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
   }
 
   .section2__list-header {
-    font-size: 16px;
+    font-size: 0.95rem;
   }
 }
