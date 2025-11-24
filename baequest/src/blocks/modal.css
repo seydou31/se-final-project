@@ -28,12 +28,13 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   background: var(--surface);
   border-radius: var(--radius-xl);
   max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: var(--shadow-xl);
   transform: translateY(-20px);
   transition: transform var(--transition-base);
@@ -67,7 +68,7 @@
   color: var(--pink-600);
   font-size: 1.75rem;
   font-weight: 700;
-  padding-top: 0;
+  padding-top: 40px;
   margin-bottom: 24px;
   text-align: center;
   width: 100%;

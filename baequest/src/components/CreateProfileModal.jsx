@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useForm } from "../hooks/useForm";
 import "../blocks/modal.css";
 import closeBtn from "../assets/close-button.svg";
@@ -7,6 +8,9 @@ import closeBtn from "../assets/close-button.svg";
   handleCreateProfile,
   onClose,
 }) {
+  const modalContentRef = useRef(null);
+  const isOpen = activeModal === "createprofilemodal";
+
   const { values, handleChange, handleReset, setValues, errors } = useForm({
     name: "",
     age: "",
@@ -15,6 +19,9 @@ import closeBtn from "../assets/close-button.svg";
     interests: [],
     convoStarter: "",
   });
+
+  // Scroll modal to top when opened
+  
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
@@ -70,10 +77,10 @@ import closeBtn from "../assets/close-button.svg";
   return (
     <div
       className={`modal ${
-        activeModal === "createprofilemodal" ? "modal_is-opened" : ""
+        isOpen ? "modal_is-opened" : ""
       }`}
     >
-      <div className="modal__content">
+      <div className="modal__content" ref={modalContentRef}>
         <h2 className="modal__title">Create Profile</h2>
         <button type="button" className="modal__close-btn" onClick={onClose}>
           <img
