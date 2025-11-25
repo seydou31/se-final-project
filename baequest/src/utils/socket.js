@@ -1,7 +1,11 @@
 import { io } from "socket.io-client";
 
-// Replace with your backend URL or localhost
-const socket = io("https://api.baequests.com", {
+// Use localhost in development, production URL in production
+const socketUrl = process.env.NODE_ENV === "production"
+  ? "https://api.baequests.com"
+  : "http://localhost:3001";
+
+const socket = io(socketUrl, {
   withCredentials: true,
 });
 
