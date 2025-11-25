@@ -204,7 +204,7 @@ import closeBtn from "../assets/close-button.svg";
               value={values.convoStarter}
               onChange={handleChange}
               required
-              minLength="6"
+              minLength="10"
               maxLength="160"
             />
           </div>
