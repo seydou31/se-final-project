@@ -67,7 +67,20 @@ function updateProfile(profile) {
   }).then(checkResponse);
 }
 
-function getEvents() {
+async function getEvents() {
+  try {
+    await fetch(`${baseUrl}/fetch-google-events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({}),
+    }).then(checkResponse);
+  } catch (error) {
+    console.error("Error fetching Google events:", error);
+  }
+
   return fetch(`${baseUrl}/events`, {
     method: "GET",
     headers: {
@@ -118,6 +131,17 @@ function checkout(payload) {
   }).then(checkResponse);
 }
 
+function fetchGoogleEvents(data) {
+  return fetch(`${baseUrl}/fetch-google-events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  }).then(checkResponse);
+}
+
 export {
   createUser,
   login,
@@ -129,4 +153,5 @@ export {
   checkin,
   getUsersAtEvent,
   checkout,
+  fetchGoogleEvents,
 };
