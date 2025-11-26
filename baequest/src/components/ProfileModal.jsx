@@ -1,17 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useContext } from "react";
 import { useForm } from "../hooks/useForm";
-import "../blocks/modal.css";
-import closeBtn from "../assets/close-button.svg";
+import AppContext from "../context/AppContext";
+import ModalWrapper from "./ModalWrapper.jsx";
 
- export default function CreateProfileModal({
-  activeModal,
-  handleCreateProfile,
+export default function ProfileModal({
+  isOpen,
+  mode, // "create" or "edit"
   onClose,
+  onOverlayClick,
+  onSubmit,
 }) {
-  const modalContentRef = useRef(null);
-  const isOpen = activeModal === "createprofilemodal";
+  const { currentProfile } = useContext(AppContext);
 
-  const { values, handleChange, handleReset, setValues, errors } = useForm({
+  const { values, handleChange, handleReset, setValues } = useForm({
     name: "",
     age: "",
     gender: "",
@@ -20,8 +21,22 @@ import closeBtn from "../assets/close-button.svg";
     convoStarter: "",
   });
 
-  // Scroll modal to top when opened
-  
+  // Populate form with current profile data in edit mode
+  useEffect(() => {
+    if (mode === "edit" && isOpen && currentProfile) {
+      setValues({
+        name: currentProfile.name || "",
+        age: currentProfile.age || "",
+        gender: currentProfile.gender || "",
+        bio: currentProfile.bio || "",
+        interests: currentProfile.interests || [],
+        convoStarter: currentProfile.convoStarter || "",
+      });
+    } else if (mode === "create" && !isOpen) {
+      // Reset form when create modal closes
+      handleReset();
+    }
+  }, [mode, isOpen, currentProfile, setValues]);
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
@@ -40,11 +55,13 @@ import closeBtn from "../assets/close-button.svg";
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await handleCreateProfile(values);
-      handleReset();
+      await onSubmit(values);
+      if (mode === "create") {
+        handleReset();
+      }
       onClose();
     } catch (err) {
-      console.error("Profile creation error:", err);
+      console.error(`Profile ${mode} error:`, err);
     }
   };
 
@@ -54,7 +71,7 @@ import closeBtn from "../assets/close-button.svg";
     "photography",
     "cooking",
     "fitness",
-    "nusic",
+    "music",
     "reading",
     "art",
     "movies",
@@ -71,33 +88,24 @@ import closeBtn from "../assets/close-button.svg";
     "fashion",
   ];
 
-  const hasErrors = errors && Object.keys(errors).length > 0;
-  const emptyFields = !values.email || !values.password;
-  const isSubmitDisabled = hasErrors || emptyFields;
-  return (
-    <div
-      className={`modal ${
-        isOpen ? "modal_is-opened" : ""
-      }`}
-    >
-      <div className="modal__content" ref={modalContentRef}>
-        <h2 className="modal__title">Create Profile</h2>
-        <button type="button" className="modal__close-btn" onClick={onClose}>
-          <img
-            src={closeBtn}
-            alt="close modal button"
-            className="modal__close-btn-image"
-          />
-        </button>
+  const title = mode === "create" ? "Create Profile" : "Edit Profile";
+  const buttonText = mode === "create" ? "Create Profile" : "Save Changes";
 
-        <form className="modal__form" onSubmit={handleSubmit}>
+  return (
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={onClose}
+      onOverlayClick={onOverlayClick}
+      title={title}
+    >
+      <form className="modal__form" onSubmit={handleSubmit}>
           <div className="modal__fieldset">
-            <label htmlFor="name" className="modal__label">
+            <label htmlFor={`${mode}-name`} className="modal__label">
               Name
             </label>
             <input
               type="text"
-              id="name"
+              id={`${mode}-name`}
               className="modal__input"
               placeholder="First name. Last name optional"
               name="name"
@@ -107,14 +115,13 @@ import closeBtn from "../assets/close-button.svg";
             />
           </div>
 
-          {/* Age */}
           <div className="modal__fieldset">
-            <label htmlFor="age" className="modal__label">
+            <label htmlFor={`${mode}-age`} className="modal__label">
               Age
             </label>
             <input
               type="number"
-              id="age"
+              id={`${mode}-age`}
               className="modal__input"
               placeholder="Enter your age"
               name="age"
@@ -126,13 +133,12 @@ import closeBtn from "../assets/close-button.svg";
             />
           </div>
 
-          {/* Gender */}
           <div className="modal__fieldset">
-            <label htmlFor="gender" className="modal__label">
+            <label htmlFor={`${mode}-gender`} className="modal__label">
               Gender
             </label>
             <select
-              id="gender"
+              id={`${mode}-gender`}
               className="modal__input"
               name="gender"
               value={values.gender}
@@ -145,13 +151,12 @@ import closeBtn from "../assets/close-button.svg";
             </select>
           </div>
 
-          {/* Bio */}
           <div className="modal__fieldset">
-            <label htmlFor="bio" className="modal__label">
+            <label htmlFor={`${mode}-bio`} className="modal__label">
               Bio
             </label>
             <textarea
-              id="bio"
+              id={`${mode}-bio`}
               className="modal__input"
               placeholder="Tell us about yourself"
               name="bio"
@@ -163,7 +168,6 @@ import closeBtn from "../assets/close-button.svg";
             />
           </div>
 
-          {/* Interests (new clickable boxes) */}
           <div className="modal__fieldset">
             <label className="modal__label">Interests</label>
             <div className="interests-list">
@@ -190,14 +194,13 @@ import closeBtn from "../assets/close-button.svg";
             </div>
           </div>
 
-          {/* Conversation Starter */}
           <div className="modal__fieldset">
-            <label htmlFor="convostarter" className="modal__label">
+            <label htmlFor={`${mode}-convostarter`} className="modal__label">
               Conversation Starter
             </label>
             <input
               type="text"
-              id="convostarter"
+              id={`${mode}-convostarter`}
               className="modal__input"
               placeholder="Enter a conversation starter"
               name="convoStarter"
@@ -209,11 +212,10 @@ import closeBtn from "../assets/close-button.svg";
             />
           </div>
 
-          <button type="submit" className="modal__submit-btn" >
-            Create Profile
+          <button type="submit" className="modal__submit-btn">
+            {buttonText}
           </button>
         </form>
-      </div>
-    </div>
+    </ModalWrapper>
   );
 }

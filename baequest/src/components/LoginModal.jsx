@@ -1,8 +1,7 @@
 import { useForm } from "../hooks/useForm.js";
-import closeBtn from "../assets/close-button.svg";
-import "../blocks/modal.css";
+import ModalWrapper from "./ModalWrapper.jsx";
 
-export default function LoginModal({ isOpen, onClose, handleLoginSubmit }) {
+export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
     password: "",
@@ -20,17 +19,13 @@ export default function LoginModal({ isOpen, onClose, handleLoginSubmit }) {
   }
 
   return (
-    <div className={`modal ${isOpen ? "modal_is-opened" : ""}`}>
-      <div className="modal__content">
-        <h2 className="modal__title">Login</h2>
-        <button type="button" className="modal__close-btn" onClick={onClose}>
-          <img
-            src={closeBtn}
-            alt="close modal button"
-            className="modal__close-btn-image"
-          />
-        </button>
-        <form className="modal__form" onSubmit={handleSubmit}>
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={onClose}
+      onOverlayClick={onOverlayClick}
+      title="Login"
+    >
+      <form className="modal__form" onSubmit={handleSubmit}>
           <fieldset className="modal__fieldset">
             <label htmlFor="email" className="modal__label">
               Email
@@ -71,7 +66,6 @@ export default function LoginModal({ isOpen, onClose, handleLoginSubmit }) {
             </button>
           </fieldset>
         </form>
-      </div>
-    </div>
+    </ModalWrapper>
   );
 }

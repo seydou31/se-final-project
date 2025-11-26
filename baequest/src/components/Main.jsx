@@ -11,9 +11,7 @@ export default function Main({onClick}) {
         Meet amazing people in your area
       </h1>
       <p className="main__text">
-        Online dating where you date people, not their profile. One monthly fee
-        <span className="main__span">for unlimited events - often less than what others charge for a singles</span>
-        day.
+        Online dating where you date people, not their profile. One monthly fee for unlimited events - often less than what others charge for a singles day.
       </p>
       <button className="main__button" onClick={onClick}>Create Account</button>
       <section className="section1">

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import closeBtn from "../assets/close-button.svg";
-import { createUser, login } from "../utils/api.js";
-
-import "../blocks/modal.css";
 import { useForm } from "../hooks/useForm.js";
+import ModalWrapper from "./ModalWrapper.jsx";
 
 export default function CreateAccountModal({
   isOpen,
   onClose,
-  openCreateProfileModal,
+  onOverlayClick,
+  handleCreateAccountSubmit,
 }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
@@ -25,32 +23,23 @@ export default function CreateAccountModal({
   function handleSubmit(e) {
     e.preventDefault();
 
-    createUser(values)
+    handleCreateAccountSubmit(values)
       .then(() => {
         handleReset();
         setConfirmPassword("");
         setConfirmError("");
-        onClose();
-        return login(values);
-      })
-      .then(() => {
-        openCreateProfileModal();
       })
       .catch(console.error);
   }
 
   return (
-    <div className={`modal ${isOpen ? "modal_is-opened" : ""}`}>
-      <div className="modal__content">
-        <h2 className="modal__title">Create Account</h2>
-        <button type="button" className="modal__close-btn" onClick={onClose}>
-          <img
-            src={closeBtn}
-            alt="close modal button"
-            className="modal__close-btn-image"
-          />
-        </button>
-        <form className="modal__form" onSubmit={handleSubmit}>
+    <ModalWrapper
+      isOpen={isOpen}
+      onClose={onClose}
+      onOverlayClick={onOverlayClick}
+      title="Create Account"
+    >
+      <form className="modal__form" onSubmit={handleSubmit}>
           <fieldset className="modal__fieldset">
             <label htmlFor="email" className="modal__label">
               Email
@@ -114,7 +103,6 @@ export default function CreateAccountModal({
             </button>
           </fieldset>
         </form>
-      </div>
-    </div>
+    </ModalWrapper>
   );
 }

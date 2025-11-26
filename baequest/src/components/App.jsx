@@ -10,19 +10,20 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import "../blocks/app.css";
 
 import Header from "./Header.jsx";
+import Footer from "./Footer.jsx";
 import Main from "./Main.jsx";
 import Profile from "./Profile.jsx";
 import Meet from "./Meet.jsx";
 import CreateAccountModal from "./CreateAccountModal.jsx";
-import CreateProfileModal from "./CreateProfileModal.jsx";
+import ProfileModal from "./ProfileModal.jsx";
 import LoginModal from "./LoginModal.jsx";
-import EditProfileModal from "./EditProfileModal.jsx";
 import OtherUsers from "./OtherUsers.jsx";
 import CheckoutModal from "./CheckoutModal.jsx";
 import NavigationModal from "./NavigationModal.jsx";
 import socket from "../utils/socket.js";
 import {
   createProfile,
+  createUser,
   getEvents,
   getProfile,
   login,
@@ -65,6 +66,18 @@ function App() {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const location = useLocation();
 
+  // Handle escape key for all modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === "Escape" && activeModal) {
+        handleCloseModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [activeModal]);
+
   // open the create-account modal
 
   const navigate = useNavigate();
@@ -94,10 +107,14 @@ function App() {
           const event = JSON.parse(savedEvent);
           console.log("🔵 Restored event, fetching users...");
 
-          return getUsersAtEvent(event._id).then((users) => {
-            console.log("✅ Fetched users:", users);
-            setOtherProfiles(users);
-          });
+          return getUsersAtEvent(event._id)
+            .then((users) => {
+              console.log("✅ Fetched users:", users);
+              setOtherProfiles(users);
+            })
+            .catch((err) => {
+              console.error("Failed to fetch users for saved event:", err);
+            });
         }
       })
       .then(() => {
@@ -197,14 +214,37 @@ function App() {
     setActiveModal("");
   }
 
-  function handleCreateProfile(formdata) {
-    createProfile(formdata).then((res) => {
-      setCurrentProfile(res);
-      setIsLoggedIn(true);
-      storeTokenExists();
+  // Handle overlay click for all modals
+  const handleModalOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
       handleCloseModal();
-      navigate("/profile");
-    });
+    }
+  };
+
+  function handleCreateProfile(formdata) {
+    createProfile(formdata)
+      .then((res) => {
+        setCurrentProfile(res);
+        setIsLoggedIn(true);
+        storeTokenExists();
+        handleCloseModal();
+        navigate("/profile");
+      })
+      .catch((err) => {
+        console.error("Failed to create profile:", err);
+      });
+  }
+
+  function handleCreateAccountSubmit(values) {
+    return createUser(values)
+      .then(() => {
+        return login(values);
+      })
+      .then(() => {
+        handleCloseModal();
+        handleCreateProfileModal();
+      })
+      .catch(console.error);
   }
 
   function handleLoginSubmit(values) {
@@ -403,34 +443,42 @@ function App() {
           <CreateAccountModal
             isOpen={activeModal === "createaccountmodal"}
             onClose={handleCloseModal}
-            openCreateProfileModal={handleCreateProfileModal}
-            setIsLoggedIn={setIsLoggedIn}
+            onOverlayClick={handleModalOverlayClick}
+            handleCreateAccountSubmit={handleCreateAccountSubmit}
           />
-          <CreateProfileModal
-            activeModal={activeModal}
-            handleCreateProfile={handleCreateProfile}
+          <ProfileModal
+            mode="create"
+            isOpen={activeModal === "createprofilemodal"}
             onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
+            onSubmit={handleCreateProfile}
+          />
+          <ProfileModal
+            mode="edit"
+            isOpen={activeModal === "editprofilemodal"}
+            onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
+            onSubmit={handleProfileUpdateSubmit}
           />
           <LoginModal
             handleLoginSubmit={handleLoginSubmit}
             isOpen={activeModal === "loginmodal"}
             onClose={handleCloseModal}
-          />
-          <EditProfileModal
-            isOpen={activeModal === "editprofilemodal"}
-            onClose={handleCloseModal}
-            handleProfileUpdateSubmit={handleProfileUpdateSubmit}
+            onOverlayClick={handleModalOverlayClick}
           />
           <CheckoutModal
             handleCheckout={handleCheckout}
             isOpen={activeModal === "checkoutmodal"}
             onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
           />
           <NavigationModal
             handleNavigate={handleNavigate}
             isOpen={activeModal === "navigationmodal"}
             onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
           />
+          <Footer />
         </div>
       </AppContext.Provider>
     </div>
