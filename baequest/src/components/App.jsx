@@ -20,6 +20,7 @@ import LoginModal from "./LoginModal.jsx";
 import OtherUsers from "./OtherUsers.jsx";
 import CheckoutModal from "./CheckoutModal.jsx";
 import NavigationModal from "./NavigationModal.jsx";
+import DeleteAccountModal from "./DeleteAccountModal.jsx";
 import socket from "../utils/socket.js";
 import {
   createProfile,
@@ -32,6 +33,8 @@ import {
   checkin,
   getUsersAtEvent,
   checkout,
+  deleteUser,
+  deleteProfile,
 } from "../utils/api.js";
 import AppContext from "../context/AppContext.js";
 
@@ -155,6 +158,10 @@ function App() {
     setActiveModal("editprofilemodal");
   }
 
+  function handleDeleteAccountModal() {
+    setActiveModal("deleteaccountmodal");
+  }
+
   // Add this useEffect in App.jsx
   useEffect(() => {
     // Listen for expired events
@@ -272,8 +279,8 @@ function App() {
       .catch(console.error);
   }
 
-  function handleFindEvents() {
-    getEvents()
+  function handleFindEvents(state = "") {
+    getEvents(state)
       .then((res) => {
         setEvents(res);
       })
@@ -394,6 +401,34 @@ function App() {
     );
   }
 
+  const handleDeleteAccount = async () => {
+    if (isCheckedIn) {
+      try {
+        await checkout({ eventId: currentEvent._id });
+        setCurrentEvent(null);
+        setOtherProfiles([]);
+        setIsCheckedIn(false);
+      } catch (err) {
+        console.error("Checkout failed:", err);
+      }
+    }
+    try {
+      await Promise.all([deleteProfile(), deleteUser()]);
+      handleCloseModal();
+      setCurrentProfile({
+        name: "",
+        age: 0,
+        gender: "",
+        interests: [],
+        convoStarter: "",
+      });
+      removeTokenExists();
+      setIsLoggedIn(false);
+    } catch (err) {
+      console.error("failed to delete account:", err);
+    }
+  };
+
   return (
     <div className="app">
       <AppContext.Provider value={{ currentProfile }}>
@@ -402,6 +437,7 @@ function App() {
             isLoggedIn={isLoggedIn}
             handleLoginModal={handleLoginModal}
             handleLogout={handleLogout}
+            handleDeleteAccountModal={handleDeleteAccountModal}
           />
           <Routes>
             <Route path="/" element={<Main onClick={handleSignupModal} />} />
@@ -475,6 +511,12 @@ function App() {
           <NavigationModal
             handleNavigate={handleNavigate}
             isOpen={activeModal === "navigationmodal"}
+            onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
+          />
+          <DeleteAccountModal
+            handleDeleteAccount={handleDeleteAccount}
+            isOpen={activeModal === "deleteaccountmodal"}
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
           />

@@ -4,7 +4,7 @@ import "../blocks/header.css";
 import { useContext, useState } from "react";
 import AppContext from "../context/AppContext";
 
-export default function Header({ isLoggedIn, handleLoginModal, handleLogout }) {
+export default function Header({ isLoggedIn, handleLoginModal, handleLogout, handleDeleteAccountModal }) {
   const { currentProfile } = useContext(AppContext);
   const firstInitial = currentProfile.name.charAt(0).toUpperCase();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,6 +15,11 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout }) {
 
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+
+  const openDeleteModal = () => {
+    handleDeleteAccountModal();
+    closeMenu();
   };
 
   return (
@@ -62,6 +67,7 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout }) {
             <span onClick={() => { handleLogout(); closeMenu(); }} className="header__logout">
               Logout
             </span>
+            <span onClick={openDeleteModal} className="header__delete-account">Delete account</span>
           </nav>
 
           {/* User Info */}

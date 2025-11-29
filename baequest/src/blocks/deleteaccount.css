@@ -1,5 +1,5 @@
-/* ===== Sophisticated Navigation Modal ===== */
-.navigation {
+/* ===== Sophisticated Delete Account Modal ===== */
+.deleteaccount {
   position: fixed;
   top: 0;
   left: 0;
@@ -16,67 +16,75 @@
   transition: all var(--transition-base);
 }
 
-.navigation_is-opened {
+.deleteaccount_is-opened {
   visibility: visible;
   opacity: 1;
 }
 
-.navigation__content {
+.deleteaccount__content {
   background: var(--surface);
-  padding: 32px;
+  padding: 48px 32px 32px;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   max-width: 420px;
   width: 90%;
   text-align: center;
-  border: 1px solid var(--pink-100);
+  border: 2px solid rgba(220, 38, 38, 0.3);
   transform: scale(0.95) translateY(-20px);
   transition: all var(--transition-base);
+  position: relative;
 }
 
-.navigation_is-opened .navigation__content {
+.deleteaccount_is-opened .deleteaccount__content {
   transform: scale(1) translateY(0);
 }
 
-.navigation__title {
+.deleteaccount__title {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 24px;
+  color: rgb(185, 28, 28);
+  margin-bottom: 12px;
 }
 
-.navigation__close-btn {
+.deleteaccount__paragraph {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.deleteaccount__close-btn {
   position: absolute;
   top: 16px;
   right: 16px;
   width: 36px;
   height: 36px;
   border: none;
-  background: var(--pink-50);
+  background: rgba(220, 38, 38, 0.1);
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition-fast);
-  color: var(--pink-600);
+  color: rgb(185, 28, 28);
   z-index: 10;
 }
 
-.navigation__close-btn:hover {
-  background: var(--pink-100);
+.deleteaccount__close-btn:hover {
+  background: rgba(220, 38, 38, 0.2);
   transform: scale(1.1);
 }
 
-.navigation__close-btn-image {
+.deleteaccount__close-btn-image {
   width: 16px;
   height: 16px;
   object-fit: contain;
 }
 
-.navigation__checkout-btn,
-.navigation__cancel-btn {
+.deleteaccount__delete-btn,
+.deleteaccount__cancel-btn {
   display: inline-block;
   width: 45%;
   padding: 14px 20px;
@@ -88,61 +96,61 @@
   transition: all var(--transition-base);
 }
 
-.navigation__checkout-btn {
-  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+.deleteaccount__delete-btn {
+  background: linear-gradient(135deg, rgb(220, 38, 38) 0%, rgb(185, 28, 28) 100%);
   color: #fff;
   margin-right: 10px;
-  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
-.navigation__checkout-btn:hover {
+.deleteaccount__delete-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(219, 39, 119, 0.35);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
 }
 
-.navigation__cancel-btn {
+.deleteaccount__cancel-btn {
   background: var(--gray-100);
   color: var(--text-secondary);
   border: 1px solid var(--gray-200);
 }
 
-.navigation__cancel-btn:hover {
+.deleteaccount__cancel-btn:hover {
   background: var(--gray-200);
   color: var(--text-primary);
 }
 
 /* ===== Mobile (480px and below) ===== */
 @media (max-width: 480px) {
-  .navigation__content {
-    padding: 24px 20px;
+  .deleteaccount__content {
+    padding: 40px 20px 24px;
     width: 95%;
     border-radius: var(--radius-lg);
   }
 
-  .navigation__title {
+  .deleteaccount__title {
     font-size: 1.35rem;
   }
 
-  .navigation__close-btn {
+  .deleteaccount__close-btn {
     top: 12px;
     right: 12px;
     width: 32px;
     height: 32px;
   }
 
-  .navigation__close-btn-image {
+  .deleteaccount__close-btn-image {
     width: 14px;
     height: 14px;
   }
 
-  .navigation__checkout-btn,
-  .navigation__cancel-btn {
+  .deleteaccount__delete-btn,
+  .deleteaccount__cancel-btn {
     width: 100%;
     margin: 0;
     margin-bottom: 12px;
   }
 
-  .navigation__checkout-btn {
+  .deleteaccount__delete-btn {
     margin-right: 0;
   }
 }

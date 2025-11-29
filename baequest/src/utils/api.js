@@ -67,27 +67,24 @@ function updateProfile(profile) {
   }).then(checkResponse);
 }
 
-async function getEvents() {
+async function getEvents(state = "") {
   try {
-    await fetch(`${baseUrl}/fetch-google-events`, {
+    // Pass the state to fetch-google-events to get events from that state
+    const response = await fetch(`${baseUrl}/fetch-google-events`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({}),
+      body: JSON.stringify({ state }),
     }).then(checkResponse);
+
+    // Return the events from the response
+    return response.events || [];
   } catch (error) {
     console.error("Error fetching Google events:", error);
+    return [];
   }
-
-  return fetch(`${baseUrl}/events`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-  }).then(checkResponse);
 }
 
 function checkin(data) {
@@ -142,6 +139,26 @@ function fetchGoogleEvents(data) {
   }).then(checkResponse);
 }
 
+function deleteUser(){
+   return fetch(`${baseUrl}/deleteUser`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  }).then(checkResponse);
+}
+
+function deleteProfile(){
+   return fetch(`${baseUrl}/users/profile`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  }).then(checkResponse);
+}
+
 export {
   createUser,
   login,
@@ -154,4 +171,6 @@ export {
   getUsersAtEvent,
   checkout,
   fetchGoogleEvents,
+  deleteProfile,
+  deleteUser
 };
