@@ -1,7 +1,7 @@
 import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
 
-export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit }) {
+export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, loggingError }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
     password: "",
@@ -13,8 +13,10 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
 
   function handleSubmit(e) {
     e.preventDefault();
-    handleLoginSubmit(values).then(() => {
-      handleReset();
+    handleLoginSubmit(values).then((success) => {
+      if (success) {
+        handleReset();
+      }
     }).catch(console.error);
   }
 
@@ -64,6 +66,7 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
             >
               Login
             </button>
+           { loggingError && <p className="modal__login-error">{loggingError}</p>}
           </fieldset>
         </form>
     </ModalWrapper>

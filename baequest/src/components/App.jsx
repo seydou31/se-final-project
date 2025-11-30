@@ -67,6 +67,7 @@ function App() {
     checkTokenExists()
   );
   const [isCheckedIn, setIsCheckedIn] = useState(false);
+  const [loggingError, setLoggingError] = useState("");
   const location = useLocation();
 
   // Handle escape key for all modals
@@ -263,11 +264,16 @@ function App() {
         setCurrentProfile(res);
         setIsLoggedIn(true);
         storeTokenExists();
-
+        setLoggingError("")
         handleCloseModal();
         navigate("/profile");
+        return true;
       })
-      .catch(console.err);
+      .catch((err) => {
+         console.error(err);
+         setLoggingError(err.message || "Invalid email or password");
+         return false;
+      });
   }
 
   function handleProfileUpdateSubmit(values) {
@@ -501,6 +507,7 @@ function App() {
             isOpen={activeModal === "loginmodal"}
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
+            loggingError={loggingError}
           />
           <CheckoutModal
             handleCheckout={handleCheckout}

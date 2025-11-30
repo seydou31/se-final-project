@@ -171,6 +171,27 @@
   align-self: flex-start;
 }
 
+.modal__login-error {
+  width: 100%;
+  padding: 16px 20px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.15) 100%);
+  border: 2px solid rgba(220, 38, 38, 0.6);
+  border-radius: var(--radius-md);
+  color: rgb(153, 27, 27);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
 /* ===== Interest Tags ===== */
 .interests-list {
   display: flex;
