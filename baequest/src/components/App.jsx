@@ -14,6 +14,8 @@ import Footer from "./Footer.jsx";
 import Main from "./Main.jsx";
 import Profile from "./Profile.jsx";
 import Meet from "./Meet.jsx";
+import MyEvents from "./MyEvents.jsx";
+import Loading from "./Loading.jsx";
 import CreateAccountModal from "./CreateAccountModal.jsx";
 import ProfileModal from "./ProfileModal.jsx";
 import LoginModal from "./LoginModal.jsx";
@@ -21,6 +23,8 @@ import OtherUsers from "./OtherUsers.jsx";
 import CheckoutModal from "./CheckoutModal.jsx";
 import NavigationModal from "./NavigationModal.jsx";
 import DeleteAccountModal from "./DeleteAccountModal.jsx";
+import ForgotPasswordModal from "./ForgotPasswordModal.jsx";
+import ResetPasswordPage from "./ResetPasswordPage.jsx";
 import socket from "../utils/socket.js";
 import {
   createProfile,
@@ -35,8 +39,12 @@ import {
   checkout,
   deleteUser,
   deleteProfile,
+  googleAuth,
+  requestPasswordReset,
+  resetPassword,
 } from "../utils/api.js";
 import AppContext from "../context/AppContext.js";
+import { trackPageView } from "../utils/analytics.js";
 
 function App() {
   // track which modal is open; empty string means no modal
@@ -46,6 +54,7 @@ function App() {
     name: "",
     age: 0,
     gender: "",
+    profession: "",
     interests: [],
     convoStarter: "",
   });
@@ -54,7 +63,6 @@ function App() {
     try {
       const saved = localStorage.getItem("currentEvent");
       if (saved) {
-        console.log("📦 Restored currentEvent from localStorage");
         return JSON.parse(saved);
       }
     } catch (err) {
@@ -70,10 +78,19 @@ function App() {
   const [loggingError, setLoggingError] = useState("");
   const location = useLocation();
 
+  // Track page views
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
   // Handle escape key for all modals
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape" && activeModal) {
+        // Prevent closing the profile creation modal
+        if (activeModal === "createprofilemodal") {
+          return;
+        }
         handleCloseModal();
       }
     };
@@ -105,15 +122,15 @@ function App() {
         setIsLoggedIn(true);
         storeTokenExists();
 
-        // ✅ After getting profile, check if we have a saved event
+        // After getting profile, check if we have a saved event
         const savedEvent = localStorage.getItem("currentEvent");
         if (savedEvent) {
           const event = JSON.parse(savedEvent);
-          console.log("🔵 Restored event, fetching users...");
+          setCurrentEvent(event);
+          setIsCheckedIn(true);
 
           return getUsersAtEvent(event._id)
             .then((users) => {
-              console.log("✅ Fetched users:", users);
               setOtherProfiles(users);
             })
             .catch((err) => {
@@ -123,7 +140,11 @@ function App() {
       })
       .then(() => {
         // Navigate after everything is loaded
-        if (location.pathname === "/") {
+        const savedEvent = localStorage.getItem("currentEvent");
+        if (savedEvent) {
+          // If user is checked in, redirect to Meet page
+          navigate("/meet");
+        } else if (location.pathname === "/") {
           navigate("/profile");
         }
       })
@@ -136,10 +157,8 @@ function App() {
   useEffect(() => {
     if (currentEvent) {
       localStorage.setItem("currentEvent", JSON.stringify(currentEvent));
-      console.log("💾 Saved currentEvent to localStorage:", currentEvent._id);
     } else {
       localStorage.removeItem("currentEvent");
-      console.log("🗑️ Removed currentEvent from localStorage");
     }
   }, [currentEvent]);
 
@@ -163,12 +182,13 @@ function App() {
     setActiveModal("deleteaccountmodal");
   }
 
-  // Add this useEffect in App.jsx
-  useEffect(() => {
-    // Listen for expired events
-    socket.on("event-expired", ({ eventId }) => {
-      console.log("⏰ Event expired:", eventId);
+  function handleForgotPasswordModal() {
+    handleCloseModal();
+    setActiveModal("forgotpasswordmodal");
+  }
 
+  useEffect(() => {
+    socket.on("event-expired", ({ eventId }) => {
       // Remove expired event from list immediately
       setEvents((prev) => prev.filter((evt) => evt._id !== eventId));
 
@@ -186,12 +206,40 @@ function App() {
     };
   }, [currentEvent]);
 
+  // Listen for when current user marks an event as going
+  useEffect(() => {
+    socket.on("event-going-updated", ({ eventId, count, userId }) => {
+      // Only update isUserGoing if this is the current user
+      // Compare as strings since MongoDB IDs can be objects
+      const currentUserId = currentProfile.owner?.toString() || currentProfile.owner;
+      if (currentUserId === userId) {
+        setEvents((prev) =>
+          prev.map((evt) =>
+            evt._id === eventId
+              ? { ...evt, isUserGoing: true, goingCount: count }
+              : evt
+          )
+        );
+      } else {
+        // Just update the count for other users
+        setEvents((prev) =>
+          prev.map((evt) =>
+            evt._id === eventId ? { ...evt, goingCount: count } : evt
+          )
+        );
+      }
+    });
+
+    return () => {
+      socket.off("event-going-updated");
+    };
+  }, [currentProfile.owner]);
+
   function handleLogout() {
-    // ✅ Check if user is checked into an event
+    // Check if user is checked into an event
     const checkoutPromise = currentEvent?._id
       ? checkout({ eventId: currentEvent._id })
-          .then(() => console.log("✅ Auto-checkout successful"))
-          .catch((err) => console.error("⚠️ Auto-checkout failed:", err))
+          .catch((err) => console.error("Auto-checkout failed:", err))
       : Promise.resolve(); // No event to checkout from
 
     checkoutPromise
@@ -240,6 +288,7 @@ function App() {
       })
       .catch((err) => {
         console.error("Failed to create profile:", err);
+        alert(`Failed to create profile: ${err.message || err}`);
       });
   }
 
@@ -276,6 +325,60 @@ function App() {
       });
   }
 
+  function handleGoogleSignup(credentialResponse) {
+    googleAuth(credentialResponse.credential)
+      .then(() => {
+        setIsLoggedIn(true);
+        storeTokenExists();
+
+        // Try to get profile, but don't fail if it doesn't exist
+        return getProfile().catch(() => {
+          return null; // Return null if profile doesn't exist
+        });
+      })
+      .then((res) => {
+        handleCloseModal();
+
+        // If profile exists (has name), go to profile page. Otherwise, show create profile modal
+        if (res && res.name) {
+          setCurrentProfile(res);
+          navigate("/profile");
+        } else {
+          setCurrentProfile({
+            name: "",
+            age: 0,
+            gender: "",
+            profession: "",
+            interests: [],
+            convoStarter: "",
+          });
+          handleCreateProfileModal();
+        }
+      })
+      .catch((err) => {
+        console.error("Google signup failed:", err);
+      });
+  }
+
+  function handleGoogleLogin(credentialResponse) {
+    googleAuth(credentialResponse.credential)
+      .then(() => {
+        return getProfile();
+      })
+      .then((res) => {
+        setCurrentProfile(res);
+        setIsLoggedIn(true);
+        storeTokenExists();
+        setLoggingError("");
+        handleCloseModal();
+        navigate("/profile");
+      })
+      .catch((err) => {
+        console.error("Google login failed:", err);
+        setLoggingError("Google login failed");
+      });
+  }
+
   function handleProfileUpdateSubmit(values) {
     updateProfile(values)
       .then((res) => {
@@ -285,14 +388,23 @@ function App() {
       .catch(console.error);
   }
 
-  function handleFindEvents(state = "") {
-    getEvents(state)
+  function handleRefreshProfile() {
+    console.log('Refreshing profile...');
+    return getProfile()
+      .then((res) => {
+        console.log('Profile refreshed:', res);
+        console.log('Profile picture URL:', res.profilePicture);
+        setCurrentProfile(res);
+      })
+      .catch(console.error);
+  }
+
+  function handleFindEvents(state = "", city = "") {
+    getEvents(state, city)
       .then((res) => {
         setEvents(res);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch(console.error);
   }
 
   const handleCheckin = async (event) => {
@@ -334,6 +446,7 @@ function App() {
           setCurrentEvent(event);
           setOtherProfiles(users);
           setIsCheckedIn(true);
+          navigate("/meet");
         } catch (err) {
           if (err.message === "You are too far from the event to check in") {
             setActiveModal("navigationmodal");
@@ -435,6 +548,26 @@ function App() {
     }
   };
 
+  function handleForgotPasswordSubmit(email) {
+    return requestPasswordReset(email)
+      .catch((err) => {
+        console.error("Password reset request failed:", err);
+        throw err;
+      });
+  }
+
+  function handleResetPassword(token, newPassword) {
+    return resetPassword(token, newPassword)
+      .catch((err) => {
+        console.error("Password reset failed:", err);
+        throw err;
+      });
+  }
+
+  if (isLoggedInLoading) {
+    return <Loading fullScreen message="Loading your profile..." />;
+  }
+
   return (
     <div className="app">
       <AppContext.Provider value={{ currentProfile }}>
@@ -447,6 +580,10 @@ function App() {
           />
           <Routes>
             <Route path="/" element={<Main onClick={handleSignupModal} />} />
+            <Route
+              path="/reset-password"
+              element={<ResetPasswordPage handleResetPassword={handleResetPassword} />}
+            />
             <Route
               path="/profile"
               element={
@@ -480,6 +617,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/my-events"
+              element={
+                <ProtectedRoute
+                  isLoggedInLoading={isLoggedInLoading}
+                  isLoggedIn={isLoggedIn}
+                >
+                  <MyEvents events={events} handleCheckin={handleCheckin} />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
 
           <CreateAccountModal
@@ -487,6 +635,7 @@ function App() {
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
             handleCreateAccountSubmit={handleCreateAccountSubmit}
+            handleGoogleSignup={handleGoogleSignup}
           />
           <ProfileModal
             mode="create"
@@ -494,6 +643,7 @@ function App() {
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
             onSubmit={handleCreateProfile}
+            onPictureUpload={handleRefreshProfile}
           />
           <ProfileModal
             mode="edit"
@@ -501,13 +651,22 @@ function App() {
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
             onSubmit={handleProfileUpdateSubmit}
+            onPictureUpload={handleRefreshProfile}
           />
           <LoginModal
             handleLoginSubmit={handleLoginSubmit}
+            handleGoogleLogin={handleGoogleLogin}
             isOpen={activeModal === "loginmodal"}
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
             loggingError={loggingError}
+            handleForgotPasswordModal={handleForgotPasswordModal}
+          />
+          <ForgotPasswordModal
+            isOpen={activeModal === "forgotpasswordmodal"}
+            onClose={handleCloseModal}
+            onOverlayClick={handleModalOverlayClick}
+            handleForgotPasswordSubmit={handleForgotPasswordSubmit}
           />
           <CheckoutModal
             handleCheckout={handleCheckout}

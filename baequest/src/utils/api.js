@@ -67,24 +67,19 @@ function updateProfile(profile) {
   }).then(checkResponse);
 }
 
-async function getEvents(state = "") {
-  try {
-    // Pass the state to fetch-google-events to get events from that state
-    const response = await fetch(`${baseUrl}/fetch-google-events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ state }),
-    }).then(checkResponse);
+function getEvents(state = "", city = "") {
+  const params = new URLSearchParams();
+  if (state) params.append('state', state);
+  if (city) params.append('city', city);
+  const queryString = params.toString();
 
-    // Return the events from the response
-    return response.events || [];
-  } catch (error) {
-    console.error("Error fetching Google events:", error);
-    return [];
-  }
+  return fetch(`${baseUrl}/events${queryString ? `?${queryString}` : ''}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  }).then(checkResponse);
 }
 
 function checkin(data) {
@@ -117,7 +112,6 @@ function getUsersAtEvent(eventId) {
 }
 
 function checkout(payload) {
-  console.log("🔵 checkout() called with payload:", payload);
   return fetch(`${baseUrl}/checkout`, {
     method: "POST",
     headers: {
@@ -128,16 +122,6 @@ function checkout(payload) {
   }).then(checkResponse);
 }
 
-function fetchGoogleEvents(data) {
-  return fetch(`${baseUrl}/fetch-google-events`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(data),
-  }).then(checkResponse);
-}
 
 function deleteUser(){
    return fetch(`${baseUrl}/deleteUser`, {
@@ -159,6 +143,60 @@ function deleteProfile(){
   }).then(checkResponse);
 }
 
+function markAsGoing(eventId) {
+  return fetch(`${baseUrl}/going`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ eventId }),
+  }).then(checkResponse);
+}
+
+function uploadProfilePicture(file) {
+  const formData = new FormData();
+  formData.append('profilePicture', file);
+
+  return fetch(`${baseUrl}/users/profile/picture`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+    // Don't set Content-Type header - browser will set it with boundary for multipart/form-data
+  }).then(checkResponse);
+}
+
+function googleAuth(credential) {
+  return fetch(`${baseUrl}/auth/google`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ credential }),
+  }).then(checkResponse);
+}
+
+function requestPasswordReset(email) {
+  return fetch(`${baseUrl}/password-reset/request`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  }).then(checkResponse);
+}
+
+function resetPassword(token, newPassword) {
+  return fetch(`${baseUrl}/password-reset/reset`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword }),
+  }).then(checkResponse);
+}
+
 export {
   createUser,
   login,
@@ -170,7 +208,11 @@ export {
   checkin,
   getUsersAtEvent,
   checkout,
-  fetchGoogleEvents,
   deleteProfile,
-  deleteUser
+  deleteUser,
+  markAsGoing,
+  uploadProfilePicture,
+  googleAuth,
+  requestPasswordReset,
+  resetPassword
 };

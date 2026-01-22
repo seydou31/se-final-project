@@ -1,6 +1,7 @@
 import "../blocks/main.css";
 import heartlogo from "../assets/heart-logo.svg";
 import redcloselogo from "../assets/red-close-logo.png";
+import demoVideo from "../assets/0114(2).mp4";
 import { Users, MessageCircle, Shield, Heart } from "lucide-react";
 
 
@@ -125,10 +126,8 @@ export default function Main({onClick}) {
             </p>
           </li>
         </ol>
-        <video className="section2__video" width="840" height="360" controls>
-          <source src="" type="video/mp4" />
-          <source src="" type="video/webm" />
-          <source src="" type="video/ogg" />
+        <video className="section2__video" controls>
+          <source src={demoVideo} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <button onClick={onClick} className="main__button">Create Account</button>

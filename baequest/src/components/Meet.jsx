@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Event from "./Event";
 import OtherUsers from "./OtherUsers";
+import Calendar from "./Calendar";
+import { markAsGoing } from "../utils/api";
 import "../blocks/meetup.css";
 
 const US_STATES = [
@@ -13,7 +15,7 @@ const US_STATES = [
   "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
   "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
   "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
-  "West Virginia", "Wisconsin", "Wyoming"
+  "Washington DC", "West Virginia", "Wisconsin", "Wyoming"
 ];
 
 export default function Meet({
@@ -28,11 +30,75 @@ export default function Meet({
   setCurrentEvent,
   setIsCheckedIn,
 }) {
-  const [selectedState, setSelectedState] = useState("");
+  // Initialize from localStorage
+  const [selectedState, setSelectedState] = useState(() => {
+    return localStorage.getItem("selectedState") || "";
+  });
+  const [selectedCity, setSelectedCity] = useState(() => {
+    return localStorage.getItem("selectedCity") || "";
+  });
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const savedDate = localStorage.getItem("selectedDate");
+    return savedDate ? new Date(savedDate) : null;
+  });
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    if (selectedState) {
+      localStorage.setItem("selectedState", selectedState);
+    } else {
+      localStorage.removeItem("selectedState");
+    }
+  }, [selectedState]);
+
+  useEffect(() => {
+    if (selectedCity) {
+      localStorage.setItem("selectedCity", selectedCity);
+    } else {
+      localStorage.removeItem("selectedCity");
+    }
+  }, [selectedCity]);
+
+  useEffect(() => {
+    if (selectedDate) {
+      localStorage.setItem("selectedDate", selectedDate.toISOString());
+    } else {
+      localStorage.removeItem("selectedDate");
+    }
+  }, [selectedDate]);
+
+  // Automatically load events on mount if filters exist
+  useEffect(() => {
+    if (selectedState || selectedCity) {
+      handleFindEvents(selectedState, selectedCity);
+    }
+  }, []); // Only run once on mount
 
   function handleClick() {
-    handleFindEvents(selectedState);
+    handleFindEvents(selectedState, selectedCity);
   }
+
+  const handleImGoing = async (event) => {
+    try {
+      const result = await markAsGoing(event._id);
+      return result;
+    } catch (error) {
+      console.error('Error marking as going:', error);
+      throw error;
+    }
+  };
+
+  // Filter events by selected date
+  const filteredEvents = selectedDate
+    ? events.filter((event) => {
+        const eventDate = new Date(event.date);
+        return (
+          eventDate.getDate() === selectedDate.getDate() &&
+          eventDate.getMonth() === selectedDate.getMonth() &&
+          eventDate.getFullYear() === selectedDate.getFullYear()
+        );
+      })
+    : events;
 
   return (
     <>
@@ -42,8 +108,8 @@ export default function Meet({
           otherProfiles={otherProfiles}
           setOtherProfiles={setOtherProfiles}
           currentEvent={currentEvent}
-          setCurrentEvent={setCurrentEvent} 
-          setIsCheckedIn={setIsCheckedIn} 
+          setCurrentEvent={setCurrentEvent}
+          setIsCheckedIn={setIsCheckedIn}
         />
       ) : (
         <div className="meet">
@@ -65,17 +131,39 @@ export default function Meet({
                 </option>
               ))}
             </select>
+
+            <label htmlFor="city-input" className="meet__label">
+              City (optional):
+            </label>
+            <input
+              id="city-input"
+              type="text"
+              className="meet__input"
+              placeholder="Enter city name"
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+            />
+
+            <div className="meet__calendar-container">
+              <label className="meet__label">Select Date:</label>
+              <Calendar
+                selectedDate={selectedDate}
+                onDateSelect={setSelectedDate}
+                events={events}
+              />
+            </div>
           </div>
           <button onClick={handleClick} type="button" className="meet__btn">
             Find
           </button>
-          {events &&
-            events.map((event) => {
+          {filteredEvents &&
+            filteredEvents.map((event) => {
               return (
                 <Event
                   key={event._id}
                   event={event}
                   handleCheckin={handleCheckin}
+                  handleImGoing={handleImGoing}
                 />
               );
             })}
