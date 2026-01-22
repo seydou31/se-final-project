@@ -3,40 +3,45 @@ import { useNavigate } from "react-router-dom";
 import socket from '../utils/socket';
 import "../blocks/otherusers.css";
 
-export default function OtherUsers({ 
-  otherProfiles, 
-  setOtherProfiles, 
-  handleCheckoutModal, 
+export default function OtherUsers({
+  otherProfiles,
+  setOtherProfiles,
+  handleCheckoutModal,
   currentEvent,
-  setCurrentEvent, 
-  setIsCheckedIn   
+  setCurrentEvent,
+  setIsCheckedIn
 }) {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  const baseUrl = import.meta.env.PROD
+    ? "https://api.baequests.com"
+    : "http://localhost:3001";
+
+  const getImageUrl = (pictureUrl) => {
+    if (!pictureUrl) return null;
+    if (pictureUrl.startsWith('http://') || pictureUrl.startsWith('https://')) {
+      return pictureUrl;
+    }
+    return `${baseUrl}${pictureUrl}`;
+  }; 
 
   useEffect(() => {
     if (!currentEvent?._id) {
-      console.warn("No current event on OtherUsers page");
       navigate("/meet");
       return;
     }
 
     socket.emit("join-event", { eventId: currentEvent._id });
-    console.log("🔵 Joining room:", currentEvent._id);
 
     // Listen for users checking OUT
     socket.on("user-checked-out", ({ userId, eventId }) => {
-      console.log("RECEIVED user-checked-out:", { userId, eventId });
-      
       if (eventId === currentEvent._id) {
-        console.log("Event ID matches! Filtering user:", userId);
         setOtherProfiles((prev) => prev.filter((user) => user._id !== userId));
       }
     });
 
     // Listen for users checking IN
     socket.on("user-checked-in", ({ user, eventId }) => {
-      console.log(" RECEIVED user-checked-in:", { user, eventId });
-      
       if (eventId === currentEvent._id) {
         setOtherProfiles((prev) => {
           // Check if user is already in the list (avoid duplicates)
@@ -48,10 +53,8 @@ export default function OtherUsers({
       }
     });
 
-    // ✅ Listen for event expiration / force checkout (OUTSIDE other listeners!)
+    // Listen for event expiration / force checkout
     socket.on("force-checkout", ({ message, eventId }) => {
-      console.log(" Force checkout:", message, eventId);
-      
       if (eventId === currentEvent._id) {
         alert(message);
         setCurrentEvent(null);
@@ -65,7 +68,7 @@ export default function OtherUsers({
     return () => {
       socket.off("user-checked-in");
       socket.off("user-checked-out");
-      socket.off("force-checkout"); // ✅ Clean up force-checkout
+      socket.off("force-checkout");
       socket.emit("leave-event", { eventId: currentEvent._id });
     };
   }, [currentEvent, navigate, setOtherProfiles, setCurrentEvent, setIsCheckedIn]);
@@ -80,20 +83,42 @@ export default function OtherUsers({
         <div className="others__grid">
           {otherProfiles.map((user) => (
             <div className="others__card" key={user._id}>
-              <h2 className="others__name">
-                {user.name}, {user.age}
-              </h2>
-              <p className="others__bio">{user.bio}</p>
-
-              <div className="others__interests">
-                {user.interests.map((interest, i) => (
-                  <span className="others__interest" key={i}>
-                    {interest}
-                  </span>
-                ))}
+              <div className="others__header">
+                <div className="others__avatar">
+                  {user.profilePicture ? (
+                    <img
+                      key={user.profilePicture}
+                      src={getImageUrl(user.profilePicture)}
+                      alt={`${user.name}'s profile`}
+                      className="others__avatar-image"
+                    />
+                  ) : (
+                    <div className="others__avatar-placeholder">
+                      {user.name ? user.name.charAt(0).toUpperCase() : "?"}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <p className="others__starter">💬 {user.convoStarter}</p>
+              <div className="others__content">
+                <h2 className="others__name">
+                  {user.name}, {user.age}
+                </h2>
+                {user.profession && (
+                  <p className="others__profession">{user.profession}</p>
+                )}
+                <p className="others__bio">{user.bio}</p>
+
+                <div className="others__interests">
+                  {user.interests.map((interest, i) => (
+                    <span className="others__interest" key={i}>
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="others__starter">💬 {user.convoStarter}</p>
+              </div>
             </div>
           ))}
         </div>

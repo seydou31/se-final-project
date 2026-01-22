@@ -265,7 +265,8 @@
 
 .section2__video {
   padding-bottom: 40px;
-  max-width: 100%;
+  max-width: 800px;
+  width: 100%;
   border-radius: var(--radius-lg);
 }
 

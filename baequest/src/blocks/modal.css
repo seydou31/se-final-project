@@ -111,6 +111,36 @@
   color: var(--text-muted);
 }
 
+.modal__input--file {
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.modal__input--file::-webkit-file-upload-button {
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  margin-right: 12px;
+  transition: all var(--transition-fast);
+}
+
+.modal__input--file::-webkit-file-upload-button:hover {
+  background: linear-gradient(135deg, var(--pink-600) 0%, var(--pink-700) 100%);
+}
+
+.modal__file-name {
+  font-size: 0.85rem;
+  color: var(--pink-700);
+  margin-top: -12px;
+  margin-bottom: 12px;
+  font-style: italic;
+  align-self: flex-start;
+}
+
 .modal__close-btn {
   position: absolute;
   top: 16px;
@@ -131,6 +161,24 @@
 .modal__close-btn:hover {
   background: var(--pink-100);
   transform: scale(1.1);
+}
+
+.modal__forgot-password {
+  background: none;
+  border: none;
+  color: var(--pink-600);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 8px;
+  padding: 4px 0;
+  transition: all var(--transition-fast);
+  text-decoration: underline;
+}
+
+.modal__forgot-password:hover {
+  color: var(--pink-700);
 }
 
 .modal__submit-btn {
@@ -186,10 +234,69 @@
   animation: shake 0.3s ease-in-out;
 }
 
+.modal__success-message {
+  width: 100%;
+  padding: 16px 20px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.15) 100%);
+  border: 2px solid rgba(34, 197, 94, 0.6);
+  border-radius: var(--radius-md);
+  color: rgb(21, 128, 61);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+  animation: slideIn 0.3s ease-in-out;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-8px); }
   75% { transform: translateX(8px); }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Google OAuth Styling ===== */
+.modal__divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 24px 0 20px;
+  padding: 0 32px;
+}
+
+.modal__divider::before,
+.modal__divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px solid var(--pink-200);
+}
+
+.modal__divider span {
+  padding: 0 16px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.modal__google-btn {
+  width: 100%;
+  padding: 0 32px 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ===== Interest Tags ===== */

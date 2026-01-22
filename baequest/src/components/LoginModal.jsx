@@ -1,7 +1,8 @@
 import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
+import { GoogleLogin } from '@react-oauth/google';
 
-export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, loggingError }) {
+export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, handleGoogleLogin, loggingError, handleForgotPasswordModal }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
     password: "",
@@ -59,6 +60,15 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
             {errors.password && (
               <p className="modal__validation">{errors.password}</p>
             )}
+
+            <button
+              type="button"
+              className="modal__forgot-password"
+              onClick={handleForgotPasswordModal}
+            >
+              Forgot Password?
+            </button>
+
             <button
               type="submit"
               className="modal__submit-btn"
@@ -69,6 +79,22 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
            { loggingError && <p className="modal__login-error">{loggingError}</p>}
           </fieldset>
         </form>
+
+        <div className="modal__divider">
+          <span>OR</span>
+        </div>
+
+        <div className="modal__google-btn">
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => {
+              console.error('Google Login Failed');
+            }}
+            text="signin_with"
+            size="large"
+            width="100%"
+          />
+        </div>
     </ModalWrapper>
   );
 }

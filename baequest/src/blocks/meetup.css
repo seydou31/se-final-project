@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 48px 24px;
+  padding: 48px 24px 120px 24px; /* Added bottom padding to prevent footer overlap */
   min-height: 100vh;
   background: linear-gradient(180deg, var(--pink-50) 0%, var(--background) 30%, var(--background) 100%);
   position: relative;
@@ -80,6 +80,40 @@
   outline: none;
   border-color: var(--pink-500);
   box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
+}
+
+.meet__input {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: 2px solid var(--pink-200);
+  border-radius: var(--radius-lg);
+  background: white;
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+  min-width: 240px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.meet__input:hover {
+  border-color: var(--pink-400);
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+}
+
+.meet__input:focus {
+  outline: none;
+  border-color: var(--pink-500);
+  box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
+}
+
+.meet__input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.meet__calendar-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
 }
 
 .meet__btn {

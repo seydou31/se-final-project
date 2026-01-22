@@ -8,6 +8,7 @@ export default function ModalWrapper({
   title,
   children,
   className = "modal",
+  showCloseButton = true,
 }) {
   return (
     <div
@@ -16,13 +17,15 @@ export default function ModalWrapper({
     >
       <div className={`${className}__content`}>
         {title && <h2 className={`${className}__title`}>{title}</h2>}
-        <button type="button" className={`${className}__close-btn`} onClick={onClose}>
-          <img
-            src={closeBtn}
-            alt="close modal button"
-            className={`${className}__close-btn-image`}
-          />
-        </button>
+        {showCloseButton && (
+          <button type="button" className={`${className}__close-btn`} onClick={onClose}>
+            <img
+              src={closeBtn}
+              alt="close modal button"
+              className={`${className}__close-btn-image`}
+            />
+          </button>
+        )}
         {children}
       </div>
     </div>

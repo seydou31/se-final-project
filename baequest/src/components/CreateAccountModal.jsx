@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function CreateAccountModal({
   isOpen,
   onClose,
   onOverlayClick,
   handleCreateAccountSubmit,
+  handleGoogleSignup,
 }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
@@ -103,6 +105,22 @@ export default function CreateAccountModal({
             </button>
           </fieldset>
         </form>
+
+        <div className="modal__divider">
+          <span>OR</span>
+        </div>
+
+        <div className="modal__google-btn">
+          <GoogleLogin
+            onSuccess={handleGoogleSignup}
+            onError={() => {
+              console.error('Google Sign-Up Failed');
+            }}
+            text="signup_with"
+            size="large"
+            width="100%"
+          />
+        </div>
     </ModalWrapper>
   );
 }

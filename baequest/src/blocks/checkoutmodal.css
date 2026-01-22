@@ -33,10 +33,37 @@
   border: 1px solid var(--pink-100);
   transform: scale(0.95);
   transition: transform var(--transition-base);
+  position: relative;
 }
 
 .checkout_is-opened .checkout__content {
   transform: scale(1);
+}
+
+.checkout__close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.checkout__close-btn:hover {
+  background: var(--pink-50);
+}
+
+.checkout__close-btn-image {
+  width: 20px;
+  height: 20px;
 }
 
 .checkout__title {
