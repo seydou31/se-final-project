@@ -158,6 +158,9 @@ function App() {
           navigate("/profile");
         }
       })
+      .catch(() => {
+        // User is not authenticated – stay on landing page
+      })
       .finally(() => {
         setIsLoggedInLoading(false);
       });

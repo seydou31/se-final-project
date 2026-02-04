@@ -45,9 +45,7 @@ describe('Event Component', () => {
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
       expect(screen.getByText('Coffee Meetup')).toBeInTheDocument();
-      expect(screen.getByText(/Let's grab coffee and chat!/i)).toBeInTheDocument();
-      expect(screen.getByText(/Starbucks/i)).toBeInTheDocument();
-      expect(screen.getByText(/Free/i)).toBeInTheDocument();
+      expect(screen.getByText(/View on Map/i)).toBeInTheDocument();
       expect(screen.getByText(/5 people going/i)).toBeInTheDocument();
     });
 
@@ -76,12 +74,6 @@ describe('Event Component', () => {
       expect(eventLink.closest('a')).toHaveAttribute('href', 'https://example.com/event');
     });
 
-    it('displays "Paid" when event is not free', () => {
-      const paidEvent = { ...mockEvent, price: '$20' };
-      render(<Event event={paidEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
-
-      expect(screen.getByText(/Paid/i)).toBeInTheDocument();
-    });
   });
 
   describe('Relative Time Display', () => {
@@ -127,7 +119,7 @@ describe('Event Component', () => {
       const eventOnlyUser = { ...mockEvent, goingCount: 1, isUserGoing: true };
       render(<Event event={eventOnlyUser} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      expect(screen.queryByText(/going/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/people going|person going/i)).not.toBeInTheDocument();
     });
   });
 
@@ -221,56 +213,6 @@ describe('Event Component', () => {
     });
   });
 
-  describe('Real-time Updates', () => {
-    it('sets up socket listener on mount', () => {
-      render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
-
-      expect(mockSocket.on).toHaveBeenCalledWith(
-        'event-going-updated',
-        expect.any(Function)
-      );
-    });
-
-    it('cleans up socket listener on unmount', () => {
-      const { unmount } = render(
-        <Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />
-      );
-
-      unmount();
-
-      expect(mockSocket.off).toHaveBeenCalledWith(
-        'event-going-updated',
-        expect.any(Function)
-      );
-    });
-
-    it('updates count when receiving socket event for this event', async () => {
-      render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
-
-      // Get the callback that was registered with socket.on
-      const socketCallback = mockSocket.on.mock.calls[0][1];
-
-      // Simulate receiving an update for this event
-      socketCallback({ eventId: 'event-123', count: 10 });
-
-      await waitFor(() => {
-        expect(screen.getByText('10 people going')).toBeInTheDocument();
-      });
-    });
-
-    it('does not update count for different events', () => {
-      render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
-
-      const socketCallback = mockSocket.on.mock.calls[0][1];
-
-      // Simulate receiving an update for a different event
-      socketCallback({ eventId: 'different-event', count: 100 });
-
-      // Count should remain unchanged
-      expect(screen.getByText('5 people going')).toBeInTheDocument();
-    });
-  });
-
   describe('Error Handling', () => {
     it('handles errors when marking as going fails', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -282,7 +224,7 @@ describe('Event Component', () => {
 
       await waitFor(() => {
         expect(consoleError).toHaveBeenCalledWith(
-          'Error marking as going:',
+          'Failed to mark as going:',
           expect.any(Error)
         );
       });

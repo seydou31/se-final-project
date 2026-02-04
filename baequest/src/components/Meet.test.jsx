@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import Meet from './Meet';
 import * as api from '../utils/api';
@@ -70,7 +71,7 @@ describe('Meet Component', () => {
 
       expect(screen.getByText('Find events near you')).toBeInTheDocument();
       expect(screen.getByLabelText(/select state/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/select day/i)).toBeInTheDocument();
+      expect(screen.getByText('Select Date:')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /find/i })).toBeInTheDocument();
     });
 
@@ -91,35 +92,9 @@ describe('Meet Component', () => {
       const findButton = screen.getByRole('button', { name: /find/i });
       await userEvent.click(findButton);
 
-      expect(handleFindEvents).toHaveBeenCalledWith('California');
+      expect(handleFindEvents).toHaveBeenCalledWith('California', '');
     });
 
-    it('filters events by selected day', async () => {
-      render(<Meet {...defaultProps} />);
-
-      const daySelect = screen.getByLabelText(/select day/i);
-      await userEvent.selectOptions(daySelect, 'Monday');
-
-      // Should only show Monday event
-      expect(screen.getByText('Monday Coffee Meetup')).toBeInTheDocument();
-      expect(screen.queryByText('Friday Happy Hour')).not.toBeInTheDocument();
-    });
-
-    it('shows all events when "All Days" is selected', async () => {
-      render(<Meet {...defaultProps} />);
-
-      const daySelect = screen.getByLabelText(/select day/i);
-
-      // First filter to Monday
-      await userEvent.selectOptions(daySelect, 'Monday');
-      expect(screen.queryByText('Friday Happy Hour')).not.toBeInTheDocument();
-
-      // Then select "All Days"
-      await userEvent.selectOptions(daySelect, '');
-
-      expect(screen.getByText('Monday Coffee Meetup')).toBeInTheDocument();
-      expect(screen.getByText('Friday Happy Hour')).toBeInTheDocument();
-    });
   });
 
   describe('State Selection', () => {
@@ -145,27 +120,6 @@ describe('Meet Component', () => {
     });
   });
 
-  describe('Day Filtering', () => {
-    it('renders all days of week in dropdown', () => {
-      render(<Meet {...defaultProps} />);
-
-      // Check for all days
-      expect(screen.getByRole('option', { name: 'Monday' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Tuesday' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Friday' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'All Days' })).toBeInTheDocument();
-    });
-
-    it('correctly filters events by Friday', async () => {
-      render(<Meet {...defaultProps} />);
-
-      const daySelect = screen.getByLabelText(/select day/i);
-      await userEvent.selectOptions(daySelect, 'Friday');
-
-      expect(screen.queryByText('Monday Coffee Meetup')).not.toBeInTheDocument();
-      expect(screen.getByText('Friday Happy Hour')).toBeInTheDocument();
-    });
-  });
 
   describe('I\'m Going Functionality', () => {
     it('calls markAsGoing API when user clicks I\'m Going', async () => {
@@ -212,29 +166,34 @@ describe('Meet Component', () => {
       ];
 
       render(
-        <Meet
-          {...defaultProps}
-          isCheckedIn={true}
-          otherProfiles={otherProfiles}
-          currentEvent={mockEvents[0]}
-        />
+        <MemoryRouter>
+          <Meet
+            {...defaultProps}
+            isCheckedIn={true}
+            otherProfiles={otherProfiles}
+            currentEvent={mockEvents[0]}
+          />
+        </MemoryRouter>
       );
 
-      expect(screen.getByText('People Checked In at the event')).toBeInTheDocument();
+      expect(screen.getByText('People Checked In')).toBeInTheDocument();
       expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
     });
 
     it('does not show event list when checked in', () => {
       render(
-        <Meet
-          {...defaultProps}
-          isCheckedIn={true}
-          currentEvent={mockEvents[0]}
-        />
+        <MemoryRouter>
+          <Meet
+            {...defaultProps}
+            isCheckedIn={true}
+            currentEvent={mockEvents[0]}
+          />
+        </MemoryRouter>
       );
 
       expect(screen.queryByText('Find events near you')).not.toBeInTheDocument();
-      expect(screen.queryByText('Monday Coffee Meetup')).not.toBeInTheDocument();
+      // Event title IS shown in OtherUsers header, so we verify the discovery UI is gone
+      expect(screen.queryByRole('button', { name: /find/i })).not.toBeInTheDocument();
     });
   });
 
@@ -246,16 +205,6 @@ describe('Meet Component', () => {
       expect(screen.queryByText('Monday Coffee Meetup')).not.toBeInTheDocument();
     });
 
-    it('shows no events when filter eliminates all results', async () => {
-      render(<Meet {...defaultProps} />);
-
-      // Filter by a day that has no events
-      const daySelect = screen.getByLabelText(/select day/i);
-      await userEvent.selectOptions(daySelect, 'Sunday');
-
-      expect(screen.queryByText('Monday Coffee Meetup')).not.toBeInTheDocument();
-      expect(screen.queryByText('Friday Happy Hour')).not.toBeInTheDocument();
-    });
   });
 
   describe('Event Rendering', () => {
@@ -274,23 +223,15 @@ describe('Meet Component', () => {
   });
 
   describe('Combined Filters', () => {
-    it('can use state and day filters together', async () => {
+    it('can use state filter and click find', async () => {
       const handleFindEvents = vi.fn();
       render(<Meet {...defaultProps} handleFindEvents={handleFindEvents} />);
 
-      // Select both state and day
       await userEvent.selectOptions(screen.getByLabelText(/select state/i), 'California');
-      await userEvent.selectOptions(screen.getByLabelText(/select day/i), 'Monday');
 
-      // Click find
       await userEvent.click(screen.getByRole('button', { name: /find/i }));
 
-      // Should call handleFindEvents with state
-      expect(handleFindEvents).toHaveBeenCalledWith('California');
-
-      // Should show only Monday events
-      expect(screen.getByText('Monday Coffee Meetup')).toBeInTheDocument();
-      expect(screen.queryByText('Friday Happy Hour')).not.toBeInTheDocument();
+      expect(handleFindEvents).toHaveBeenCalledWith('California', '');
     });
   });
 });

@@ -1,30 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import * as api from '../utils/api';
 
-// Mock the API module
+// Mock the API module with all functions imported across the app
 vi.mock('../utils/api', () => ({
   login: vi.fn(),
-  signup: vi.fn(),
+  createUser: vi.fn(),
   googleAuth: vi.fn(),
   getProfile: vi.fn(),
   createProfile: vi.fn(),
   updateProfile: vi.fn(),
-  deleteAccount: vi.fn(),
   getEvents: vi.fn(),
-  checkInEvent: vi.fn(),
-  checkOutEvent: vi.fn(),
-  getOtherUsers: vi.fn(),
-  sendInterest: vi.fn(),
-  getMatches: vi.fn(),
+  checkin: vi.fn(),
+  getUsersAtEvent: vi.fn(),
+  checkout: vi.fn(),
+  logout: vi.fn(),
+  deleteUser: vi.fn(),
+  deleteProfile: vi.fn(),
+  requestPasswordReset: vi.fn(),
+  resetPassword: vi.fn(),
+  verifyEmail: vi.fn(),
+  sendEmailVerification: vi.fn(),
+  markAsGoing: vi.fn(),
+  uploadProfilePicture: vi.fn(),
 }));
 
-// Mock socket.io-client
+// Mock socket.io-client (named export)
 vi.mock('socket.io-client', () => ({
-  default: vi.fn(() => ({
+  io: vi.fn(() => ({
     on: vi.fn(),
     emit: vi.fn(),
     off: vi.fn(),
@@ -35,17 +41,20 @@ vi.mock('socket.io-client', () => ({
 // Mock Google OAuth
 vi.mock('@react-oauth/google', () => ({
   GoogleOAuthProvider: ({ children }) => children,
-  GoogleLogin: ({ onSuccess, onError }) => (
+  GoogleLogin: ({ onSuccess }) => (
     <button
       data-testid="google-login-button"
-      onClick={() =>
-        onSuccess({ credential: 'mock-google-credential' })
-      }
+      onClick={() => onSuccess({ credential: 'mock-google-credential' })}
     >
       Sign in with Google
     </button>
   ),
 }));
+
+// Returns the single modal that currently has the opened class
+function getOpenedModal() {
+  return document.querySelector('.modal_is-opened');
+}
 
 const renderApp = () => {
   return render(
@@ -66,18 +75,19 @@ describe('BaeQuest App - Integration Tests', () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      expect(screen.getByText(/Find your vibe/i)).toBeInTheDocument();
+      expect(screen.getByText(/Meet amazing people in your area/i)).toBeInTheDocument();
     });
 
-    it('shows login modal when login button is clicked', async () => {
+    it('shows login modal when SIGN IN button is clicked', async () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      const loginButton = screen.getByRole('button', { name: /log in/i });
-      await userEvent.click(loginButton);
+      await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-      expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
+      const modal = getOpenedModal();
+      expect(modal).toBeTruthy();
+      expect(within(modal).getByPlaceholderText('Enter email')).toBeInTheDocument();
+      expect(within(modal).getByPlaceholderText('Create Password')).toBeInTheDocument();
     });
 
     it('successfully logs in with email and password', async () => {
@@ -86,33 +96,29 @@ describe('BaeQuest App - Integration Tests', () => {
         age: 25,
         gender: 'male',
         profession: 'Engineer',
+        bio: 'A developer',
         interests: ['hiking', 'coding'],
         convoStarter: 'Hello!',
       };
 
       api.getProfile.mockRejectedValueOnce(new Error('Not authenticated'));
-      api.login.mockResolvedValue({ token: 'mock-token' });
-      api.getProfile.mockResolvedValue(mockProfile);
+      api.login.mockResolvedValue({});
+      api.getProfile.mockResolvedValueOnce(mockProfile);
 
       renderApp();
 
-      // Open login modal
-      const loginButton = screen.getByRole('button', { name: /log in/i });
-      await userEvent.click(loginButton);
+      // Open login modal via Header SIGN IN button
+      await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-      // Fill in credentials
-      const emailInput = screen.getByPlaceholderText(/email/i);
-      const passwordInput = screen.getByPlaceholderText(/password/i);
+      const modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'test@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
 
-      await userEvent.type(emailInput, 'test@example.com');
-      await userEvent.type(passwordInput, 'password123');
-
-      // Submit login
-      const submitButton = screen.getByRole('button', { name: /^log in$/i });
-      await userEvent.click(submitButton);
+      // Login button enabled once email and password pass validation
+      await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
 
       await waitFor(() => {
-        expect(api.login).toHaveBeenCalledWith('test@example.com', 'password123');
+        expect(api.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'Password1!' });
       });
     });
 
@@ -120,104 +126,128 @@ describe('BaeQuest App - Integration Tests', () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      const createAccountButton = screen.getByRole('button', { name: /create account/i });
-      await userEvent.click(createAccountButton);
+      // Main renders two "Create Account" buttons; click the first
+      const buttons = screen.getAllByRole('button', { name: /create account/i });
+      await userEvent.click(buttons[0]);
 
-      expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/^password$/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/confirm password/i)).toBeInTheDocument();
+      const modal = getOpenedModal();
+      expect(modal).toBeTruthy();
+      expect(within(modal).getByPlaceholderText('Enter email')).toBeInTheDocument();
+      expect(within(modal).getByPlaceholderText('Confirm Password')).toBeInTheDocument();
     });
 
     it('successfully creates account with email and password', async () => {
       api.getProfile.mockRejectedValueOnce(new Error('Not authenticated'));
-      api.signup.mockResolvedValue({ token: 'mock-token' });
-      api.getProfile.mockResolvedValue(null);
+      api.createUser.mockResolvedValue({});
 
       renderApp();
 
-      // Open create account modal
-      const createAccountButton = screen.getByRole('button', { name: /create account/i });
-      await userEvent.click(createAccountButton);
+      const buttons = screen.getAllByRole('button', { name: /create account/i });
+      await userEvent.click(buttons[0]);
 
-      // Fill in credentials
-      const emailInput = screen.getByPlaceholderText(/email/i);
-      const passwordInput = screen.getByPlaceholderText(/^password$/i);
-      const confirmPasswordInput = screen.getByPlaceholderText(/confirm password/i);
+      const modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'newuser@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.type(within(modal).getByPlaceholderText('Confirm Password'), 'Password1!');
 
-      await userEvent.type(emailInput, 'newuser@example.com');
-      await userEvent.type(passwordInput, 'password123');
-      await userEvent.type(confirmPasswordInput, 'password123');
-
-      // Submit signup
-      const submitButton = screen.getByRole('button', { name: /^create account$/i });
-      await userEvent.click(submitButton);
+      // Submit button text is "Continue"
+      await userEvent.click(within(modal).getByRole('button', { name: /^Continue$/ }));
 
       await waitFor(() => {
-        expect(api.signup).toHaveBeenCalledWith('newuser@example.com', 'password123');
+        expect(api.createUser).toHaveBeenCalledWith({ email: 'newuser@example.com', password: 'Password1!' });
       });
     });
   });
 
   describe('Profile Management', () => {
-    it('redirects to profile page when user has a profile', async () => {
+    it('shows profile page when user has a profile', async () => {
       const mockProfile = {
         name: 'John Doe',
         age: 25,
         gender: 'male',
         profession: 'Engineer',
+        bio: 'A developer',
         interests: ['hiking', 'coding'],
         convoStarter: 'Hello!',
       };
 
       api.getProfile.mockResolvedValue(mockProfile);
-      api.getEvents.mockResolvedValue([]);
 
       renderApp();
 
+      // App navigates to /profile after loading; Profile renders the name
       await waitFor(() => {
         expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
       });
     });
 
-    it('shows profile creation modal for new users', async () => {
-      api.getProfile.mockResolvedValue(null);
-      localStorage.setItem('tokenExists', 'true');
+    it('shows profile creation modal after login for new users', async () => {
+      // 1st getProfile (initial mount) rejects – not logged in
+      api.getProfile.mockRejectedValueOnce(new Error('Not authenticated'));
+      api.login.mockResolvedValue({});
+      // 2nd getProfile (after login) returns null – no profile yet
+      api.getProfile.mockResolvedValueOnce(null);
 
       renderApp();
 
+      // Log in via SIGN IN → LoginModal
+      await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      let modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'new@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
+
+      // After login with null profile, App opens the Create Profile modal
       await waitFor(() => {
-        expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
-        expect(screen.getByPlaceholderText(/age/i)).toBeInTheDocument();
+        const m = getOpenedModal();
+        expect(m).toBeTruthy();
+        expect(within(m).getByRole('heading', { name: /create profile/i })).toBeInTheDocument();
       });
     });
 
-    it('creates profile with all required fields', async () => {
-      api.getProfile.mockResolvedValue(null);
+    it('creates profile with required fields', async () => {
+      api.getProfile.mockRejectedValueOnce(new Error('Not authenticated'));
+      api.login.mockResolvedValue({});
+      api.getProfile.mockResolvedValueOnce(null);
       api.createProfile.mockResolvedValue({
         name: 'Jane Doe',
         age: 28,
         gender: 'female',
         profession: 'Designer',
+        bio: 'Creative designer',
         interests: ['art', 'music'],
-        convoStarter: 'Hi there!',
+        convoStarter: 'What do you love to do?',
       });
-      localStorage.setItem('tokenExists', 'true');
 
       renderApp();
 
+      // Step 1: log in to trigger profile creation modal
+      await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      let modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'jane@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
+
+      // Step 2: wait for Create Profile modal to appear
       await waitFor(() => {
-        expect(screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
+        modal = getOpenedModal();
+        expect(within(modal).getByRole('heading', { name: /create profile/i })).toBeInTheDocument();
       });
 
-      // Fill profile form
-      await userEvent.type(screen.getByPlaceholderText(/name/i), 'Jane Doe');
-      await userEvent.type(screen.getByPlaceholderText(/age/i), '28');
-      await userEvent.type(screen.getByPlaceholderText(/profession/i), 'Designer');
-      await userEvent.type(screen.getByPlaceholderText(/interests/i), 'art, music');
-      await userEvent.type(screen.getByPlaceholderText(/conversation starter/i), 'Hi there!');
+      // Step 3: fill all required profile fields (scoped to opened modal to avoid
+      // duplicate fields from the edit-mode ProfileModal also in the DOM)
+      await userEvent.type(within(modal).getByPlaceholderText('First name. Last name optional'), 'Jane Doe');
+      await userEvent.type(within(modal).getByPlaceholderText('Enter your age'), '28');
+      await userEvent.selectOptions(within(modal).getByLabelText(/^Gender$/), 'female');
+      await userEvent.selectOptions(within(modal).getByLabelText(/^Sexual Orientation$/), 'straight');
+      await userEvent.type(within(modal).getByPlaceholderText(/Software Engineer/), 'Designer');
+      await userEvent.type(within(modal).getByPlaceholderText('Tell us about yourself'), 'Creative designer');
+      await userEvent.click(within(modal).getByLabelText('art'));
+      await userEvent.click(within(modal).getByLabelText('music'));
+      await userEvent.type(within(modal).getByPlaceholderText('Enter a conversation starter'), 'What do you love to do?');
 
-      const createButton = screen.getByRole('button', { name: /create profile/i });
-      await userEvent.click(createButton);
+      // Step 4: submit the form
+      await userEvent.click(within(modal).getByRole('button', { name: /create profile/i }));
 
       await waitFor(() => {
         expect(api.createProfile).toHaveBeenCalled();
@@ -232,20 +262,17 @@ describe('BaeQuest App - Integration Tests', () => {
 
       renderApp();
 
-      // Open login modal
-      const loginButton = screen.getByRole('button', { name: /log in/i });
-      await userEvent.click(loginButton);
+      await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
-      // Fill credentials
-      await userEvent.type(screen.getByPlaceholderText(/email/i), 'wrong@example.com');
-      await userEvent.type(screen.getByPlaceholderText(/password/i), 'wrongpass');
+      const modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'wrong@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
 
-      // Submit
-      const submitButton = screen.getByRole('button', { name: /^log in$/i });
-      await userEvent.click(submitButton);
-
+      // loggingError renders in both LoginModal and CreateAccountModal (always in DOM);
+      // scope to the still-open LoginModal
       await waitFor(() => {
-        expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+        expect(within(modal).getByText(/Invalid credentials/i)).toBeInTheDocument();
       });
     });
 
@@ -253,17 +280,14 @@ describe('BaeQuest App - Integration Tests', () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      // Open create account modal
-      const createAccountButton = screen.getByRole('button', { name: /create account/i });
-      await userEvent.click(createAccountButton);
+      const buttons = screen.getAllByRole('button', { name: /create account/i });
+      await userEvent.click(buttons[0]);
 
-      // Fill with mismatched passwords
-      await userEvent.type(screen.getByPlaceholderText(/email/i), 'test@example.com');
-      await userEvent.type(screen.getByPlaceholderText(/^password$/i), 'password123');
-      await userEvent.type(screen.getByPlaceholderText(/confirm password/i), 'password456');
-
-      const submitButton = screen.getByRole('button', { name: /^create account$/i });
-      await userEvent.click(submitButton);
+      const modal = getOpenedModal();
+      await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'test@example.com');
+      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      // Confirm password differs – mismatch error appears immediately on change
+      await userEvent.type(within(modal).getByPlaceholderText('Confirm Password'), 'Password2!');
 
       await waitFor(() => {
         expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
@@ -272,10 +296,11 @@ describe('BaeQuest App - Integration Tests', () => {
   });
 
   describe('Loading States', () => {
-    it('shows loading spinner during profile fetch', async () => {
-      api.getProfile.mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve(null), 1000))
-      );
+    it('shows loading message during profile fetch', () => {
+      // tokenExists in localStorage makes isLoggedInLoading true on mount
+      localStorage.setItem('tokenExists', 'true');
+      // Promise that never settles keeps the app in loading state
+      api.getProfile.mockImplementation(() => new Promise(() => {}));
 
       renderApp();
 
@@ -284,40 +309,32 @@ describe('BaeQuest App - Integration Tests', () => {
   });
 
   describe('Navigation', () => {
-    it('navigates to events page when logged in', async () => {
+    it('navigates to Meet page when clicking Meet link', async () => {
       const mockProfile = {
         name: 'John Doe',
         age: 25,
         gender: 'male',
         profession: 'Engineer',
+        bio: 'A developer',
         interests: ['hiking'],
         convoStarter: 'Hello!',
       };
 
       api.getProfile.mockResolvedValue(mockProfile);
-      api.getEvents.mockResolvedValue([
-        {
-          _id: '1',
-          name: 'Coffee Meetup',
-          date: new Date().toISOString(),
-          location: 'Starbucks',
-          description: 'Let\'s meet',
-          attendees: [],
-        },
-      ]);
 
       renderApp();
 
+      // Wait for profile page (App auto-navigates to /profile after loading)
       await waitFor(() => {
         expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
       });
 
-      // Navigate to events
-      const eventsLink = screen.getByRole('link', { name: /events/i });
-      await userEvent.click(eventsLink);
+      // Click "Meet" nav link in the Header
+      const meetLink = screen.getByRole('link', { name: /^Meet$/ });
+      await userEvent.click(meetLink);
 
       await waitFor(() => {
-        expect(screen.getByText(/Coffee Meetup/i)).toBeInTheDocument();
+        expect(screen.getByText(/Find events near you/i)).toBeInTheDocument();
       });
     });
   });
