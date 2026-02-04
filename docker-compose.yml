@@ -1,0 +1,46 @@
+services:
+  frontend:
+    build:
+      context: ./baequest
+      args:
+        VITE_API_BASE_URL: http://localhost:3001
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+        VITE_GA_TRACKING_ID: ${VITE_GA_TRACKING_ID}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ../se-final-project-backend/baequest-server
+    ports:
+      - "3001:3001"
+    # Loads all vars from the backend .env, then the environment block
+    # overrides the two that change inside Docker networking
+    env_file:
+      - ../se-final-project-backend/baequest-server/.env
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/baequest-db
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ../se-final-project-backend/baequest-server/uploads:/app/uploads
+      - ../se-final-project-backend/baequest-server/logs:/app/logs
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand({ping:1})' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:
