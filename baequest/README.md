@@ -1,7 +1,3 @@
-# instructions 
-To access the project go to https://baequests.com
-Backend is hosted at https://api.baequests.com
-Backend github repo at [this link](https://github.com/seydou31/se-final-project-backend)
 # 💞 BaeQuest
 
 **BaeQuest** is a modern social dating platform designed to help people **meet face-to-face** through **real-world group events** rather than traditional profile-based or speed-dating formats.
@@ -39,5 +35,3 @@ The platform operates on a **monthly subscription model** that gives members **u
 Example:
 ```js
 window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, "_blank");
-
-
