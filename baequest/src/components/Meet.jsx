@@ -115,6 +115,9 @@ export default function Meet({
       ) : (
         <div className="meet">
           <h1 className="meet__title">Find events near you</h1>
+          <div className="meet__notice">
+            📍 Currently showing events in the DMV area (DC, Maryland, Virginia) only
+          </div>
           <div className="meet__filter">
             <label htmlFor="state-select" className="meet__label">
               Select State:
