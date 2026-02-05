@@ -53,6 +53,19 @@ jobs:
         run: |
           set -e
           TAG="deploy-${{ github.sha }}"
+
+          # Delete existing release/tag if it exists (from previous failed run)
+          EXISTING_RELEASE=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG" \
+            -H "Authorization: token $GITHUB_TOKEN")
+          EXISTING_ID=$(echo "$EXISTING_RELEASE" | node -pe "try{JSON.parse(require('fs').readFileSync(0,'utf8')).id||''}catch(e){''}")
+          if [ -n "$EXISTING_ID" ]; then
+            echo "Deleting existing release: $EXISTING_ID"
+            curl -sX DELETE "https://api.github.com/repos/${{ github.repository }}/releases/$EXISTING_ID" \
+              -H "Authorization: token $GITHUB_TOKEN"
+            curl -sX DELETE "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$TAG" \
+              -H "Authorization: token $GITHUB_TOKEN"
+          fi
+
           RELEASE=$(curl -sX POST \
             "https://api.github.com/repos/${{ github.repository }}/releases" \
             -H "Authorization: token $GITHUB_TOKEN" \
