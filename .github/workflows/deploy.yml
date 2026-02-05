@@ -27,8 +27,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     needs: test
-    # Only deploy on pushes to main, not on PRs
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -41,32 +42,80 @@ jobs:
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
             VITE_GA_TRACKING_ID=${{ secrets.VITE_GA_TRACKING_ID }}
           tags: baequest-frontend:latest
+          load: true
 
       - name: Save image to tarball
         run: docker save baequest-frontend:latest -o frontend.tar
 
-      - name: SCP image to Google Cloud VM
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.GC_SERVER_HOST }}
-          username: ${{ secrets.GC_SERVER_USER }}
-          key: ${{ secrets.GC_SSH_KEY }}
-          source: frontend.tar
-          target: /tmp/
+      - name: Upload image as release asset
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          TAG="deploy-${{ github.sha }}"
+          RELEASE=$(curl -sX POST \
+            "https://api.github.com/repos/${{ github.repository }}/releases" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"tag_name\":\"$TAG\",\"name\":\"deploy\"}")
+          echo "Release response: $RELEASE"
+          RELEASE_ID=$(echo "$RELEASE" | node -e "const d=require('fs').readFileSync(0,'utf8');const id=JSON.parse(d).id;if(!id){console.error('Failed to create release');process.exit(1)}console.log(id)")
+          echo "Release ID: $RELEASE_ID"
+          UPLOAD_STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            "https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=frontend.tar" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @frontend.tar)
+          echo "Upload HTTP status: $UPLOAD_STATUS"
+          [ "$UPLOAD_STATUS" = "201" ] || { echo "ERROR: Asset upload failed with status $UPLOAD_STATUS"; exit 1; }
+          echo "RELEASE_ID=$RELEASE_ID" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$TAG" >> $GITHUB_ENV
 
-      - name: Load image and restart container
-        uses: appleboy/ssh-action@v1
+      - name: Deploy via SSH pull
+        run: |
+          echo "${{ secrets.GC_SSH_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          HOST="${{ secrets.GC_SERVER_USER }}@${{ secrets.GC_SERVER_HOST }}"
+          DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG/frontend.tar"
+
+          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes \
+            -o ConnectTimeout=10 "$HOST" \
+            "docker stop baequest-frontend 2>/dev/null || true; \
+             docker rm baequest-frontend 2>/dev/null || true; \
+             docker system prune -af 2>/dev/null; \
+             curl -sL '$DOWNLOAD_URL' | docker load; \
+             LOAD_EXIT=\$?; \
+             if [ \$LOAD_EXIT -ne 0 ]; then echo LOAD_FAILED; df -h /; exit 1; fi; \
+             docker run -d --name baequest-frontend -p 3000:80 --restart=unless-stopped \
+               baequest-frontend:latest; \
+             echo RUN_EXIT=\$?; \
+             docker ps" 2>&1 | tee /tmp/deploy_debug.log
+
+          rm -f /tmp/deploy_key
+
+          if grep -q "RUN_EXIT=0" /tmp/deploy_debug.log; then
+            echo "Deploy succeeded"
+          else
+            echo "Deploy failed - check artifact for details"
+            exit 1
+          fi
+
+      - name: Upload deploy debug log
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          host: ${{ secrets.GC_SERVER_HOST }}
-          username: ${{ secrets.GC_SERVER_USER }}
-          key: ${{ secrets.GC_SSH_KEY }}
-          script: |
-            docker load -i /tmp/frontend.tar
-            docker stop baequest-frontend || true
-            docker rm baequest-frontend || true
-            docker run -d \
-              --name baequest-frontend \
-              -p 3000:80 \
-              --restart=unless-stopped \
-              baequest-frontend:latest
-            rm -f /tmp/frontend.tar
+          name: deploy-debug-log
+          path: /tmp/deploy_debug.log
+
+      - name: Cleanup release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$RELEASE_ID" ]; then
+            curl -sX DELETE \
+              "https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID" \
+              -H "Authorization: token $GITHUB_TOKEN"
+            curl -sX DELETE \
+              "https://api.github.com/repos/${{ github.repository }}/git/refs/tags/$RELEASE_TAG" \
+              -H "Authorization: token $GITHUB_TOKEN"
+          fi
