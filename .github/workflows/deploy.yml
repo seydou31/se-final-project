@@ -91,10 +91,10 @@ jobs:
           HOST="${{ secrets.GC_SERVER_USER }}@${{ secrets.GC_SERVER_HOST }}"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG/frontend.tar"
 
-          # Add local dev key to VM (one-time setup for backend CI/CD)
+          # Add CI/CD deploy key to VM (one-time setup for backend deployments)
           ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes \
             -o ConnectTimeout=10 "$HOST" \
-            "grep -q 'seydoubadiaka@gmail.com' ~/.ssh/authorized_keys 2>/dev/null || echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILpUTbpBkcGn4eElWtApdt0ut6/6gC76OFanIIrk4Okt seydoubadiaka@gmail.com' >> ~/.ssh/authorized_keys"
+            "grep -q 'deploy-key-cicd' ~/.ssh/authorized_keys 2>/dev/null || echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINlO8jAFhQqqo966qD3A/TMSt75O/ZaLyxOyPy03CnYL deploy-key-cicd' >> ~/.ssh/authorized_keys"
 
           ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes \
             -o ConnectTimeout=10 "$HOST" \
