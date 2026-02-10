@@ -91,11 +91,6 @@ jobs:
           HOST="${{ secrets.GC_SERVER_USER }}@${{ secrets.GC_SERVER_HOST }}"
           DOWNLOAD_URL="https://github.com/${{ github.repository }}/releases/download/$RELEASE_TAG/frontend.tar"
 
-          # Add CI/CD deploy key to VM (one-time setup for backend deployments)
-          ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes \
-            -o ConnectTimeout=10 "$HOST" \
-            "grep -q 'deploy-key-cicd' ~/.ssh/authorized_keys 2>/dev/null || echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINlO8jAFhQqqo966qD3A/TMSt75O/ZaLyxOyPy03CnYL deploy-key-cicd' >> ~/.ssh/authorized_keys"
-
           ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes \
             -o ConnectTimeout=10 "$HOST" \
             "docker stop baequest-frontend 2>/dev/null || true; \
