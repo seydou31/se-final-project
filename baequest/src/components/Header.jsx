@@ -24,10 +24,10 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
 
   return (
     <header className="header">
-      <div className="header__left">
+      <Link to="/" className="header__left">
         <img className="header__logo" src={logo} alt="baequest-logo" />
         <h2 className="header__title">Baequest</h2>
-      </div>
+      </Link>
 
       {/* Desktop Navigation */}
       {!isLoggedIn && (
