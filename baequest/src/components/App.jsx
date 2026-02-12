@@ -28,6 +28,12 @@ import ForgotPasswordModal from "./ForgotPasswordModal.jsx";
 import ResetPasswordPage from "./ResetPasswordPage.jsx";
 import VerifyEmailPage from "./VerifyEmailPage.jsx";
 import EventFeedbackPage from "./EventFeedbackPage.jsx";
+import AboutUs from "../pages/AboutUs.jsx";
+import Contact from "../pages/Contact.jsx";
+import Careers from "../pages/Careers.jsx";
+import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
+import TermsOfService from "../pages/TermsOfService.jsx";
+import CookiePolicy from "../pages/CookiePolicy.jsx";
 import socket from "../utils/socket.js";
 import {
   createProfile,
@@ -669,6 +675,12 @@ function App() {
               path="/event-feedback"
               element={<EventFeedbackPage />}
             />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/cookies" element={<CookiePolicy />} />
             <Route
               path="/profile"
               element={
