@@ -71,6 +71,29 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header__home-mobile {
+  display: none;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all var(--transition-base);
+}
+
+.header__home-mobile:hover,
+.header__home-mobile:active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 /* ===== Navigation ===== */
 .header__nav {
   display: flex;
@@ -277,6 +300,10 @@
   .header__logo {
     width: 48px;
     height: 48px;
+  }
+
+  .header__home-mobile {
+    display: inline-block;
   }
 
   .header__burger {

@@ -29,11 +29,14 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
         <h2 className="header__title">Baequest</h2>
       </Link>
 
-      {/* Desktop Navigation */}
+      {/* Non-logged-in buttons */}
       {!isLoggedIn && (
-        <button type="button" onClick={handleLoginModal} className="header__button">
-          SIGN IN
-        </button>
+        <div className="header__actions">
+          <Link to="/" className="header__home-mobile">Home</Link>
+          <button type="button" onClick={handleLoginModal} className="header__button">
+            SIGN IN
+          </button>
+        </div>
       )}
 
       {isLoggedIn && (
