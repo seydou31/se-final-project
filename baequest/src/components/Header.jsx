@@ -1,13 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/baequest-logo.svg";
 import "../blocks/header.css";
 import { useContext, useState } from "react";
 import AppContext from "../context/AppContext";
 
+const FOOTER_PAGES = ["/about", "/contact", "/careers", "/privacy", "/terms", "/cookies"];
+
 export default function Header({ isLoggedIn, handleLoginModal, handleLogout, handleDeleteAccountModal }) {
   const { currentProfile } = useContext(AppContext);
   const firstInitial = currentProfile.name.charAt(0).toUpperCase();
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const isOnFooterPage = FOOTER_PAGES.includes(location.pathname);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -32,7 +36,7 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
       {/* Non-logged-in buttons */}
       {!isLoggedIn && (
         <div className="header__actions">
-          <Link to="/" className="header__home-mobile">Home</Link>
+          {isOnFooterPage && <Link to="/" className="header__home-mobile">Home</Link>}
           <button type="button" onClick={handleLoginModal} className="header__button">
             SIGN IN
           </button>
@@ -61,9 +65,11 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
 
           {/* Navigation Links */}
           <nav className={`header__nav ${menuOpen ? "header__nav_open" : ""}`}>
-            <Link className="header__link header__link_home" to="/" onClick={closeMenu}>
-              <span>Home</span>
-            </Link>
+            {isOnFooterPage && (
+              <Link className="header__link header__link_home" to="/" onClick={closeMenu}>
+                <span>Home</span>
+              </Link>
+            )}
             <Link className="header__link" to="/profile" onClick={closeMenu}>
               <span>Profile</span>
             </Link>
