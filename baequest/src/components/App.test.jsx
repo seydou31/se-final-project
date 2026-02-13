@@ -10,6 +10,7 @@ vi.mock('../utils/api', () => ({
   login: vi.fn(),
   createUser: vi.fn(),
   googleAuth: vi.fn(),
+  googleAuthWithToken: vi.fn(),
   getProfile: vi.fn(),
   createProfile: vi.fn(),
   updateProfile: vi.fn(),
@@ -49,6 +50,7 @@ vi.mock('@react-oauth/google', () => ({
       Sign in with Google
     </button>
   ),
+  useGoogleLogin: () => vi.fn(),
 }));
 
 // Returns the single modal that currently has the opened class
