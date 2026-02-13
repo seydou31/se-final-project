@@ -116,7 +116,9 @@ export default function CreateAccountModal({
         <div className="modal__google-btn">
           <GoogleLogin
             onSuccess={handleGoogleSignup}
-            onError={() => {
+            onError={(error) => {
+              console.error('Google Sign-Up Error:', error);
+              alert('Google Sign-Up failed. Please try again or use email signup.');
             }}
             text="signup_with"
             size="large"

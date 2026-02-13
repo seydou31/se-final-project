@@ -98,7 +98,9 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
         <div className="modal__google-btn">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => {
+            onError={(error) => {
+              console.error('Google Sign-In Error:', error);
+              alert('Google Sign-In failed. Please try again or use email login.');
             }}
             text="signin_with"
             size="large"
