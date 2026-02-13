@@ -111,6 +111,11 @@
   width: calc(100% - 32px);
 }
 
+/* Home link - only visible on mobile */
+.header__link_home {
+  display: none;
+}
+
 .header__logout {
   cursor: pointer;
   font-size: 0.95rem;
@@ -323,6 +328,10 @@
   .header__link:active {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .header__link_home {
+    display: flex;
   }
 
   .header__logout {

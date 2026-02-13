@@ -58,6 +58,9 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
 
           {/* Navigation Links */}
           <nav className={`header__nav ${menuOpen ? "header__nav_open" : ""}`}>
+            <Link className="header__link header__link_home" to="/" onClick={closeMenu}>
+              <span>Home</span>
+            </Link>
             <Link className="header__link" to="/profile" onClick={closeMenu}>
               <span>Profile</span>
             </Link>
