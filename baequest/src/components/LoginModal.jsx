@@ -2,9 +2,6 @@ import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
 import { GoogleLogin } from '@react-oauth/google';
 
-// Detect mobile devices
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
 export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, handleGoogleLogin, loggingError, handleForgotPasswordModal, handleResendVerification }) {
   const { errors, values, handleChange, handleReset } = useForm({
     email: "",
@@ -106,7 +103,7 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
             text="signin_with"
             size="large"
             width="100%"
-            ux_mode={isMobile ? "redirect" : "popup"}
+            use_fedcm_for_prompt={false}
           />
         </div>
     </ModalWrapper>
