@@ -213,6 +213,13 @@ function googleAuth(credential) {
   });
 }
 
+function googleAuthWithToken(accessToken) {
+  return makeRequest(`${baseUrl}/auth/google/token`, {
+    method: "POST",
+    body: JSON.stringify({ accessToken }),
+  });
+}
+
 function requestPasswordReset(email) {
   return makeRequest(`${baseUrl}/password-reset/request`, {
     method: "POST",
@@ -258,6 +265,7 @@ export {
   markAsGoing,
   uploadProfilePicture,
   googleAuth,
+  googleAuthWithToken,
   requestPasswordReset,
   resetPassword,
   sendEmailVerification,

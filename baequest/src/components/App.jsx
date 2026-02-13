@@ -49,6 +49,7 @@ import {
   deleteUser,
   deleteProfile,
   googleAuth,
+  googleAuthWithToken,
   requestPasswordReset,
   resetPassword,
   verifyEmail,
@@ -416,6 +417,60 @@ function App() {
       });
   }
 
+  // Mobile Google auth handlers (using access token from implicit flow)
+  function handleGoogleLoginWithToken(accessToken) {
+    googleAuthWithToken(accessToken)
+      .then(() => {
+        return getProfile();
+      })
+      .then((res) => {
+        setCurrentProfile(res);
+        setIsLoggedIn(true);
+        storeTokenExists();
+        setLoggingError("");
+        handleCloseModal();
+        navigate("/profile");
+      })
+      .catch((err) => {
+        setLoggingError("Google login failed");
+      });
+  }
+
+  function handleGoogleSignupWithToken(accessToken) {
+    googleAuthWithToken(accessToken)
+      .then(() => {
+        setIsLoggedIn(true);
+        storeTokenExists();
+
+        // Try to get profile, but don't fail if it doesn't exist
+        return getProfile().catch(() => {
+          return null;
+        });
+      })
+      .then((res) => {
+        handleCloseModal();
+
+        // If profile exists (has name), go to profile page. Otherwise, show create profile modal
+        if (res && res.name) {
+          setCurrentProfile(res);
+          navigate("/profile");
+        } else {
+          setCurrentProfile({
+            name: "",
+            age: 0,
+            gender: "",
+            profession: "",
+            interests: [],
+            convoStarter: "",
+          });
+          handleCreateProfileModal();
+        }
+      })
+      .catch((err) => {
+        setLoggingError("Google sign-up failed. Please try again.");
+      });
+  }
+
   function handleProfileUpdateSubmit(values) {
     updateProfile(values)
       .then((res) => {
@@ -734,6 +789,7 @@ function App() {
             onOverlayClick={handleModalOverlayClick}
             handleCreateAccountSubmit={handleCreateAccountSubmit}
             handleGoogleSignup={handleGoogleSignup}
+            handleGoogleSignupWithToken={handleGoogleSignupWithToken}
             loggingError={loggingError}
           />
           <ProfileModal
@@ -755,6 +811,7 @@ function App() {
           <LoginModal
             handleLoginSubmit={handleLoginSubmit}
             handleGoogleLogin={handleGoogleLogin}
+            handleGoogleLoginWithToken={handleGoogleLoginWithToken}
             isOpen={activeModal === "loginmodal"}
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
