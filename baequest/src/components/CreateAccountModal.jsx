@@ -3,6 +3,9 @@ import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
 import { GoogleLogin } from '@react-oauth/google';
 
+// Detect mobile devices
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 export default function CreateAccountModal({
   isOpen,
   onClose,
@@ -121,6 +124,7 @@ export default function CreateAccountModal({
             text="signup_with"
             size="large"
             width="100%"
+            ux_mode={isMobile ? "redirect" : "popup"}
           />
         </div>
     </ModalWrapper>
