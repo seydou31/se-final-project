@@ -77,7 +77,7 @@ describe('BaeQuest App - Integration Tests', () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      expect(screen.getByText(/Meet amazing people in your area/i)).toBeInTheDocument();
+      expect(screen.getByText(/Meet people at places you already go/i)).toBeInTheDocument();
     });
 
     it('shows login modal when SIGN IN button is clicked', async () => {
