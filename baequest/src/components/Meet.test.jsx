@@ -16,139 +16,130 @@ vi.mock('../utils/socket', () => ({
 
 // Mock API
 vi.mock('../utils/api', () => ({
-  markAsGoing: vi.fn(),
-  getUsersAtEvent: vi.fn(),
+  getNearbyPlaces: vi.fn(),
+  getPlacePhotoUrl: vi.fn(),
+  checkinAtPlace: vi.fn(),
+  getUsersAtPlace: vi.fn(),
+  checkoutFromPlace: vi.fn(),
 }));
 
-const mockEvents = [
+// Mock geolocation
+const mockGeolocation = {
+  getCurrentPosition: vi.fn(),
+};
+
+const mockPlaces = [
   {
-    _id: '1',
-    title: 'Monday Coffee Meetup',
-    description: 'Morning coffee',
-    date: new Date('2026-01-06T10:00:00').toISOString(), // Monday
-    endTime: new Date('2026-01-06T12:00:00').toISOString(),
-    location: { name: 'Starbucks', address: '123 Main St' },
-    image: 'https://example.com/coffee.jpg',
-    price: 'Free',
-    goingCount: 3,
-    isUserGoing: false,
+    placeId: 'place_1',
+    name: 'Coffee Shop',
+    address: '123 Main St',
+    rating: 4.5,
+    openNow: true,
+    userCount: 2,
+    photos: [{ reference: 'photo_ref_1' }],
   },
   {
-    _id: '2',
-    title: 'Friday Happy Hour',
-    description: 'End of week drinks',
-    date: new Date('2026-01-10T18:00:00').toISOString(), // Friday
-    endTime: new Date('2026-01-10T21:00:00').toISOString(),
-    location: { name: 'Bar', address: '456 Oak Ave' },
-    image: 'https://example.com/drinks.jpg',
-    price: '$10',
-    goingCount: 8,
-    isUserGoing: false,
+    placeId: 'place_2',
+    name: 'Bar & Grill',
+    address: '456 Oak Ave',
+    rating: 4.2,
+    openNow: true,
+    userCount: 5,
+    photos: [{ reference: 'photo_ref_2' }],
   },
 ];
 
 const defaultProps = {
-  events: mockEvents,
-  handleFindEvents: vi.fn(),
   handleCheckin: vi.fn(),
   otherProfiles: [],
   setOtherProfiles: vi.fn(),
   handleCheckoutModal: vi.fn(),
-  currentEvent: null,
+  currentPlace: null,
   isCheckedIn: false,
-  setCurrentEvent: vi.fn(),
+  setCurrentPlace: vi.fn(),
   setIsCheckedIn: vi.fn(),
 };
 
 describe('Meet Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset geolocation mock
+    global.navigator.geolocation = mockGeolocation;
   });
 
-  describe('Event Discovery Mode (Not Checked In)', () => {
-    it('renders event discovery interface', () => {
+  describe('Place Discovery Mode (Not Checked In)', () => {
+    it('renders place discovery interface', async () => {
+      // Mock geolocation to fail (no location)
+      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+        error({ code: 1, message: 'Permission denied' });
+      });
+
       render(<Meet {...defaultProps} />);
 
-      expect(screen.getByText('Find events near you')).toBeInTheDocument();
-      expect(screen.getByLabelText(/select state/i)).toBeInTheDocument();
-      expect(screen.getByText('Select Date:')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /find/i })).toBeInTheDocument();
+      expect(screen.getByText('Find people nearby')).toBeInTheDocument();
+      expect(screen.getByText(/Check in at a location/i)).toBeInTheDocument();
     });
 
-    it('displays all events by default', () => {
+    it('shows loading state while getting location', () => {
+      // Mock geolocation to never resolve
+      mockGeolocation.getCurrentPosition.mockImplementation(() => {});
+
       render(<Meet {...defaultProps} />);
 
-      expect(screen.getByText('Monday Coffee Meetup')).toBeInTheDocument();
-      expect(screen.getByText('Friday Happy Hour')).toBeInTheDocument();
+      expect(screen.getByText(/Finding places near you/i)).toBeInTheDocument();
     });
 
-    it('calls handleFindEvents with selected state', async () => {
-      const handleFindEvents = vi.fn();
-      render(<Meet {...defaultProps} handleFindEvents={handleFindEvents} />);
+    it('shows error when location permission denied', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+        error({ code: 1, PERMISSION_DENIED: 1 });
+      });
 
-      const stateSelect = screen.getByLabelText(/select state/i);
-      await userEvent.selectOptions(stateSelect, 'California');
-
-      const findButton = screen.getByRole('button', { name: /find/i });
-      await userEvent.click(findButton);
-
-      expect(handleFindEvents).toHaveBeenCalledWith('California', '');
-    });
-
-  });
-
-  describe('State Selection', () => {
-    it('renders all US states in dropdown', () => {
       render(<Meet {...defaultProps} />);
-
-      const stateSelect = screen.getByLabelText(/select state/i);
-
-      // Check for a few states
-      expect(screen.getByRole('option', { name: 'California' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'New York' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'Texas' })).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: 'All States' })).toBeInTheDocument();
-    });
-
-    it('updates selected state when changed', async () => {
-      render(<Meet {...defaultProps} />);
-
-      const stateSelect = screen.getByLabelText(/select state/i);
-      await userEvent.selectOptions(stateSelect, 'Florida');
-
-      expect(stateSelect).toHaveValue('Florida');
-    });
-  });
-
-
-  describe('I\'m Going Functionality', () => {
-    it('calls markAsGoing API when user clicks I\'m Going', async () => {
-      api.markAsGoing.mockResolvedValue({ count: 4 });
-      render(<Meet {...defaultProps} />);
-
-      // Find the first event's "I'm Going" button
-      const goingButtons = screen.getAllByRole('button', { name: /i'm going/i });
-      await userEvent.click(goingButtons[0]);
 
       await waitFor(() => {
-        expect(api.markAsGoing).toHaveBeenCalledWith('1');
+        expect(screen.getByText(/allow location access/i)).toBeInTheDocument();
       });
     });
 
-    it('handles errors when marking as going fails', async () => {
-      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-      api.markAsGoing.mockRejectedValue(new Error('API error'));
+    it('displays places when location is available', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success({ coords: { latitude: 38.9, longitude: -77.0 } });
+      });
+      api.getNearbyPlaces.mockResolvedValue(mockPlaces);
 
       render(<Meet {...defaultProps} />);
 
-      const goingButtons = screen.getAllByRole('button', { name: /i'm going/i });
-      await userEvent.click(goingButtons[0]);
+      await waitFor(() => {
+        expect(screen.getByText('Coffee Shop')).toBeInTheDocument();
+        expect(screen.getByText('Bar & Grill')).toBeInTheDocument();
+      });
+    });
+
+    it('shows user count on places', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success({ coords: { latitude: 38.9, longitude: -77.0 } });
+      });
+      api.getNearbyPlaces.mockResolvedValue(mockPlaces);
+
+      render(<Meet {...defaultProps} />);
 
       await waitFor(() => {
-        expect(consoleError).toHaveBeenCalled();
+        expect(screen.getByText(/2 people checked in/i)).toBeInTheDocument();
+        expect(screen.getByText(/5 people checked in/i)).toBeInTheDocument();
       });
+    });
 
-      consoleError.mockRestore();
+    it('shows empty state when no places found', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+        success({ coords: { latitude: 38.9, longitude: -77.0 } });
+      });
+      api.getNearbyPlaces.mockResolvedValue([]);
+
+      render(<Meet {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/No places found nearby/i)).toBeInTheDocument();
+      });
     });
   });
 
@@ -165,13 +156,19 @@ describe('Meet Component', () => {
         },
       ];
 
+      const currentPlace = {
+        placeId: 'place_1',
+        placeName: 'Coffee Shop',
+        placeAddress: '123 Main St',
+      };
+
       render(
         <MemoryRouter>
           <Meet
             {...defaultProps}
             isCheckedIn={true}
             otherProfiles={otherProfiles}
-            currentEvent={mockEvents[0]}
+            currentPlace={currentPlace}
           />
         </MemoryRouter>
       );
@@ -180,58 +177,75 @@ describe('Meet Component', () => {
       expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
     });
 
-    it('does not show event list when checked in', () => {
+    it('does not show place list when checked in', () => {
+      const currentPlace = {
+        placeId: 'place_1',
+        placeName: 'Coffee Shop',
+        placeAddress: '123 Main St',
+      };
+
       render(
         <MemoryRouter>
           <Meet
             {...defaultProps}
             isCheckedIn={true}
-            currentEvent={mockEvents[0]}
+            currentPlace={currentPlace}
           />
         </MemoryRouter>
       );
 
-      expect(screen.queryByText('Find events near you')).not.toBeInTheDocument();
-      // Event title IS shown in OtherUsers header, so we verify the discovery UI is gone
-      expect(screen.queryByRole('button', { name: /find/i })).not.toBeInTheDocument();
+      expect(screen.queryByText('Find people nearby')).not.toBeInTheDocument();
+    });
+
+    it('shows place name in OtherUsers view', () => {
+      const currentPlace = {
+        placeId: 'place_1',
+        placeName: 'Coffee Shop',
+        placeAddress: '123 Main St',
+      };
+
+      render(
+        <MemoryRouter>
+          <Meet
+            {...defaultProps}
+            isCheckedIn={true}
+            currentPlace={currentPlace}
+          />
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText('Coffee Shop')).toBeInTheDocument();
+      expect(screen.getByText('123 Main St')).toBeInTheDocument();
     });
   });
 
-  describe('Empty States', () => {
-    it('renders correctly with no events', () => {
-      render(<Meet {...defaultProps} events={[]} />);
+  describe('Retry Functionality', () => {
+    it('shows retry button on location error', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+        error({ code: 1, PERMISSION_DENIED: 1 });
+      });
 
-      expect(screen.getByText('Find events near you')).toBeInTheDocument();
-      expect(screen.queryByText('Monday Coffee Meetup')).not.toBeInTheDocument();
+      render(<Meet {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+      });
     });
 
-  });
+    it('retries getting location when retry button clicked', async () => {
+      mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+        error({ code: 1, PERMISSION_DENIED: 1 });
+      });
 
-  describe('Event Rendering', () => {
-    it('passes correct props to Event components', () => {
-      const handleCheckin = vi.fn();
-      render(<Meet {...defaultProps} handleCheckin={handleCheckin} />);
+      render(<Meet {...defaultProps} />);
 
-      // Check that events are rendered
-      expect(screen.getByText('Monday Coffee Meetup')).toBeInTheDocument();
-      expect(screen.getByText('Friday Happy Hour')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+      });
 
-      // Both should have check-in buttons
-      const checkinButtons = screen.getAllByRole('button', { name: /i'm here/i });
-      expect(checkinButtons).toHaveLength(2);
-    });
-  });
+      await userEvent.click(screen.getByRole('button', { name: /try again/i }));
 
-  describe('Combined Filters', () => {
-    it('can use state filter and click find', async () => {
-      const handleFindEvents = vi.fn();
-      render(<Meet {...defaultProps} handleFindEvents={handleFindEvents} />);
-
-      await userEvent.selectOptions(screen.getByLabelText(/select state/i), 'California');
-
-      await userEvent.click(screen.getByRole('button', { name: /find/i }));
-
-      expect(handleFindEvents).toHaveBeenCalledWith('California', '');
+      expect(mockGeolocation.getCurrentPosition).toHaveBeenCalledTimes(2);
     });
   });
 });

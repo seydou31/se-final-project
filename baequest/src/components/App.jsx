@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Routes,
   Route,
-  Navigate,
   useNavigate,
   useLocation,
 } from "react-router-dom";
@@ -15,37 +14,31 @@ import Footer from "./Footer.jsx";
 import Main from "./Main.jsx";
 import Profile from "./Profile.jsx";
 import Meet from "./Meet.jsx";
-import MyEvents from "./MyEvents.jsx";
 import Loading from "./Loading.jsx";
 import CreateAccountModal from "./CreateAccountModal.jsx";
 import ProfileModal from "./ProfileModal.jsx";
 import LoginModal from "./LoginModal.jsx";
-import OtherUsers from "./OtherUsers.jsx";
 import CheckoutModal from "./CheckoutModal.jsx";
-import NavigationModal from "./NavigationModal.jsx";
 import DeleteAccountModal from "./DeleteAccountModal.jsx";
 import ForgotPasswordModal from "./ForgotPasswordModal.jsx";
 import ResetPasswordPage from "./ResetPasswordPage.jsx";
 import VerifyEmailPage from "./VerifyEmailPage.jsx";
-import EventFeedbackPage from "./EventFeedbackPage.jsx";
 import AboutUs from "../pages/AboutUs.jsx";
 import Contact from "../pages/Contact.jsx";
 import Careers from "../pages/Careers.jsx";
 import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
 import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
-import socket from "../utils/socket.js";
 import {
   createProfile,
   createUser,
-  getEvents,
   getProfile,
   login,
   logout,
   updateProfile,
-  checkin,
-  getUsersAtEvent,
-  checkout,
+  checkinAtPlace,
+  getUsersAtPlace,
+  checkoutFromPlace,
   deleteUser,
   deleteProfile,
   googleAuth,
@@ -70,14 +63,14 @@ function App() {
     interests: [],
     convoStarter: "",
   });
-  const [events, setEvents] = useState([]);
-  const [currentEvent, setCurrentEvent] = useState(() => {
+  const [currentPlace, setCurrentPlace] = useState(() => {
     try {
-      const saved = localStorage.getItem("currentEvent");
+      const saved = localStorage.getItem("currentPlace");
       if (saved) {
         return JSON.parse(saved);
       }
-    } catch (err) {
+    } catch {
+      // Invalid JSON in localStorage, ignore
     }
     return null;
   });
@@ -86,9 +79,7 @@ function App() {
     checkTokenExists()
   );
   const [isCheckedIn, setIsCheckedIn] = useState(false);
-  const [navigationEvent, setNavigationEvent] = useState(null);
   const [loggingError, setLoggingError] = useState("");
-  const [isLoadingEvents, setIsLoadingEvents] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const location = useLocation();
 
@@ -136,29 +127,29 @@ function App() {
         setIsLoggedIn(true);
         storeTokenExists();
 
-        // After getting profile, check if we have a saved event
-        const savedEvent = localStorage.getItem("currentEvent");
-        if (savedEvent) {
-          const event = JSON.parse(savedEvent);
-          setCurrentEvent(event);
+        // After getting profile, check if we have a saved place
+        const savedPlace = localStorage.getItem("currentPlace");
+        if (savedPlace) {
+          const place = JSON.parse(savedPlace);
+          setCurrentPlace(place);
           setIsCheckedIn(true);
 
-          return getUsersAtEvent(event._id)
+          return getUsersAtPlace(place.placeId)
             .then((users) => {
               setOtherProfiles(users);
             })
             .catch((err) => {
-              console.error("Failed to load users at event:", err);
-              // Clear the event if we can't load users
-              setCurrentEvent(null);
+              console.error("Failed to load users at place:", err);
+              // Clear the place if we can't load users
+              setCurrentPlace(null);
               setIsCheckedIn(false);
             });
         }
       })
       .then(() => {
         // Navigate after everything is loaded
-        const savedEvent = localStorage.getItem("currentEvent");
-        if (savedEvent) {
+        const savedPlace = localStorage.getItem("currentPlace");
+        if (savedPlace) {
           // If user is checked in, redirect to Meet page
           navigate("/meet");
         } else if (location.pathname === "/") {
@@ -174,12 +165,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (currentEvent) {
-      localStorage.setItem("currentEvent", JSON.stringify(currentEvent));
+    if (currentPlace) {
+      localStorage.setItem("currentPlace", JSON.stringify(currentPlace));
     } else {
-      localStorage.removeItem("currentEvent");
+      localStorage.removeItem("currentPlace");
     }
-  }, [currentEvent]);
+  }, [currentPlace]);
 
   function handleSignupModal() {
     setLoggingError("");
@@ -210,63 +201,15 @@ function App() {
     setActiveModal("forgotpasswordmodal");
   }
 
-  useEffect(() => {
-    socket.on("event-expired", ({ eventId }) => {
-      // Remove expired event from list immediately
-      setEvents((prev) => prev.filter((evt) => evt._id !== eventId));
-
-      // If user is checked into this event, show notification
-      if (currentEvent?._id === eventId) {
-        toast.error("This event has ended");
-        setCurrentEvent(null);
-        setOtherProfiles([]);
-        setIsCheckedIn(false);
-      }
-    });
-
-    return () => {
-      socket.off("event-expired");
-    };
-  }, [currentEvent]);
-
-  // Listen for when current user marks an event as going
-  useEffect(() => {
-    socket.on("event-going-updated", ({ eventId, count, userId }) => {
-      // Only update isUserGoing if this is the current user
-      // Compare as strings since MongoDB IDs can be objects
-      const currentUserId = currentProfile.owner?.toString() || currentProfile.owner;
-      if (currentUserId === userId) {
-        setEvents((prev) =>
-          prev.map((evt) =>
-            evt._id === eventId
-              ? { ...evt, isUserGoing: true, goingCount: count }
-              : evt
-          )
-        );
-      } else {
-        // Just update the count for other users
-        setEvents((prev) =>
-          prev.map((evt) =>
-            evt._id === eventId ? { ...evt, goingCount: count } : evt
-          )
-        );
-      }
-    });
-
-    return () => {
-      socket.off("event-going-updated");
-    };
-  }, [currentProfile.owner]);
 
   function handleLogout() {
-    // Check if user is checked into an event
-    const checkoutPromise = currentEvent?._id
-      ? checkout({ eventId: currentEvent._id })
-      : Promise.resolve(); // No event to checkout from
+    // Check if user is checked into a place
+    const checkoutPromise = currentPlace?.placeId
+      ? checkoutFromPlace(currentPlace.placeId)
+      : Promise.resolve();
 
     checkoutPromise
       .finally(() => {
-        // Continue with normal logout flow
         return logout();
       })
       .then(() => {
@@ -279,7 +222,7 @@ function App() {
           interests: [],
           convoStarter: "",
         });
-        setCurrentEvent(null); //
+        setCurrentPlace(null);
         setOtherProfiles([]);
         setIsCheckedIn(false);
         navigate("/");
@@ -315,9 +258,24 @@ function App() {
   function handleCreateAccountSubmit(values) {
     return createUser(values)
       .then(() => {
+        // Auto-login after account creation
+        return login(values);
+      })
+      .then(() => {
+        setIsLoggedIn(true);
+        storeTokenExists();
+        return getProfile().catch(() => null);
+      })
+      .then((res) => {
         handleCloseModal();
-        setLoggingError("Account created! Please check your email to verify your account before logging in.");
-        handleLoginModal(true); // Keep the success message
+        setLoggingError("");
+        if (res && res.name) {
+          setCurrentProfile(res);
+          navigate("/profile");
+        } else {
+          // New user - show profile creation modal
+          handleCreateProfileModal();
+        }
       })
       .catch((err) => {
         setLoggingError(err.message || "Failed to create account");
@@ -486,95 +444,34 @@ function App() {
       })
   }
 
-  function handleFindEvents(state = "", city = "") {
-    setIsLoadingEvents(true);
-    getEvents(state, city)
-      .then((res) => {
-        setEvents(res);
-      })
-      .catch((err) => {
-        console.error("Failed to load events:", err);
-        toast.error(`Failed to load events: ${err.message || "Please try again"}`);
-      })
-      .finally(() => {
-        setIsLoadingEvents(false);
+  const handleCheckin = async (placeData) => {
+    try {
+      await checkinAtPlace(placeData);
+      const users = await getUsersAtPlace(placeData.placeId);
+
+      setCurrentPlace({
+        placeId: placeData.placeId,
+        placeName: placeData.placeName,
+        placeAddress: placeData.placeAddress,
       });
-  }
-
-  const handleCheckin = async (event) => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
-      return;
+      setOtherProfiles(users);
+      setIsCheckedIn(true);
+    } catch (err) {
+      const message = typeof err === "string" ? err : err.message;
+      toast.error(`Check-in failed: ${message || "Please try again"}`);
+      throw err;
     }
-
-    // Geolocation options - allow 30s cached position for faster checkin
-    const geoOptions = {
-      //enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 30000,
-    };
-
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          const payload = {
-            eventId: event._id,
-            lat,
-            lng,
-          };
-
-          try {
-            await checkin(payload);
-            const users = await getUsersAtEvent(event._id);
-
-            setCurrentEvent(event);
-            setOtherProfiles(users);
-            setIsCheckedIn(true);
-            navigate("/meet");
-            resolve();
-          } catch (err) {
-            const message = typeof err === "string" ? err : err.message;
-            if (message === "User is too far away from the event, and must get directions.") {
-              setNavigationEvent(event);
-              setActiveModal("navigationmodal");
-            }
-            reject(err);
-          }
-        },
-        (error) => {
-          // Handle location errors
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              toast.error("Location permission denied.");
-              break;
-            case error.POSITION_UNAVAILABLE:
-              toast.error("Location information is unavailable.");
-              break;
-            case error.TIMEOUT:
-              toast.error("Location request timed out.");
-              break;
-            default:
-              toast.error("An unknown geolocation error occurred.");
-              break;
-          }
-          reject(error);
-        },
-        geoOptions
-      );
-    });
   };
 
   const handleCheckout = async () => {
     try {
-      await checkout({ eventId: currentEvent._id });
-      setCurrentEvent(null);
+      await checkoutFromPlace(currentPlace.placeId);
+      setCurrentPlace(null);
       setOtherProfiles([]);
       handleCloseModal();
       setIsCheckedIn(false);
     } catch (err) {
+      console.error("Checkout failed:", err);
     }
   };
 
@@ -582,47 +479,17 @@ function App() {
     setActiveModal("checkoutmodal");
   }
 
-  function handleNavigate() {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser.");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        const targetEvent = navigationEvent || currentEvent;
-        if (!targetEvent || !targetEvent.location) {
-          toast.error("Event location not available.");
-          return;
-        }
-
-        const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${targetEvent.location.lat},${targetEvent.location.lng}`;
-
-        window.open(mapsUrl, "_blank");
-      },
-      (err) => {
-        toast.error("Could not get your location. Please try again.");
-      }
-    );
-  }
-
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      if (isCheckedIn) {
+      if (isCheckedIn && currentPlace?.placeId) {
         try {
-          await checkout({ eventId: currentEvent._id });
-          setCurrentEvent(null);
+          await checkoutFromPlace(currentPlace.placeId);
+          setCurrentPlace(null);
           setOtherProfiles([]);
           setIsCheckedIn(false);
         } catch (err) {
           console.error("Failed to checkout before deleting account:", err);
-          // Continue with deletion even if checkout fails
         }
       }
 
@@ -726,10 +593,6 @@ function App() {
               path="/verify-email"
               element={<VerifyEmailPage handleEmailVerification={handleEmailVerification} />}
             />
-            <Route
-              path="/event-feedback"
-              element={<EventFeedbackPage />}
-            />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/careers" element={<Careers />} />
@@ -755,29 +618,15 @@ function App() {
                   isLoggedIn={isLoggedIn}
                 >
                   <Meet
-                    events={events}
-                    handleFindEvents={handleFindEvents}
                     handleCheckin={handleCheckin}
                     handleCheckoutModal={handleCheckoutModal}
                     otherProfiles={otherProfiles}
                     setOtherProfiles={setOtherProfiles}
-                    currentEvent={currentEvent}
+                    currentPlace={currentPlace}
                     isCheckedIn={isCheckedIn}
-                    setCurrentEvent={setCurrentEvent}
+                    setCurrentPlace={setCurrentPlace}
                     setIsCheckedIn={setIsCheckedIn}
-                    isLoadingEvents={isLoadingEvents}
                   />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/my-events"
-              element={
-                <ProtectedRoute
-                  isLoggedInLoading={isLoggedInLoading}
-                  isLoggedIn={isLoggedIn}
-                >
-                  <MyEvents events={events} handleCheckin={handleCheckin} />
                 </ProtectedRoute>
               }
             />
@@ -828,12 +677,6 @@ function App() {
           <CheckoutModal
             handleCheckout={handleCheckout}
             isOpen={activeModal === "checkoutmodal"}
-            onClose={handleCloseModal}
-            onOverlayClick={handleModalOverlayClick}
-          />
-          <NavigationModal
-            handleNavigate={handleNavigate}
-            isOpen={activeModal === "navigationmodal"}
             onClose={handleCloseModal}
             onOverlayClick={handleModalOverlayClick}
           />

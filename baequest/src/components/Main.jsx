@@ -1,7 +1,6 @@
 import "../blocks/main.css";
 import heartlogo from "../assets/heart-logo.svg";
 import redcloselogo from "../assets/red-close-logo.png";
-import demoVideo from "../assets/0114(2).mp4";
 import { Users, MessageCircle, Shield, Heart } from "lucide-react";
 
 
@@ -9,17 +8,17 @@ export default function Main({onClick}) {
   return (
     <main className="main">
       <h1 className="main__title">
-        Meet amazing people in your area
+        Meet people at places you already go
       </h1>
       <p className="main__text">
-        Online dating where you date people, not their profile. One monthly fee for unlimited events - often less than what others charge for a singles day.
+        Real dating starts in real places. Check in at lounges, bars, clubs, and venues near you to see who's there and ready to connect.
       </p>
       <button className="main__button" onClick={onClick}>Create Account</button>
       <section className="section1">
-        <h3 className="section__title">We're Not a Speed Dating Service</h3>
+        <h3 className="section__title">We're Not a Swipe App</h3>
         <p className="section1__text">
-          Say goodbye to awkward 3-minute conversations and hello to natural<span className="main__span">
-          connections through unrushed conversations</span>
+          Say goodbye to endless swiping and hello to real<span className="main__span">
+          connections at places you're already at</span>
         </p>
         <div className="section1__cards">
           <div className="section1__card">
@@ -29,23 +28,23 @@ export default function Main({onClick}) {
               className="section1__card-image"
             />
             <p className="section1__card-text section1__card-text_color_brown">
-              Speed Dating
+              Dating Apps
             </p>
             <ul className="section1__card-list">
               <li className="section1__card-item">
-                Rushed 3-5 minute conversations with strangers
+                Endless swiping through curated photos
               </li>
               <li className="section1__card-item">
-                Forced small talk in awkward sitting arrangements
+                Matches that never respond or ghost
               </li>
               <li className="section1__card-item">
-                High pressure to make instant judgments
+                Weeks of texting before meeting
               </li>
               <li className="section1__card-item">
-                Limited to surface-level conversations
+                Profiles that don't match reality
               </li>
               <li className="section1__card-item">
-                Expensive per-event pricing ($50-100+ each time)
+                Expensive subscriptions for basic features
               </li>
             </ul>
           </div>
@@ -56,120 +55,116 @@ export default function Main({onClick}) {
               className="section1__card-image"
             />
             <p className="section1__card-text section1__card-text_color_pink">
-              BaeQuest Events
+              BaeQuest
             </p>
             <ul className="section1__card-list">
               <li className="section1__card-item">
-                Natural conversations during fun activities & experiences
+                See real people at real places near you
               </li>
               <li className="section1__card-item">
-                Relaxed group settings with shared interests
+                Check in at lounges, bars, clubs & more
               </li>
               <li className="section1__card-item">
-                Authentic connections through unrushed conversations
+                Meet face-to-face, skip the texting phase
               </li>
               <li className="section1__card-item">
-                See how people really act in social situations
+                Know who's actually there and open to meeting
               </li>
               <li className="section1__card-item">
-                Talk to anyone for as long as you like
+                Conversation starters to break the ice
               </li>
               <li className="section1__card-item">
-                One affordable monthly fee for unlimited events
+                Free to use - connect without limits
               </li>
             </ul>
           </div>
         </div>
         <p className="section1__highlight">
           <span className="section1__summary">Experience the difference: </span>
-          Whether it's a coffee shop meetup, park stroll, cooking<br/> class, hiking
-          group, art workshop, or game night - you'll discover genuine chemistry<br/>
-          through unrushed conversations at comfortable, low-key locations.
+          Whether you're at a lounge, bar, club, arcade, or any venue -<br/>
+          see who's checked in and ready to meet. Real connections<br/>
+          happen in real places, not through a screen.
         </p>
       </section>
       <section className="section2">
         <h3 className="section__title">How it works</h3>
         <p className="section2__text">
           Discover how our unique approach to dating brings people together
-           <span className="section2__span">throughr real-world experiences</span>
+           <span className="section2__span"> through real-world places</span>
         </p>
         <ol className="section2__list">
           <li className="section2__item">
             <p className="section2__list-header">Create Your Profile</p>
             <p className="section2__list-par">
-              Sign up with your phone, email, or social accounts. Add photos and
-              tell us about yourself.
+              Sign up with email or Google. Add a photo, share your interests,
+              and write a conversation starter.
             </p>
           </li>
           <li className="section2__item">
             {" "}
-            <p className="section2__list-header">Browse Local Events</p>
+            <p className="section2__list-header">Find Places Near You</p>
             <p className="section2__list-par">
-              Discover curated dating events happening near you - from coffee
-              meetups to activity-based gatherings.
+              Discover lounges, bars, clubs, arcades, and other venues closest
+              to your current location.
             </p>
           </li>
           <li className="section2__item">
             {" "}
-            <p className="section2__list-header">Attend & Connect</p>
+            <p className="section2__list-header">Check In & See Who's There</p>
             <p className="section2__list-par">
-              Show up to events, meet people face-to-face, and build genuine
-              connections through shared experiences.
+              When you arrive at a venue, check in to see other BaeQuest users
+              who are there and open to meeting.
             </p>
           </li>
           <li className="section2__item">
             {" "}
-            <p className="section2__list-header">Build Relationships</p>
+            <p className="section2__list-header">Make Your Move</p>
             <p className="section2__list-par">
-              Skip the endless texting phase and get to know people through
-              unrushed conversations and activities.
+              Use their conversation starter to break the ice. No awkward
+              openers - you already know what to talk about.
             </p>
           </li>
         </ol>
-        <video className="section2__video" controls>
-          <source src={demoVideo} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
         <button onClick={onClick} className="main__button">Create Account</button>
       </section>
       <section className="section3">
         <h3 className="section__title">Why Choose BaeQuest?</h3>
         <p className="section3__text">
           Experience a better way to meet people through authentic connections
-          and shared experiences
+          at real places
         </p>
         <div className="section3__benefit">
           <ul className="section3__cards">
             <li className="section3__card">
               <Users className="section3__card-image" />
-              <p className="section3__card-title">Unbeatable Value</p>
+              <p className="section3__card-title">Real People, Real Places</p>
               <p className="section3__card-par">
-                One monthly subscription for unlimited events - less than what
-                competitors charge per event
+                See who's actually at venues near you right now - no fake
+                profiles or bots
               </p>
             </li>
             <li className="section3__card">
               <Shield className="section3__card-image" />
-              <p className="section3__card-title">Verified Events</p>
+              <p className="section3__card-title">Safe & Public</p>
               <p className="section3__card-par">
-                All events are hosted at verified, safe locations with real
-                people
+                Meet at established venues like bars, lounges, and clubs -
+                always in public spaces
               </p>
             </li>
             <li className="section3__card">
               <MessageCircle className="section3__card-image" />
-              <p className="section3__card-title">Face-to-Face Dating</p>
+              <p className="section3__card-title">Built-in Ice Breakers</p>
               <p className="section3__card-par">
-                Skip the endless texting and meet in person at curated venues
-                and events
+                Every profile has a conversation starter - you'll always know
+                how to approach someone
               </p>
             </li>
             <li className="section3__card">
               <Heart className="section3__card-image" />
-              <p className="section3__card-title">Authentic Connections</p>
+              <p className="section3__card-title">Instant Connections</p>
               <p className="section3__card-par">
-                Build genuine relationships through shared experiences and real
-                conversations
+                Skip weeks of texting - meet face-to-face the moment you're
+                both ready
               </p>
             </li>
           </ul>

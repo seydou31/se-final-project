@@ -131,40 +131,33 @@ function updateProfile(profile) {
   });
 }
 
-function getEvents(state = "", city = "") {
-  const params = new URLSearchParams();
-  if (state) params.append('state', state);
-  if (city) params.append('city', city);
-  const queryString = params.toString();
-
-  return makeRequest(`${baseUrl}/events${queryString ? `?${queryString}` : ''}`, {
+function getNearbyPlaces(lat, lng) {
+  return makeRequest(`${baseUrl}/places/nearby?lat=${lat}&lng=${lng}`, {
     method: "GET",
   });
 }
 
-function getMyEvents() {
-  return makeRequest(`${baseUrl}/my-events`, {
-    method: "GET",
-  });
+function getPlacePhotoUrl(photoReference) {
+  return `${baseUrl}/places/photo?photoReference=${photoReference}`;
 }
 
-function checkin(data) {
-  return makeRequest(`${baseUrl}/checkin`, {
+function checkinAtPlace(data) {
+  return makeRequest(`${baseUrl}/places/checkin`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
-function getUsersAtEvent(eventId) {
-  return makeRequest(`${baseUrl}/otherUsers?eventId=${eventId}`, {
+function getUsersAtPlace(placeId) {
+  return makeRequest(`${baseUrl}/places/users?placeId=${placeId}`, {
     method: "GET",
   });
 }
 
-function checkout(payload) {
-  return makeRequest(`${baseUrl}/checkout`, {
+function checkoutFromPlace(placeId) {
+  return makeRequest(`${baseUrl}/places/checkout`, {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ placeId }),
   });
 }
 
@@ -177,13 +170,6 @@ function deleteUser() {
 function deleteProfile() {
   return makeRequest(`${baseUrl}/users/profile`, {
     method: "DELETE",
-  });
-}
-
-function markAsGoing(eventId) {
-  return makeRequest(`${baseUrl}/going`, {
-    method: "POST",
-    body: JSON.stringify({ eventId }),
   });
 }
 
@@ -255,14 +241,13 @@ export {
   getProfile,
   logout,
   updateProfile,
-  getEvents,
-  getMyEvents,
-  checkin,
-  getUsersAtEvent,
-  checkout,
+  getNearbyPlaces,
+  getPlacePhotoUrl,
+  checkinAtPlace,
+  getUsersAtPlace,
+  checkoutFromPlace,
   deleteProfile,
   deleteUser,
-  markAsGoing,
   uploadProfilePicture,
   googleAuth,
   googleAuthWithToken,

@@ -14,10 +14,11 @@ vi.mock('../utils/api', () => ({
   getProfile: vi.fn(),
   createProfile: vi.fn(),
   updateProfile: vi.fn(),
-  getEvents: vi.fn(),
-  checkin: vi.fn(),
-  getUsersAtEvent: vi.fn(),
-  checkout: vi.fn(),
+  getNearbyPlaces: vi.fn(),
+  getPlacePhotoUrl: vi.fn(),
+  checkinAtPlace: vi.fn(),
+  getUsersAtPlace: vi.fn(),
+  checkoutFromPlace: vi.fn(),
   logout: vi.fn(),
   deleteUser: vi.fn(),
   deleteProfile: vi.fn(),
@@ -25,7 +26,6 @@ vi.mock('../utils/api', () => ({
   resetPassword: vi.fn(),
   verifyEmail: vi.fn(),
   sendEmailVerification: vi.fn(),
-  markAsGoing: vi.fn(),
   uploadProfilePicture: vi.fn(),
 }));
 
@@ -336,7 +336,7 @@ describe('BaeQuest App - Integration Tests', () => {
       await userEvent.click(meetLink);
 
       await waitFor(() => {
-        expect(screen.getByText(/Find events near you/i)).toBeInTheDocument();
+        expect(screen.getByText(/Find people nearby/i)).toBeInTheDocument();
       });
     });
   });
