@@ -8,8 +8,7 @@ export function useForm(defaultValues) {
 
   function validate(data) {
     let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    let passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    let passwordPattern = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
 
     if (data.email !== undefined && !emailPattern.test(data.email)) {
       return (newErrors.email =
@@ -18,7 +17,7 @@ export function useForm(defaultValues) {
 
     if (data.password !== undefined && !passwordPattern.test(data.password)) {
       return (newErrors.password =
-        "password requires at least 8 characters, one uppercase, one lowercase, one number, and one special character:");
+        "Password must be at least 8 characters with one uppercase letter and one number");
     }
     return "";
   }
