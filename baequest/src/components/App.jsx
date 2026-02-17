@@ -29,6 +29,7 @@ import Careers from "../pages/Careers.jsx";
 import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
 import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
+import WelcomeLanding from "./WelcomeLanding.jsx";
 import {
   createProfile,
   createUser,
@@ -585,6 +586,7 @@ function App() {
           />
           <Routes>
             <Route path="/" element={<Main onClick={handleSignupModal} />} />
+            <Route path="/welcome/:campaign" element={<WelcomeLanding onClick={handleSignupModal} />} />
             <Route
               path="/reset-password"
               element={<ResetPasswordPage handleResetPassword={handleResetPassword} />}
