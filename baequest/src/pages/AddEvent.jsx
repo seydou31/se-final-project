@@ -25,11 +25,15 @@ export default function AddEvent() {
     setStatus({ type: "", message: "" });
 
     try {
+      // Convert local datetime to ISO string (includes timezone offset)
+      const startISO = new Date(formData.startTime).toISOString();
+      const endISO = new Date(formData.endTime).toISOString();
+
       const eventData = {
         name: formData.name,
         address: formData.address,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
+        startTime: startISO,
+        endTime: endISO,
       };
       // Only include coordinates if provided
       if (formData.lat) eventData.lat = parseFloat(formData.lat);
