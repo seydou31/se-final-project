@@ -259,24 +259,13 @@ function App() {
   function handleCreateAccountSubmit(values) {
     return createUser(values)
       .then(() => {
-        // Auto-login after account creation
-        return login(values);
-      })
-      .then(() => {
+        // Signup now auto-logs in (sets JWT cookie)
         setIsLoggedIn(true);
         storeTokenExists();
-        return getProfile().catch(() => null);
-      })
-      .then((res) => {
+        // New user won't have a profile yet
         handleCloseModal();
         setLoggingError("");
-        if (res && res.name) {
-          setCurrentProfile(res);
-          navigate("/profile");
-        } else {
-          // New user - show profile creation modal
-          handleCreateProfileModal();
-        }
+        handleCreateProfileModal();
       })
       .catch((err) => {
         setLoggingError(err.message || "Failed to create account");
