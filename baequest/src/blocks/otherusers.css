@@ -100,8 +100,14 @@
 .others__header {
   position: relative;
   width: 100%;
-  height: 200px;
+  aspect-ratio: 3 / 4;
   background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+}
+
+@media (max-width: 768px) {
+  .others__header {
+    aspect-ratio: 9 / 16;
+  }
 }
 
 .others__avatar {
@@ -263,9 +269,6 @@
     margin-bottom: 48px;
   }
 
-  .others__header {
-    height: 180px;
-  }
 
   .others__content {
     padding: 20px;
@@ -292,9 +295,6 @@
     font-size: 1.5rem;
   }
 
-  .others__header {
-    height: 160px;
-  }
 
   .others__content {
     padding: 18px;
