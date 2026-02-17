@@ -30,6 +30,7 @@ import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
 import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
 import WelcomeLanding from "./WelcomeLanding.jsx";
+import AddEvent from "../pages/AddEvent.jsx";
 import {
   createProfile,
   createUser,
@@ -590,6 +591,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/cookies" element={<CookiePolicy />} />
+            <Route path="/add-event" element={<AddEvent />} />
             <Route
               path="/profile"
               element={

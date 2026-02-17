@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Place from "./Place";
 import OtherUsers from "./OtherUsers";
 import Loading from "./Loading";
-import { getNearbyPlaces } from "../utils/api";
+import { getNearbyPlaces, getNearbyCuratedEvents } from "../utils/api";
 import toast from 'react-hot-toast';
 import "../blocks/meetup.css";
 
@@ -73,8 +73,20 @@ export default function Meet({
 
   const fetchNearbyPlaces = async (lat, lng) => {
     try {
-      const data = await getNearbyPlaces(lat, lng);
-      setPlaces(data);
+      // Fetch curated events first (they have priority)
+      let curatedEvents = [];
+      try {
+        curatedEvents = await getNearbyCuratedEvents(lat, lng);
+      } catch (err) {
+        console.error("Failed to fetch curated events:", err);
+        // Continue with Google Places even if curated events fail
+      }
+
+      // Fetch Google Places
+      const googlePlaces = await getNearbyPlaces(lat, lng);
+
+      // Combine: curated events first, then Google Places
+      setPlaces([...curatedEvents, ...googlePlaces]);
     } catch (error) {
       console.error("Failed to fetch nearby places:", error);
       toast.error("Failed to fetch nearby places");

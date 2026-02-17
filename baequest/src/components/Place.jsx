@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Users } from 'lucide-react';
+import { MapPin, Users, Clock } from 'lucide-react';
 import { getPlacePhotoUrl } from '../utils/api';
 import '../blocks/place.css';
 
@@ -30,6 +30,9 @@ export default function Place({ place, handleCheckin, isCheckingIn }) {
         </div>
       )}
       <div className="place__content">
+        {place.isCurated && (
+          <span className="place__badge">Featured Event</span>
+        )}
         <h2 className="place__name">{place.name}</h2>
         <p className="place__address">
           <MapPin size={16} />
@@ -42,7 +45,13 @@ export default function Place({ place, handleCheckin, isCheckingIn }) {
             <span className="place__rating-value">{place.rating}</span>
           </p>
         )}
-        {place.openNow !== undefined && (
+        {place.isCurated && place.endTime && (
+          <p className="place__time">
+            <Clock size={14} />
+            Ends {new Date(place.endTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+          </p>
+        )}
+        {!place.isCurated && place.openNow !== undefined && (
           <p className={`place__status ${place.openNow ? 'place__status--open' : 'place__status--closed'}`}>
             {place.openNow ? 'Open Now' : 'Closed'}
           </p>

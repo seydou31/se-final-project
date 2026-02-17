@@ -43,6 +43,19 @@
   gap: 10px;
 }
 
+.place__badge {
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  align-self: center;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.25);
+}
+
 .place__name {
   font-family: var(--font-display);
   font-size: 1.25rem;
@@ -91,6 +104,17 @@
 .place__status--closed {
   background: #fee2e2;
   color: #dc2626;
+}
+
+.place__time {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--pink-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
 }
 
 .place__users {

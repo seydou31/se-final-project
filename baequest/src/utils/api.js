@@ -234,6 +234,34 @@ function verifyEmail(token) {
   });
 }
 
+// Curated events (public - no auth)
+function createCuratedEvent(eventData) {
+  return fetch(`${baseUrl}/events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventData),
+  }).then((res) => {
+    if (!res.ok) {
+      return res.json().then((data) => {
+        throw new Error(data.message || "Failed to create event");
+      });
+    }
+    return res.json();
+  });
+}
+
+function getNearbyCuratedEvents(lat, lng, radiusKm = 10) {
+  return fetch(`${baseUrl}/events/nearby?lat=${lat}&lng=${lng}&radiusKm=${radiusKm}`)
+    .then((res) => {
+      if (!res.ok) {
+        return res.json().then((data) => {
+          throw new Error(data.message || "Failed to fetch events");
+        });
+      }
+      return res.json();
+    });
+}
+
 export {
   createUser,
   login,
@@ -255,5 +283,7 @@ export {
   resetPassword,
   sendEmailVerification,
   verifyEmail,
-  refreshToken
+  refreshToken,
+  createCuratedEvent,
+  getNearbyCuratedEvents,
 };
