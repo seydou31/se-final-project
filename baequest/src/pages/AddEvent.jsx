@@ -127,7 +127,7 @@ export default function AddEvent() {
                 name="startTime"
                 value={formData.startTime}
                 onChange={handleChange}
-                className="add-event__input"
+                className="add-event__input add-event__input--datetime"
                 required
               />
             </div>
@@ -138,7 +138,7 @@ export default function AddEvent() {
                 name="endTime"
                 value={formData.endTime}
                 onChange={handleChange}
-                className="add-event__input"
+                className="add-event__input add-event__input--datetime"
                 required
               />
             </div>
