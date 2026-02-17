@@ -101,7 +101,7 @@ export default function AddEvent() {
                 value={formData.lat}
                 onChange={handleChange}
                 className="add-event__input"
-                placeholder="Auto-detected from address"
+                placeholder="Auto from address"
                 step="any"
               />
             </div>
@@ -113,7 +113,7 @@ export default function AddEvent() {
                 value={formData.lng}
                 onChange={handleChange}
                 className="add-event__input"
-                placeholder="Auto-detected from address"
+                placeholder="Auto from address"
                 step="any"
               />
             </div>

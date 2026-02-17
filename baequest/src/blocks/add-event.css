@@ -79,6 +79,9 @@
   border-radius: var(--radius-md);
   font-size: 0.95rem;
   transition: all var(--transition-fast);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .add-event__input:focus {
