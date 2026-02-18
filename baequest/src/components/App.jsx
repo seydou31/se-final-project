@@ -31,6 +31,7 @@ import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
 import WelcomeLanding from "./WelcomeLanding.jsx";
 import AddEvent from "../pages/AddEvent.jsx";
+import EventFeedbackPage from "./EventFeedbackPage.jsx";
 import {
   createProfile,
   createUser,
@@ -592,6 +593,7 @@ function App() {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/cookies" element={<CookiePolicy />} />
             <Route path="/add-event" element={<AddEvent />} />
+            <Route path="/event-feedback" element={<EventFeedbackPage />} />
             <Route
               path="/profile"
               element={
