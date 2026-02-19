@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from 'react-hot-toast';
 import socket from '../utils/socket';
 import "../blocks/otherusers.css";
 
@@ -8,9 +7,7 @@ export default function OtherUsers({
   otherProfiles,
   setOtherProfiles,
   handleCheckoutModal,
-  currentPlace,
-  setCurrentPlace,
-  setIsCheckedIn
+  currentEvent,
 }) {
   const navigate = useNavigate();
 
@@ -27,14 +24,14 @@ export default function OtherUsers({
   };
 
   useEffect(() => {
-    if (!currentPlace?.placeId) {
-      navigate("/meet");
+    if (!currentEvent?._id) {
+      navigate("/events");
       return;
     }
 
-    socket.emit("join-place", { placeId: currentPlace.placeId });
+    const eventId = currentEvent._id;
+    socket.emit("join-event", { eventId });
 
-    // Listen for socket errors
     socket.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
     });
@@ -43,42 +40,36 @@ export default function OtherUsers({
       console.error("Socket error:", error);
     });
 
-    // Listen for users checking OUT
-    socket.on("user-checked-out", ({ userId, placeId }) => {
-      if (placeId === currentPlace.placeId) {
-        setOtherProfiles((prev) => prev.filter((user) => user._id !== userId));
+    socket.on("user-checked-out", ({ userId, eventId: outEventId }) => {
+      if (outEventId === eventId) {
+        setOtherProfiles((prev) => prev.filter((u) => u._id !== userId && u.owner !== userId));
       }
     });
 
-    // Listen for users checking IN
-    socket.on("user-checked-in", ({ user, placeId }) => {
-      if (placeId === currentPlace.placeId) {
+    socket.on("user-checked-in", ({ user, eventId: inEventId }) => {
+      if (inEventId === eventId) {
         setOtherProfiles((prev) => {
-          // Check if user is already in the list (avoid duplicates)
-          if (prev.some(p => p._id === user._id)) {
-            return prev;
-          }
+          if (prev.some(p => p._id === user._id)) return prev;
           return [...prev, user];
         });
       }
     });
 
-    // Cleanup
     return () => {
       socket.off("user-checked-in");
       socket.off("user-checked-out");
       socket.off("connect_error");
       socket.off("error");
-      socket.emit("leave-place", { placeId: currentPlace.placeId });
+      socket.emit("leave-event", { eventId });
     };
-  }, [currentPlace, navigate, setOtherProfiles, setCurrentPlace, setIsCheckedIn]);
+  }, [currentEvent, navigate, setOtherProfiles]);
 
   return (
     <div className="others">
       <div className="others__event-info">
-        <h1 className="others__title">{currentPlace?.placeName || "Location"}</h1>
-        {currentPlace?.placeAddress && (
-          <p className="others__location">{currentPlace.placeAddress}</p>
+        <h1 className="others__title">{currentEvent?.name || "Event"}</h1>
+        {currentEvent?.address && (
+          <p className="others__location">{currentEvent.address}</p>
         )}
       </div>
       <h2 className="others__subtitle">People Checked In</h2>

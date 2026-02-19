@@ -65,6 +65,14 @@
   max-width: 380px;
 }
 
+/* Loading */
+.my-events__loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
 /* Empty State */
 .my-events__empty {
   display: flex;

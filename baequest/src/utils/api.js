@@ -131,34 +131,36 @@ function updateProfile(profile) {
   });
 }
 
-function getNearbyPlaces(lat, lng) {
-  return makeRequest(`${baseUrl}/places/nearby?lat=${lat}&lng=${lng}`, {
-    method: "GET",
-  });
+function getAllEvents({ lat, lng, state, city, zipcode, dateFrom, dateTo } = {}) {
+  const params = new URLSearchParams();
+  if (lat) params.set("lat", lat);
+  if (lng) params.set("lng", lng);
+  if (state) params.set("state", state);
+  if (city) params.set("city", city);
+  if (zipcode) params.set("zipcode", zipcode);
+  if (dateFrom) params.set("dateFrom", dateFrom);
+  if (dateTo) params.set("dateTo", dateTo);
+  const qs = params.toString();
+  return makeRequest(`${baseUrl}/events${qs ? `?${qs}` : ""}`, { method: "GET" });
 }
 
-function getPlacePhotoUrl(photoReference) {
-  return `${baseUrl}/places/photo?photoReference=${photoReference}`;
+function markAsGoing(eventId) {
+  return makeRequest(`${baseUrl}/events/${eventId}/going`, { method: "POST" });
 }
 
-function checkinAtPlace(data) {
-  return makeRequest(`${baseUrl}/places/checkin`, {
+function checkinAtEvent(eventId, lat, lng) {
+  return makeRequest(`${baseUrl}/events/${eventId}/checkin`, {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({ lat, lng }),
   });
 }
 
-function getUsersAtPlace(placeId) {
-  return makeRequest(`${baseUrl}/places/users?placeId=${placeId}`, {
-    method: "GET",
-  });
+function checkoutFromEvent(eventId) {
+  return makeRequest(`${baseUrl}/events/${eventId}/checkout`, { method: "POST" });
 }
 
-function checkoutFromPlace(placeId) {
-  return makeRequest(`${baseUrl}/places/checkout`, {
-    method: "POST",
-    body: JSON.stringify({ placeId }),
-  });
+function getUsersAtEvent(eventId) {
+  return makeRequest(`${baseUrl}/events/${eventId}/users`, { method: "GET" });
 }
 
 function deleteUser() {
@@ -269,11 +271,11 @@ export {
   getProfile,
   logout,
   updateProfile,
-  getNearbyPlaces,
-  getPlacePhotoUrl,
-  checkinAtPlace,
-  getUsersAtPlace,
-  checkoutFromPlace,
+  getAllEvents,
+  markAsGoing,
+  checkinAtEvent,
+  checkoutFromEvent,
+  getUsersAtEvent,
   deleteProfile,
   deleteUser,
   uploadProfilePicture,

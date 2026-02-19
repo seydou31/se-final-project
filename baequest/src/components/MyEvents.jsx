@@ -1,19 +1,40 @@
+import { useState, useEffect } from "react";
 import Event from "./Event";
-import { markAsGoing } from "../utils/api";
+import { getAllEvents, markAsGoing } from "../utils/api";
 import "../blocks/my-events.css";
 
-export default function MyEvents({ events, handleCheckin }) {
+export default function MyEvents({ handleCheckin }) {
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getAllEvents()
+      .then((data) => setEvents(data))
+      .catch(() => setEvents([]))
+      .finally(() => setIsLoading(false));
+  }, []);
+
   const handleImGoing = async (event) => {
-    try {
-      const result = await markAsGoing(event._id);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    const result = await markAsGoing(event._id);
+    setEvents((prev) =>
+      prev.map((e) =>
+        e._id === event._id
+          ? { ...e, isUserGoing: result.isGoing, goingCount: result.goingCount }
+          : e
+      )
+    );
+    return result;
   };
 
-  // Filter to show only events the user is going to
   const myEvents = events.filter((event) => event.isUserGoing);
+
+  if (isLoading) {
+    return (
+      <div className="my-events">
+        <p className="my-events__loading">Loading your events...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="my-events">

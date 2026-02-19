@@ -13,7 +13,8 @@ import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import Main from "./Main.jsx";
 import Profile from "./Profile.jsx";
-import Meet from "./Meet.jsx";
+import EventsPage from "../pages/EventsPage.jsx";
+import MyEvents from "./MyEvents.jsx";
 import Loading from "./Loading.jsx";
 import CreateAccountModal from "./CreateAccountModal.jsx";
 import ProfileModal from "./ProfileModal.jsx";
@@ -39,9 +40,9 @@ import {
   login,
   logout,
   updateProfile,
-  checkinAtPlace,
-  getUsersAtPlace,
-  checkoutFromPlace,
+  checkinAtEvent,
+  getUsersAtEvent,
+  checkoutFromEvent,
   deleteUser,
   deleteProfile,
   googleAuth,
@@ -66,12 +67,10 @@ function App() {
     interests: [],
     convoStarter: "",
   });
-  const [currentPlace, setCurrentPlace] = useState(() => {
+  const [currentEvent, setCurrentEvent] = useState(() => {
     try {
-      const saved = localStorage.getItem("currentPlace");
-      if (saved) {
-        return JSON.parse(saved);
-      }
+      const saved = localStorage.getItem("currentEvent");
+      if (saved) return JSON.parse(saved);
     } catch {
       // Invalid JSON in localStorage, ignore
     }
@@ -130,31 +129,27 @@ function App() {
         setIsLoggedIn(true);
         storeTokenExists();
 
-        // After getting profile, check if we have a saved place
-        const savedPlace = localStorage.getItem("currentPlace");
-        if (savedPlace) {
-          const place = JSON.parse(savedPlace);
-          setCurrentPlace(place);
+        // After getting profile, check if we have a saved event check-in
+        const savedEvent = localStorage.getItem("currentEvent");
+        if (savedEvent) {
+          const event = JSON.parse(savedEvent);
+          setCurrentEvent(event);
           setIsCheckedIn(true);
 
-          return getUsersAtPlace(place.placeId)
+          return getUsersAtEvent(event._id)
             .then((users) => {
               setOtherProfiles(users);
             })
-            .catch((err) => {
-              console.error("Failed to load users at place:", err);
-              // Clear the place if we can't load users
-              setCurrentPlace(null);
+            .catch(() => {
+              setCurrentEvent(null);
               setIsCheckedIn(false);
             });
         }
       })
       .then(() => {
-        // Navigate after everything is loaded
-        const savedPlace = localStorage.getItem("currentPlace");
-        if (savedPlace) {
-          // If user is checked in, redirect to Meet page
-          navigate("/meet");
+        const savedEvent = localStorage.getItem("currentEvent");
+        if (savedEvent) {
+          navigate("/events");
         } else if (location.pathname === "/") {
           navigate("/profile");
         }
@@ -168,12 +163,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (currentPlace) {
-      localStorage.setItem("currentPlace", JSON.stringify(currentPlace));
+    if (currentEvent) {
+      localStorage.setItem("currentEvent", JSON.stringify(currentEvent));
     } else {
-      localStorage.removeItem("currentPlace");
+      localStorage.removeItem("currentEvent");
     }
-  }, [currentPlace]);
+  }, [currentEvent]);
 
   function handleSignupModal() {
     setLoggingError("");
@@ -207,8 +202,8 @@ function App() {
 
   function handleLogout() {
     // Check if user is checked into a place
-    const checkoutPromise = currentPlace?.placeId
-      ? checkoutFromPlace(currentPlace.placeId)
+    const checkoutPromise = currentEvent?._id
+      ? checkoutFromEvent(currentEvent._id)
       : Promise.resolve();
 
     checkoutPromise
@@ -225,7 +220,7 @@ function App() {
           interests: [],
           convoStarter: "",
         });
-        setCurrentPlace(null);
+        setCurrentEvent(null);
         setOtherProfiles([]);
         setIsCheckedIn(false);
         navigate("/");
@@ -438,29 +433,35 @@ function App() {
       })
   }
 
-  const handleCheckin = async (placeData) => {
-    try {
-      await checkinAtPlace(placeData);
-      const users = await getUsersAtPlace(placeData.placeId);
-
-      setCurrentPlace({
-        placeId: placeData.placeId,
-        placeName: placeData.placeName,
-        placeAddress: placeData.placeAddress,
-      });
-      setOtherProfiles(users);
-      setIsCheckedIn(true);
-    } catch (err) {
-      const message = typeof err === "string" ? err : err.message;
-      toast.error(`Check-in failed: ${message || "Please try again"}`);
-      throw err;
-    }
+  const handleCheckin = async (eventData) => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { latitude: lat, longitude: lng } = pos.coords;
+            const result = await checkinAtEvent(eventData._id, lat, lng);
+            setCurrentEvent(eventData);
+            setOtherProfiles(result.users || []);
+            setIsCheckedIn(true);
+            resolve(result);
+          } catch (err) {
+            const message = typeof err === "string" ? err : err.message;
+            toast.error(message || "Check-in failed");
+            reject(err);
+          }
+        },
+        () => {
+          toast.error("Location access is required to check in");
+          reject(new Error("Geolocation denied"));
+        }
+      );
+    });
   };
 
   const handleCheckout = async () => {
     try {
-      await checkoutFromPlace(currentPlace.placeId);
-      setCurrentPlace(null);
+      await checkoutFromEvent(currentEvent._id);
+      setCurrentEvent(null);
       setOtherProfiles([]);
       handleCloseModal();
       setIsCheckedIn(false);
@@ -476,10 +477,10 @@ function App() {
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true);
     try {
-      if (isCheckedIn && currentPlace?.placeId) {
+      if (isCheckedIn && currentEvent?._id) {
         try {
-          await checkoutFromPlace(currentPlace.placeId);
-          setCurrentPlace(null);
+          await checkoutFromEvent(currentEvent._id);
+          setCurrentEvent(null);
           setOtherProfiles([]);
           setIsCheckedIn(false);
         } catch (err) {
@@ -608,22 +609,25 @@ function App() {
               }
             />
             <Route
-              path="/meet"
+              path="/events"
               element={
-                <ProtectedRoute
-                  isLoggedInLoading={isLoggedInLoading}
-                  isLoggedIn={isLoggedIn}
-                >
-                  <Meet
+                <ProtectedRoute isLoggedInLoading={isLoggedInLoading} isLoggedIn={isLoggedIn}>
+                  <EventsPage
                     handleCheckin={handleCheckin}
                     handleCheckoutModal={handleCheckoutModal}
+                    currentEvent={currentEvent}
                     otherProfiles={otherProfiles}
                     setOtherProfiles={setOtherProfiles}
-                    currentPlace={currentPlace}
                     isCheckedIn={isCheckedIn}
-                    setCurrentPlace={setCurrentPlace}
-                    setIsCheckedIn={setIsCheckedIn}
                   />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-events"
+              element={
+                <ProtectedRoute isLoggedInLoading={isLoggedInLoading} isLoggedIn={isLoggedIn}>
+                  <MyEvents handleCheckin={handleCheckin} />
                 </ProtectedRoute>
               }
             />
