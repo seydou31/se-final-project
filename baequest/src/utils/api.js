@@ -237,11 +237,16 @@ function verifyEmail(token) {
 }
 
 // Curated events (public - no auth)
-function createCuratedEvent(eventData) {
+function createCuratedEvent(eventData, photoFile) {
+  const formData = new FormData();
+  Object.entries(eventData).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") formData.append(key, value);
+  });
+  if (photoFile) formData.append("photo", photoFile);
+
   return fetch(`${baseUrl}/events`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(eventData),
+    body: formData, // browser sets Content-Type with boundary automatically
   }).then((res) => {
     if (!res.ok) {
       return res.json().then((data) => {

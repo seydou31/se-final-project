@@ -74,16 +74,20 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
 
   return (
     <div className="event">
-      <div className="event__image event__image--placeholder">
-        <svg className="event__placeholder-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          <circle cx="8" cy="14" r="1.5" fill="currentColor"/>
-          <circle cx="12" cy="14" r="1.5" fill="currentColor"/>
-          <circle cx="16" cy="14" r="1.5" fill="currentColor"/>
-        </svg>
-        <span className="event__placeholder-text">Event</span>
-      </div>
+      {event.photo ? (
+        <img src={event.photo} alt={event.name} className="event__image" />
+      ) : (
+        <div className="event__image event__image--placeholder">
+          <svg className="event__placeholder-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <circle cx="8" cy="14" r="1.5" fill="currentColor"/>
+            <circle cx="12" cy="14" r="1.5" fill="currentColor"/>
+            <circle cx="16" cy="14" r="1.5" fill="currentColor"/>
+          </svg>
+          <span className="event__placeholder-text">Event</span>
+        </div>
+      )}
 
       <div className="event__content">
         <div className="event__title-row">
@@ -107,6 +111,21 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
         )}
 
         <p className="event__starts">{getRelativeTime(event.startTime)}</p>
+
+        {event.description && (
+          <p className="event__description">{event.description}</p>
+        )}
+
+        {event.link && (
+          <a
+            href={event.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="event__external-link"
+          >
+            More Info ↗
+          </a>
+        )}
 
         {goingCount > 0 && !(isGoing && goingCount === 1) && (
           <p className="event__attendees">

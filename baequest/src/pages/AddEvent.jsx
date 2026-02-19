@@ -13,13 +13,24 @@ export default function AddEvent() {
     lng: "",
     startTime: "",
     endTime: "",
+    description: "",
+    link: "",
   });
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -40,12 +51,14 @@ export default function AddEvent() {
         zipcode: formData.zipcode,
         startTime: startISO,
         endTime: endISO,
+        description: formData.description,
+        link: formData.link,
       };
       // Only include coordinates if provided
       if (formData.lat) eventData.lat = parseFloat(formData.lat);
       if (formData.lng) eventData.lng = parseFloat(formData.lng);
 
-      await createCuratedEvent(eventData);
+      await createCuratedEvent(eventData, photoFile);
 
       setStatus({ type: "success", message: "Event created successfully!" });
       setFormData({
@@ -58,7 +71,11 @@ export default function AddEvent() {
         lng: "",
         startTime: "",
         endTime: "",
+        description: "",
+        link: "",
       });
+      setPhotoFile(null);
+      setPhotoPreview(null);
     } catch (err) {
       setStatus({ type: "error", message: err.message || "Failed to create event" });
     } finally {
@@ -140,6 +157,48 @@ export default function AddEvent() {
                 placeholder="20001"
               />
             </div>
+          </div>
+
+          <div className="add-event__field">
+            <label className="add-event__label">Description (optional)</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="add-event__input add-event__textarea"
+              placeholder="Describe the event, dress code, what to expect..."
+              maxLength={1000}
+              rows={4}
+            />
+          </div>
+
+          <div className="add-event__field">
+            <label className="add-event__label">Event Photo (optional)</label>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handlePhotoChange}
+              className="add-event__input add-event__input--file"
+            />
+            {photoPreview && (
+              <img
+                src={photoPreview}
+                alt="Preview"
+                className="add-event__photo-preview"
+              />
+            )}
+          </div>
+
+          <div className="add-event__field">
+            <label className="add-event__label">Event Link (optional)</label>
+            <input
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+              className="add-event__input"
+              placeholder="https://eventbrite.com/..."
+            />
           </div>
 
           <div className="add-event__row">
