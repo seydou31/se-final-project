@@ -8,17 +8,17 @@ export default function Main({onClick}) {
   return (
     <main className="main">
       <h1 className="main__title">
-        Meet people at places you already go
+        Meet people at events made for singles
       </h1>
       <p className="main__text">
-        Real dating starts in real places. Check in at lounges, bars, clubs, and venues near you to see who's there and ready to connect.
+        Real dating starts in real life. Browse curated singles events near you, RSVP to let others know you're going, and check in when you arrive to see who's there.
       </p>
       <button className="main__button" onClick={onClick}>Create Account</button>
       <section className="section1">
         <h3 className="section__title">We're Not a Swipe App</h3>
         <p className="section1__text">
           Say goodbye to endless swiping and hello to real<span className="main__span">
-          connections at places you're already at</span>
+          connections at events you actually want to attend</span>
         </p>
         <div className="section1__cards">
           <div className="section1__card">
@@ -59,16 +59,16 @@ export default function Main({onClick}) {
             </p>
             <ul className="section1__card-list">
               <li className="section1__card-item">
-                See real people at real places near you
+                Browse curated singles events near you
               </li>
               <li className="section1__card-item">
-                Check in at lounges, bars, clubs & more
+                RSVP so others know you're going
+              </li>
+              <li className="section1__card-item">
+                Check in when you arrive to see who's there
               </li>
               <li className="section1__card-item">
                 Meet face-to-face, skip the texting phase
-              </li>
-              <li className="section1__card-item">
-                Know who's actually there and open to meeting
               </li>
               <li className="section1__card-item">
                 Conversation starters to break the ice
@@ -81,16 +81,16 @@ export default function Main({onClick}) {
         </div>
         <p className="section1__highlight">
           <span className="section1__summary">Experience the difference: </span>
-          Whether you're at a lounge, bar, club, arcade, or any venue -<br/>
-          see who's checked in and ready to meet. Real connections<br/>
-          happen in real places, not through a screen.
+          Find events designed for singles, RSVP to show you're going,<br/>
+          and check in when you arrive. See who else is there and<br/>
+          make a real connection — no screen required.
         </p>
       </section>
       <section className="section2">
         <h3 className="section__title">How it works</h3>
         <p className="section2__text">
           Discover how our unique approach to dating brings people together
-           <span className="section2__span"> through real-world places</span>
+           <span className="section2__span"> through real-world events</span>
         </p>
         <ol className="section2__list">
           <li className="section2__item">
@@ -102,17 +102,17 @@ export default function Main({onClick}) {
           </li>
           <li className="section2__item">
             {" "}
-            <p className="section2__list-header">Find Places Near You</p>
+            <p className="section2__list-header">Browse Events Near You</p>
             <p className="section2__list-par">
-              Discover lounges, bars, clubs, arcades, and other venues closest
-              to your current location.
+              Discover curated singles events sorted by distance. RSVP to events
+              you're interested in so others know you're going.
             </p>
           </li>
           <li className="section2__item">
             {" "}
             <p className="section2__list-header">Check In & See Who's There</p>
             <p className="section2__list-par">
-              When you arrive at a venue, check in to see other BaeQuest users
+              When you arrive at the event, check in to see other BaeQuest users
               who are there and open to meeting.
             </p>
           </li>
@@ -131,24 +131,24 @@ export default function Main({onClick}) {
         <h3 className="section__title">Why Choose BaeQuest?</h3>
         <p className="section3__text">
           Experience a better way to meet people through authentic connections
-          at real places
+          at real events
         </p>
         <div className="section3__benefit">
           <ul className="section3__cards">
             <li className="section3__card">
               <Users className="section3__card-image" />
-              <p className="section3__card-title">Real People, Real Places</p>
+              <p className="section3__card-title">Real People, Real Events</p>
               <p className="section3__card-par">
-                See who's actually at venues near you right now - no fake
+                See who's actually at the event right now — no fake
                 profiles or bots
               </p>
             </li>
             <li className="section3__card">
               <Shield className="section3__card-image" />
-              <p className="section3__card-title">Safe & Public</p>
+              <p className="section3__card-title">Safe & Social</p>
               <p className="section3__card-par">
-                Meet at established venues like bars, lounges, and clubs -
-                always in public spaces
+                Meet at curated public events — always in safe,
+                social environments with other singles
               </p>
             </li>
             <li className="section3__card">
@@ -164,7 +164,7 @@ export default function Main({onClick}) {
               <p className="section3__card-title">Instant Connections</p>
               <p className="section3__card-par">
                 Skip weeks of texting - meet face-to-face the moment you're
-                both ready
+                both at the same event
               </p>
             </li>
           </ul>

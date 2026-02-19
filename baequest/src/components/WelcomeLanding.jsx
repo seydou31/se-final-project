@@ -3,28 +3,28 @@ import "../blocks/welcome-landing.css";
 
 const campaignContent = {
   bars: {
-    headline: "Meet Someone Special at Your Favorite Bar",
-    subheadline: "See who's checked in and ready to connect tonight.",
+    headline: "Meet Someone Special at Singles Events Near You",
+    subheadline: "RSVP to curated events and check in to see who else is going tonight.",
     emoji: "🍻",
     cta: "Get Started Free",
   },
   lounges: {
-    headline: "Connect with Singles at Upscale Lounges",
-    subheadline: "Discover who's looking to meet someone special nearby.",
+    headline: "Connect with Singles at Exclusive Events",
+    subheadline: "Browse curated singles events and discover who's looking to meet someone special.",
     emoji: "🍸",
     cta: "Get Started Free",
   },
   arcade: {
-    headline: "Level Up Your Dating Life at Arcades",
-    subheadline: "Find fellow gamers at arcade bars and gaming spots.",
+    headline: "Level Up Your Dating Life at Singles Events",
+    subheadline: "Find fellow singles at fun curated events near you.",
     emoji: "🎮",
     cta: "Find Your Player 2",
   },
 };
 
 const defaultContent = {
-  headline: "Meet Amazing People Near You",
-  subheadline: "Check in at venues to see who's there and ready to connect.",
+  headline: "Meet Amazing People at Events Near You",
+  subheadline: "Browse curated singles events, RSVP, and check in to see who's there and ready to connect.",
   emoji: "💕",
   cta: "Get Started Free",
 };
