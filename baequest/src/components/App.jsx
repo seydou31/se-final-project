@@ -264,10 +264,9 @@ function App() {
         // Signup now auto-logs in (sets JWT cookie)
         setIsLoggedIn(true);
         storeTokenExists();
-        // New user won't have a profile yet
-        handleCloseModal();
         setLoggingError("");
-        handleCreateProfileModal();
+        // Direct swap to profile modal (no close animation needed)
+        setActiveModal("createprofilemodal");
       })
       .catch((err) => {
         setLoggingError(err.message || "Failed to create account");

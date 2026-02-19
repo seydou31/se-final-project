@@ -5,15 +5,14 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 40px 20px;
   visibility: hidden;
   opacity: 0;
-  transition: all var(--transition-base);
+  transition: opacity var(--transition-fast), visibility var(--transition-fast);
   z-index: 1000;
 }
 
