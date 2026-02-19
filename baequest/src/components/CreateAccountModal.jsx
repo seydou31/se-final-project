@@ -33,13 +33,15 @@ export default function CreateAccountModal({
 
   const [confirmError, setConfirmError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const hasErrors = errors && Object.keys(errors).length > 0;
   const emptyFields =
     !values.email || !values.password || confirmPassword.length === 0;
-  const isSubmitDisabled = hasErrors || emptyFields;
+  const isSubmitDisabled = hasErrors || emptyFields || isLoading;
 
   function handleSubmit(e) {
     e.preventDefault();
+    setIsLoading(true);
 
     handleCreateAccountSubmit(values)
       .then(() => {
@@ -47,6 +49,8 @@ export default function CreateAccountModal({
         setConfirmPassword("");
         setConfirmError("");
       })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   }
 
   return (
@@ -119,7 +123,7 @@ export default function CreateAccountModal({
               className="modal__submit-btn"
               disabled={isSubmitDisabled}
             >
-              Continue
+              {isLoading ? "Creating account..." : "Continue"}
             </button>
           </fieldset>
         </form>
