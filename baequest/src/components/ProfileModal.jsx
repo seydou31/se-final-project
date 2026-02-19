@@ -334,7 +334,7 @@ export default function ProfileModal({
             />
           </div>
 
-          <button type="submit" className="modal__submit-btn" disabled={isLoading}>
+          <button type="submit" className={`modal__submit-btn ${isLoading ? "modal__submit-btn--loading" : ""}`} disabled={isLoading}>
             {isLoading ? (mode === "create" ? "Creating profile..." : "Saving...") : buttonText}
           </button>
         </form>

@@ -245,16 +245,16 @@ function App() {
   };
 
   function handleCreateProfile(formdata) {
-    createProfile(formdata)
+    return createProfile(formdata)
       .then((res) => {
         setCurrentProfile(res);
         setIsLoggedIn(true);
         storeTokenExists();
-        handleCloseModal();
         navigate("/profile");
       })
       .catch((err) => {
         toast.error(`Failed to create profile: ${err.message || err}`);
+        throw err;
       });
   }
 
@@ -421,11 +421,14 @@ function App() {
   }
 
   function handleProfileUpdateSubmit(values) {
-    updateProfile(values)
+    return updateProfile(values)
       .then((res) => {
         setCurrentProfile(res);
-        handleCloseModal();
       })
+      .catch((err) => {
+        toast.error(`Failed to update profile: ${err.message || err}`);
+        throw err;
+      });
   }
 
   function handleRefreshProfile() {

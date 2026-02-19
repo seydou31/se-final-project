@@ -210,6 +210,14 @@
   transform: none;
 }
 
+.modal__submit-btn--loading {
+  background: linear-gradient(135deg, var(--pink-500) 0%, var(--pink-600) 100%) !important;
+  color: #fff !important;
+  opacity: 0.85;
+  cursor: wait !important;
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.25) !important;
+}
+
 .modal__resend-btn {
   background: none;
   border: 2px solid var(--pink-500);

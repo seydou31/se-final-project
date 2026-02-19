@@ -120,7 +120,7 @@ export default function CreateAccountModal({
             )}
             <button
               type="submit"
-              className="modal__submit-btn"
+              className={`modal__submit-btn ${isLoading ? "modal__submit-btn--loading" : ""}`}
               disabled={isSubmitDisabled}
             >
               {isLoading ? "Creating account..." : "Continue"}
