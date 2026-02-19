@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import toast from 'react-hot-toast';
 import { useForm } from "../hooks/useForm";
 import AppContext from "../context/AppContext";
@@ -28,6 +28,7 @@ export default function ProfileModal({
     onOverlayClick(e);
   };
   const { currentProfile } = useContext(AppContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { values, handleChange, handleReset, setValues } = useForm({
     name: "",
@@ -94,6 +95,7 @@ export default function ProfileModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       // First, submit the profile data (without the file)
       const profileData = {
@@ -126,6 +128,8 @@ export default function ProfileModal({
       // Call the original onClose to bypass the create mode restriction
       onClose();
     } catch (err) {
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -330,8 +334,8 @@ export default function ProfileModal({
             />
           </div>
 
-          <button type="submit" className="modal__submit-btn">
-            {buttonText}
+          <button type="submit" className="modal__submit-btn" disabled={isLoading}>
+            {isLoading ? (mode === "create" ? "Creating profile..." : "Saving...") : buttonText}
           </button>
         </form>
     </ModalWrapper>
