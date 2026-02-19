@@ -20,17 +20,13 @@ vi.mock('../utils/api', () => ({
 
 const mockEvent = {
   _id: 'event-123',
-  title: 'Coffee Meetup',
+  name: 'Coffee Meetup',
   description: 'Let\'s grab coffee and chat!',
-  date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+  startTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
   endTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
-  location: {
-    name: 'Starbucks',
-    address: '123 Main St, City, State',
-  },
-  image: 'https://example.com/event.jpg',
-  price: 'Free',
-  url: 'https://example.com/event',
+  address: '123 Main St, City, State',
+  photo: 'https://example.com/event.jpg',
+  link: 'https://example.com/event',
   goingCount: 5,
   isUserGoing: false,
 };
@@ -45,7 +41,7 @@ describe('Event Component', () => {
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
       expect(screen.getByText('Coffee Meetup')).toBeInTheDocument();
-      expect(screen.getByText(/View on Map/i)).toBeInTheDocument();
+      expect(screen.getByText(/123 Main St/i)).toBeInTheDocument();
       expect(screen.getByText(/5 people going/i)).toBeInTheDocument();
     });
 
@@ -59,7 +55,7 @@ describe('Event Component', () => {
     it('shows map link when address is provided', () => {
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      const mapLink = screen.getByText(/view on map/i);
+      const mapLink = screen.getByText(/123 Main St/i);
       expect(mapLink).toBeInTheDocument();
       expect(mapLink.closest('a')).toHaveAttribute(
         'href',
@@ -67,10 +63,10 @@ describe('Event Component', () => {
       );
     });
 
-    it('shows event website link when url is provided', () => {
+    it('shows event link when link is provided', () => {
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      const eventLink = screen.getByText(/event website/i);
+      const eventLink = screen.getByText(/more info/i);
       expect(eventLink.closest('a')).toHaveAttribute('href', 'https://example.com/event');
     });
 
@@ -83,14 +79,14 @@ describe('Event Component', () => {
       expect(screen.getByText(/Starts in \d+ hours?/i)).toBeInTheDocument();
     });
 
-    it('shows "Started" for events that have already begun', () => {
+    it('shows "In progress" for events that have already begun', () => {
       const pastEvent = {
         ...mockEvent,
-        date: new Date(Date.now() - 1000).toISOString(),
+        startTime: new Date(Date.now() - 1000).toISOString(),
       };
       render(<Event event={pastEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      expect(screen.getByText(/Started/i)).toBeInTheDocument();
+      expect(screen.getByText(/In progress/i)).toBeInTheDocument();
     });
   });
 
@@ -133,7 +129,7 @@ describe('Event Component', () => {
     });
 
     it('calls handleImGoing when clicked', async () => {
-      const handleImGoing = vi.fn().mockResolvedValue({ count: 6 });
+      const handleImGoing = vi.fn().mockResolvedValue({ isGoing: true, goingCount: 6 });
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={handleImGoing} />);
 
       const goingButton = screen.getByRole('button', { name: /i'm going/i });
@@ -145,28 +141,29 @@ describe('Event Component', () => {
     });
 
     it('updates to "Going" state after clicking', async () => {
-      const handleImGoing = vi.fn().mockResolvedValue({ count: 6 });
+      const handleImGoing = vi.fn().mockResolvedValue({ isGoing: true, goingCount: 6 });
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={handleImGoing} />);
 
       const goingButton = screen.getByRole('button', { name: /i'm going/i });
       await userEvent.click(goingButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /^going$/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /✓ Going/i })).toBeInTheDocument();
       });
     });
 
-    it('shows "Going" and is disabled when user is already going', () => {
+    it('shows active "Going" state when user is already going', () => {
       const eventUserGoing = { ...mockEvent, isUserGoing: true };
       render(<Event event={eventUserGoing} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      const goingButton = screen.getByRole('button', { name: /^going$/i });
-      expect(goingButton).toBeDisabled();
+      const goingButton = screen.getByRole('button', { name: /✓ Going/i });
+      expect(goingButton).toBeInTheDocument();
+      expect(goingButton).toHaveClass('event__going--active');
     });
 
     it('prevents double-clicks by showing loading state', async () => {
       const handleImGoing = vi.fn(
-        () => new Promise((resolve) => setTimeout(() => resolve({ count: 6 }), 100))
+        () => new Promise((resolve) => setTimeout(() => resolve({ isGoing: true, goingCount: 6 }), 100))
       );
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={handleImGoing} />);
 
@@ -184,7 +181,7 @@ describe('Event Component', () => {
     });
 
     it('updates attendee count after marking as going', async () => {
-      const handleImGoing = vi.fn().mockResolvedValue({ count: 6 });
+      const handleImGoing = vi.fn().mockResolvedValue({ isGoing: true, goingCount: 6 });
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={handleImGoing} />);
 
       await userEvent.click(screen.getByRole('button', { name: /i'm going/i }));
@@ -215,21 +212,16 @@ describe('Event Component', () => {
 
   describe('Error Handling', () => {
     it('handles errors when marking as going fails', async () => {
-      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       const handleImGoing = vi.fn().mockRejectedValue(new Error('Network error'));
 
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={handleImGoing} />);
 
       await userEvent.click(screen.getByRole('button', { name: /i'm going/i }));
 
+      // Button should recover to its normal state after error
       await waitFor(() => {
-        expect(consoleError).toHaveBeenCalledWith(
-          'Failed to mark as going:',
-          expect.any(Error)
-        );
+        expect(screen.getByRole('button', { name: /i'm going/i })).not.toBeDisabled();
       });
-
-      consoleError.mockRestore();
     });
   });
 });

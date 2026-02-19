@@ -14,11 +14,11 @@ vi.mock('../utils/api', () => ({
   getProfile: vi.fn(),
   createProfile: vi.fn(),
   updateProfile: vi.fn(),
-  getNearbyPlaces: vi.fn(),
-  getPlacePhotoUrl: vi.fn(),
-  checkinAtPlace: vi.fn(),
-  getUsersAtPlace: vi.fn(),
-  checkoutFromPlace: vi.fn(),
+  getAllEvents: vi.fn().mockResolvedValue([]),
+  markAsGoing: vi.fn(),
+  checkinAtEvent: vi.fn(),
+  getUsersAtEvent: vi.fn().mockResolvedValue([]),
+  checkoutFromEvent: vi.fn(),
   logout: vi.fn(),
   deleteUser: vi.fn(),
   deleteProfile: vi.fn(),
@@ -77,7 +77,7 @@ describe('BaeQuest App - Integration Tests', () => {
       api.getProfile.mockRejectedValue(new Error('Not authenticated'));
       renderApp();
 
-      expect(screen.getByText(/Meet people at places you already go/i)).toBeInTheDocument();
+      expect(screen.getByText(/Meet people at events made for singles/i)).toBeInTheDocument();
     });
 
     it('shows login modal when SIGN IN button is clicked', async () => {
@@ -311,7 +311,7 @@ describe('BaeQuest App - Integration Tests', () => {
   });
 
   describe('Navigation', () => {
-    it('navigates to Meet page when clicking Meet link', async () => {
+    it('shows Events and My Events nav links when logged in', async () => {
       const mockProfile = {
         name: 'John Doe',
         age: 25,
@@ -331,13 +331,9 @@ describe('BaeQuest App - Integration Tests', () => {
         expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
       });
 
-      // Click "Meet" nav link in the Header
-      const meetLink = screen.getByRole('link', { name: /^Meet$/ });
-      await userEvent.click(meetLink);
-
-      await waitFor(() => {
-        expect(screen.getByText(/Find people nearby/i)).toBeInTheDocument();
-      });
+      // Events and My Events links should be in the nav
+      expect(screen.getByRole('link', { name: /^Events$/ })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^My Events$/ })).toBeInTheDocument();
     });
   });
 });
