@@ -9,8 +9,6 @@ export default function AddEvent() {
     city: "",
     state: "",
     zipcode: "",
-    lat: "",
-    lng: "",
     startTime: "",
     endTime: "",
     description: "",
@@ -54,9 +52,6 @@ export default function AddEvent() {
         description: formData.description,
         link: formData.link,
       };
-      // Only include coordinates if provided
-      if (formData.lat) eventData.lat = parseFloat(formData.lat);
-      if (formData.lng) eventData.lng = parseFloat(formData.lng);
 
       await createCuratedEvent(eventData, photoFile);
 
@@ -67,8 +62,6 @@ export default function AddEvent() {
         city: "",
         state: "",
         zipcode: "",
-        lat: "",
-        lng: "",
         startTime: "",
         endTime: "",
         description: "",
@@ -87,7 +80,7 @@ export default function AddEvent() {
     <main className="add-event">
       <div className="add-event__container">
         <h1 className="add-event__title">Add Event</h1>
-        <p className="add-event__subtitle">Create a curated event for BaeQuest users. Coordinates will be auto-detected from the address.</p>
+        <p className="add-event__subtitle">Create a curated event for BaeQuest users. Coordinates are auto-detected from the address.</p>
 
         {status.message && (
           <div className={`add-event__status add-event__status--${status.type}`}>
@@ -199,33 +192,6 @@ export default function AddEvent() {
               className="add-event__input"
               placeholder="https://eventbrite.com/..."
             />
-          </div>
-
-          <div className="add-event__row">
-            <div className="add-event__field">
-              <label className="add-event__label">Latitude (optional)</label>
-              <input
-                type="number"
-                name="lat"
-                value={formData.lat}
-                onChange={handleChange}
-                className="add-event__input"
-                placeholder="Auto from address"
-                step="any"
-              />
-            </div>
-            <div className="add-event__field">
-              <label className="add-event__label">Longitude (optional)</label>
-              <input
-                type="number"
-                name="lng"
-                value={formData.lng}
-                onChange={handleChange}
-                className="add-event__input"
-                placeholder="Auto from address"
-                step="any"
-              />
-            </div>
           </div>
 
           <div className="add-event__row">
