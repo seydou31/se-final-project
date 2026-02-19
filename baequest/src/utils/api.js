@@ -238,23 +238,31 @@ function verifyEmail(token) {
 
 // Curated events (public - no auth)
 function createCuratedEvent(eventData, photoFile) {
-  const formData = new FormData();
-  Object.entries(eventData).forEach(([key, value]) => {
-    if (value !== undefined && value !== "") formData.append(key, value);
-  });
-  if (photoFile) formData.append("photo", photoFile);
-
-  return fetch(`${baseUrl}/events`, {
-    method: "POST",
-    body: formData, // browser sets Content-Type with boundary automatically
-  }).then((res) => {
+  const handleResponse = (res) => {
     if (!res.ok) {
       return res.json().then((data) => {
         throw new Error(data.message || "Failed to create event");
       });
     }
     return res.json();
-  });
+  };
+
+  if (photoFile) {
+    // Send multipart FormData when a photo is included
+    const formData = new FormData();
+    Object.entries(eventData).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") formData.append(key, value);
+    });
+    formData.append("photo", photoFile);
+    return fetch(`${baseUrl}/events`, { method: "POST", body: formData }).then(handleResponse);
+  }
+
+  // No photo — send as JSON (works with both old and new backend)
+  return fetch(`${baseUrl}/events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(eventData),
+  }).then(handleResponse);
 }
 
 function getNearbyCuratedEvents(lat, lng, radiusKm = 10) {
