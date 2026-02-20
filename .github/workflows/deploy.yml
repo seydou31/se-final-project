@@ -21,6 +21,9 @@ jobs:
       - run: npm ci
         working-directory: baequest
 
+      - run: npm audit --audit-level=high --omit=dev
+        working-directory: baequest
+
       - run: npm run lint
         working-directory: baequest
 
