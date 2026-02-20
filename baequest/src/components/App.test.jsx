@@ -247,6 +247,7 @@ describe('BaeQuest App - Integration Tests', () => {
       await userEvent.click(within(modal).getByLabelText('art'));
       await userEvent.click(within(modal).getByLabelText('music'));
       await userEvent.type(within(modal).getByPlaceholderText('Enter a conversation starter'), 'What do you love to do?');
+      await userEvent.type(within(modal).getByPlaceholderText('+12025551234'), '+15555550001');
 
       // Step 4: submit the form
       await userEvent.click(within(modal).getByRole('button', { name: /create profile/i }));

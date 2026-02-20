@@ -25,6 +25,7 @@ const mockProfile = {
   bio: 'I love coding',
   interests: ['gaming', 'hiking', 'coffee'],
   convoStarter: 'What is your favorite hobby?',
+  phoneNumber: '+12025551234',
 };
 
 const renderProfileModal = (props = {}, contextValue = {}) => {
@@ -102,6 +103,11 @@ describe('ProfileModal Component', () => {
         'What is your favorite place to travel?'
       );
 
+      await userEvent.type(
+        screen.getByPlaceholderText('+12025551234'),
+        '+15555550001'
+      );
+
       // Submit form
       const submitButton = screen.getByRole('button', { name: /create profile/i });
       await userEvent.click(submitButton);
@@ -116,6 +122,7 @@ describe('ProfileModal Component', () => {
           bio: 'I love art and design',
           interests: ['gaming', 'travel'],
           convoStarter: 'What is your favorite place to travel?',
+          phoneNumber: '+15555550001',
         });
       });
     });
