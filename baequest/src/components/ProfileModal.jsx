@@ -39,6 +39,7 @@ export default function ProfileModal({
     bio: "",
     interests: [],
     convoStarter: "",
+    phoneNumber: "",
     profilePicture: null,
   });
 
@@ -54,6 +55,7 @@ export default function ProfileModal({
         bio: currentProfile.bio || "",
         interests: currentProfile.interests || [],
         convoStarter: currentProfile.convoStarter || "",
+        phoneNumber: currentProfile.phoneNumber || "",
       });
     } else if (mode === "create" && !isOpen) {
       // Reset form when create modal closes
@@ -107,6 +109,7 @@ export default function ProfileModal({
         bio: values.bio,
         interests: values.interests,
         convoStarter: values.convoStarter,
+        phoneNumber: values.phoneNumber,
       };
 
       await onSubmit(profileData);
@@ -331,6 +334,23 @@ export default function ProfileModal({
               required
               minLength="10"
               maxLength="160"
+            />
+          </div>
+
+          <div className="modal__fieldset">
+            <label htmlFor={`${mode}-phone`} className="modal__label modal__label--with-hint">
+              Phone Number
+              <span className="modal__hint" title="We send you a text when someone compatible checks in at the same event as you.">?</span>
+            </label>
+            <input
+              type="tel"
+              id={`${mode}-phone`}
+              className="modal__input"
+              placeholder="+12025551234"
+              name="phoneNumber"
+              value={values.phoneNumber || ''}
+              onChange={handleChange}
+              required
             />
           </div>
 

@@ -82,6 +82,47 @@
   font-size: 0.9rem;
 }
 
+.modal__label--with-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal__hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--pink-300, #f9a8d4);
+  color: var(--pink-700);
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: help;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.modal__hint:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 400;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  max-width: 240px;
+  white-space: normal;
+  z-index: 10;
+  pointer-events: none;
+}
+
 .modal__input {
   width: 100%;
   display: block;
