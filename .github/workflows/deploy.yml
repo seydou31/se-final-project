@@ -21,6 +21,9 @@ jobs:
       - run: npm ci
         working-directory: baequest
 
+      - run: npm run lint
+        working-directory: baequest
+
       - run: npm test -- --run
         working-directory: baequest
 
