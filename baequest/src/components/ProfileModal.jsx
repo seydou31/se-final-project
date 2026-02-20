@@ -61,6 +61,7 @@ export default function ProfileModal({
       // Reset form when create modal closes
       handleReset();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, isOpen, currentProfile, setValues]);
 
   const handleCheckboxChange = (e) => {
@@ -116,7 +117,7 @@ export default function ProfileModal({
 
       // Then, if there's a profile picture, upload it separately
       if (values.profilePicture) {
-        const uploadResponse = await uploadProfilePicture(values.profilePicture);
+        await uploadProfilePicture(values.profilePicture);
         // Call the callback to refetch profile with updated picture
         if (onPictureUpload) {
           // Small delay to ensure file is fully written (development mode)
@@ -130,7 +131,8 @@ export default function ProfileModal({
       }
       // Call the original onClose to bypass the create mode restriction
       onClose();
-    } catch (err) {
+    } catch (_err) {
+      // error is thrown from onSubmit and handled by the caller
     } finally {
       setIsLoading(false);
     }

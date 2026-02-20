@@ -33,6 +33,7 @@ export default function EventsPage({
         fetchEvents(null, {});
       }
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchEvents = async (coords, filterOverrides) => {

@@ -1,6 +1,4 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useContext } from "react";
-import AppContext from "../context/AppContext";
+import { Navigate } from "react-router-dom";
 import Loading from "./Loading";
 
 function ProtectedRoute({ isLoggedInLoading, children, isLoggedIn }) {

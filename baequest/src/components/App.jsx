@@ -160,6 +160,7 @@ function App() {
       .finally(() => {
         setIsLoggedInLoading(false);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -338,7 +339,7 @@ function App() {
           handleCreateProfileModal();
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setLoggingError("Google sign-up failed. Please try again.");
       });
   }
@@ -356,7 +357,7 @@ function App() {
         handleCloseModal();
         navigate("/profile");
       })
-      .catch((err) => {
+      .catch(() => {
         setLoggingError("Google login failed");
       });
   }
@@ -375,7 +376,7 @@ function App() {
         handleCloseModal();
         navigate("/profile");
       })
-      .catch((err) => {
+      .catch(() => {
         setLoggingError("Google login failed");
       });
   }
@@ -410,7 +411,7 @@ function App() {
           handleCreateProfileModal();
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setLoggingError("Google sign-up failed. Please try again.");
       });
   }

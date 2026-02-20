@@ -58,10 +58,6 @@ export default function Calendar({ selectedDate, onDateSelect, events = [] }) {
     });
   };
 
-  const hasEvents = (day) => {
-    return getEventsForDay(day).length > 0;
-  };
-
   const handleDateClick = (day) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
     onDateSelect(date);
