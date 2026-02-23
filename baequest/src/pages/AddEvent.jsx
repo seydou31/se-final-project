@@ -21,6 +21,7 @@ export default function AddEvent() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,7 +59,7 @@ export default function AddEvent() {
 
       await createCuratedEvent(eventData, photoFile, isLoggedIn ? null : passphrase);
 
-      setStatus({ type: "success", message: "Event created successfully!" });
+      setSubmitted(true);
       setFormData({
         name: "",
         address: "",
@@ -79,6 +80,26 @@ export default function AddEvent() {
       setIsSubmitting(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <main className="add-event">
+        <div className="add-event__container">
+          <h1 className="add-event__title">Thank You!</h1>
+          <p className="add-event__subtitle">
+            Your event has been created successfully. Event attendees will be able to see other singles at the event and connect with compatible matches when they check in.
+          </p>
+          <button
+            type="button"
+            className="add-event__submit"
+            onClick={() => setSubmitted(false)}
+          >
+            Create Another Event
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="add-event">
