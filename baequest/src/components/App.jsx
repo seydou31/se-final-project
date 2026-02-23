@@ -571,7 +571,7 @@ function App() {
           },
         }}
       />
-      <AppContext.Provider value={{ currentProfile }}>
+      <AppContext.Provider value={{ currentProfile, isLoggedIn }}>
         <div className="app-content">
           <Header
             isLoggedIn={isLoggedIn}

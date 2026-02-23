@@ -236,8 +236,8 @@ function verifyEmail(token) {
   });
 }
 
-// Curated events (public - no auth)
-function createCuratedEvent(eventData, photoFile) {
+// Curated events — requires login OR event manager passphrase
+function createCuratedEvent(eventData, photoFile, passphrase = null) {
   const handleResponse = (res) => {
     if (!res.ok) {
       return res.json().then((data) => {
@@ -247,6 +247,8 @@ function createCuratedEvent(eventData, photoFile) {
     return res.json();
   };
 
+  const extraHeaders = passphrase ? { "x-event-passphrase": passphrase } : {};
+
   if (photoFile) {
     // Send multipart FormData when a photo is included
     const formData = new FormData();
@@ -254,13 +256,19 @@ function createCuratedEvent(eventData, photoFile) {
       if (value !== undefined && value !== "") formData.append(key, value);
     });
     formData.append("photo", photoFile);
-    return fetch(`${baseUrl}/events`, { method: "POST", body: formData }).then(handleResponse);
+    return fetch(`${baseUrl}/events`, {
+      method: "POST",
+      credentials: "include",
+      headers: extraHeaders,
+      body: formData,
+    }).then(handleResponse);
   }
 
-  // No photo — send as JSON (works with both old and new backend)
+  // No photo — send as JSON
   return fetch(`${baseUrl}/events`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...extraHeaders },
     body: JSON.stringify(eventData),
   }).then(handleResponse);
 }

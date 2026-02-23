@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { createCuratedEvent } from "../utils/api";
+import AppContext from "../context/AppContext";
 import "../blocks/add-event.css";
 
 export default function AddEvent() {
+  const { isLoggedIn } = useContext(AppContext);
+  const [passphrase, setPassphrase] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -53,7 +56,7 @@ export default function AddEvent() {
         link: formData.link,
       };
 
-      await createCuratedEvent(eventData, photoFile);
+      await createCuratedEvent(eventData, photoFile, isLoggedIn ? null : passphrase);
 
       setStatus({ type: "success", message: "Event created successfully!" });
       setFormData({
@@ -218,6 +221,20 @@ export default function AddEvent() {
               />
             </div>
           </div>
+
+          {!isLoggedIn && (
+            <div className="add-event__field">
+              <label className="add-event__label">Event Manager Passphrase</label>
+              <input
+                type="password"
+                value={passphrase}
+                onChange={(e) => setPassphrase(e.target.value)}
+                className="add-event__input"
+                placeholder="Enter your passphrase"
+                required
+              />
+            </div>
+          )}
 
           <button
             type="submit"
