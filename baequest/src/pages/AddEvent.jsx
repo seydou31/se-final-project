@@ -59,7 +59,11 @@ export default function AddEvent() {
 
       await createCuratedEvent(eventData, photoFile, isLoggedIn ? null : passphrase);
 
-      setSubmitted(true);
+      if (isLoggedIn) {
+        setStatus({ type: "success", message: "Event created successfully!" });
+      } else {
+        setSubmitted(true);
+      }
       setFormData({
         name: "",
         address: "",
