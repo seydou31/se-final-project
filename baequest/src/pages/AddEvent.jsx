@@ -72,6 +72,7 @@ export default function AddEvent() {
       });
       setPhotoFile(null);
       setPhotoPreview(null);
+      setPassphrase("");
     } catch (err) {
       setStatus({ type: "error", message: err.message || "Failed to create event" });
     } finally {
