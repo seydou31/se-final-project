@@ -354,6 +354,7 @@ export default function ProfileModal({
               onChange={handleChange}
               required
             />
+            <p className="modal__sms-consent">By providing your phone number, you agree to receive SMS notifications when someone checks in at the same event as you. Message &amp; data rates may apply.</p>
           </div>
 
           <button type="submit" className={`modal__submit-btn ${isLoading ? "modal__submit-btn--loading" : ""}`} disabled={isLoading}>

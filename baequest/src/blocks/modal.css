@@ -104,6 +104,13 @@
   position: relative;
 }
 
+.modal__sms-consent {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
 .modal__hint:hover::after {
   content: attr(title);
   position: absolute;
