@@ -29,6 +29,7 @@ export default function ProfileModal({
   };
   const { currentProfile } = useContext(AppContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [smsConsent, setSmsConsent] = useState(false);
 
   const { values, handleChange, handleReset, setValues } = useForm({
     name: "",
@@ -354,7 +355,19 @@ export default function ProfileModal({
               onChange={handleChange}
               required
             />
-            <p className="modal__sms-consent">By providing your phone number, you agree to receive SMS notifications when someone checks in at the same event as you. Message &amp; data rates may apply.</p>
+            {mode === "create" ? (
+              <label className="modal__sms-consent modal__sms-consent--checkbox">
+                <input
+                  type="checkbox"
+                  checked={smsConsent}
+                  onChange={(e) => setSmsConsent(e.target.checked)}
+                  required
+                />
+                I agree to receive SMS notifications when someone checks in at the same event as me. Message &amp; data rates may apply.
+              </label>
+            ) : (
+              <p className="modal__sms-consent">You agreed to receive SMS notifications when someone checks in at the same event as you. Message &amp; data rates may apply.</p>
+            )}
           </div>
 
           <button type="submit" className={`modal__submit-btn ${isLoading ? "modal__submit-btn--loading" : ""}`} disabled={isLoading}>

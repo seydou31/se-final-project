@@ -111,6 +111,19 @@
   line-height: 1.4;
 }
 
+.modal__sms-consent--checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.modal__sms-consent--checkbox input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .modal__hint:hover::after {
   content: attr(title);
   position: absolute;
