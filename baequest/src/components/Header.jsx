@@ -79,10 +79,7 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, han
             <Link className="header__link" to="/my-events" onClick={closeMenu}>
               <span>My Events</span>
             </Link>
-            <Link className="header__link" to="/add-event" onClick={closeMenu}>
-              <span>Create Event</span>
-            </Link>
-            <span onClick={() => { handleLogout(); closeMenu(); }} className="header__logout">
+<span onClick={() => { handleLogout(); closeMenu(); }} className="header__logout">
               Logout
             </span>
             <span onClick={openDeleteModal} className="header__delete-account">Delete account</span>
