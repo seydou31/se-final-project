@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { eventManagerRegister, eventManagerLogin } from '../utils/api.js';
+import { Link } from 'react-router-dom';
+import { eventManagerRegister } from '../utils/api.js';
 import '../blocks/event-manager.css';
 
 export default function EventManagerSignup() {
@@ -11,7 +11,7 @@ export default function EventManagerSignup() {
   const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -23,13 +23,24 @@ export default function EventManagerSignup() {
     setLoading(true);
     try {
       await eventManagerRegister({ name, email, password, inviteCode });
-      await eventManagerLogin({ email, password });
-      navigate('/event-manager/onboarding');
+      setSuccess(true);
     } catch (err) {
       setError(err.message || 'Failed to create account');
     } finally {
       setLoading(false);
     }
+  }
+
+  if (success) {
+    return (
+      <div className="em-page">
+        <div className="em-card">
+          <h1 className="em-card__title">Check your email</h1>
+          <p className="em-card__subtitle">We sent a verification link to <strong>{email}</strong>. Click it to activate your account.</p>
+          <Link to="/event-manager/login" className="em-link">Back to sign in</Link>
+        </div>
+      </div>
+    );
   }
 
   return (

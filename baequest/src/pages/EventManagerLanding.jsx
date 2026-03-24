@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { eventManagerRegister, eventManagerLogin, createCuratedEvent } from '../utils/api.js';
+import { Link } from 'react-router-dom';
+import { eventManagerRegister } from '../utils/api.js';
 import '../blocks/add-event.css';
 import '../blocks/event-manager.css';
 
@@ -19,22 +19,13 @@ export default function EventManagerLanding() {
     description: '',
     link: '',
   });
-  const [photoFile, setPhotoFile] = useState(null);
-  const [photoPreview, setPhotoPreview] = useState(null);
   const [account, setAccount] = useState({ name: '', email: '', password: '', confirm: '', inviteCode: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [emailSent, setEmailSent] = useState(false);
 
   function handleChange(e) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  }
-
-  function handlePhotoChange(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
   }
 
   function handleEventContinue(e) {
@@ -53,29 +44,24 @@ export default function EventManagerLanding() {
     setLoading(true);
     try {
       await eventManagerRegister({ name: account.name, email: account.email, password: account.password, inviteCode: account.inviteCode });
-      await eventManagerLogin({ email: account.email, password: account.password });
-
-      const startISO = new Date(formData.startTime).toISOString();
-      const endISO = new Date(formData.endTime).toISOString();
-
-      await createCuratedEvent({
-        name: formData.name,
-        address: formData.address,
-        ...(formData.city && { city: formData.city }),
-        ...(formData.state && { state: formData.state }),
-        ...(formData.zipcode && { zipcode: formData.zipcode }),
-        ...(formData.description && { description: formData.description }),
-        ...(formData.link && { link: formData.link }),
-        startTime: startISO,
-        endTime: endISO,
-      }, photoFile);
-
-      navigate('/event-manager/dashboard');
+      setEmailSent(true);
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
+  }
+
+  if (emailSent) {
+    return (
+      <div className="em-page">
+        <div className="em-card">
+          <h1 className="em-card__title">Check your email</h1>
+          <p className="em-card__subtitle">We sent a verification link to <strong>{account.email}</strong>. Click it to activate your account, then sign in to publish your event.</p>
+          <Link to="/event-manager/login" className="em-link">Go to sign in</Link>
+        </div>
+      </div>
+    );
   }
 
   if (step === STEPS.ACCOUNT) {
@@ -237,20 +223,7 @@ export default function EventManagerLanding() {
             />
           </div>
 
-          <div className="add-event__field">
-            <label className="add-event__label">Event Photo (optional)</label>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={handlePhotoChange}
-              className="add-event__input add-event__input--file"
-            />
-            {photoPreview && (
-              <img src={photoPreview} alt="Preview" className="add-event__photo-preview" />
-            )}
-          </div>
-
-          <div className="add-event__field">
+<div className="add-event__field">
             <label className="add-event__label">Event Link (optional)</label>
             <input
               type="url"
