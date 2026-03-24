@@ -8,6 +8,7 @@ export default function EventManagerSignup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function EventManagerSignup() {
     setError('');
     setLoading(true);
     try {
-      await eventManagerRegister({ name, email, password });
+      await eventManagerRegister({ name, email, password, inviteCode });
       await eventManagerLogin({ email, password });
       navigate('/event-manager/onboarding');
     } catch (err) {
@@ -76,6 +77,16 @@ export default function EventManagerSignup() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Repeat password"
+            required
+          />
+          <label className="em-form__label" htmlFor="em-invite">Invite Code</label>
+          <input
+            id="em-invite"
+            type="text"
+            className="em-form__input"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
+            placeholder="Enter your invite code"
             required
           />
           {error && <p className="em-error">{error}</p>}

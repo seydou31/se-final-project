@@ -21,7 +21,7 @@ export default function EventManagerLanding() {
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [account, setAccount] = useState({ name: '', email: '', password: '', confirm: '' });
+  const [account, setAccount] = useState({ name: '', email: '', password: '', confirm: '', inviteCode: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function EventManagerLanding() {
     setError('');
     setLoading(true);
     try {
-      await eventManagerRegister({ name: account.name, email: account.email, password: account.password });
+      await eventManagerRegister({ name: account.name, email: account.email, password: account.password, inviteCode: account.inviteCode });
       await eventManagerLogin({ email: account.email, password: account.password });
 
       const startISO = new Date(formData.startTime).toISOString();
@@ -125,6 +125,16 @@ export default function EventManagerLanding() {
               value={account.confirm}
               onChange={(e) => setAccount((p) => ({ ...p, confirm: e.target.value }))}
               placeholder="Repeat password"
+              required
+            />
+            <label className="em-form__label" htmlFor="em-invite">Invite Code</label>
+            <input
+              id="em-invite"
+              type="text"
+              className="em-form__input"
+              value={account.inviteCode}
+              onChange={(e) => setAccount((p) => ({ ...p, inviteCode: e.target.value }))}
+              placeholder="Enter your invite code"
               required
             />
             {error && <p className="em-error">{error}</p>}
