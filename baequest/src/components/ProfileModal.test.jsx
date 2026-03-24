@@ -61,7 +61,7 @@ describe('ProfileModal Component', () => {
       expect(screen.getByRole('heading', { name: /create profile/i })).toBeInTheDocument();
       expect(screen.getByLabelText(/profile picture/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/age/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/^age$/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/^gender$/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/sexual orientation/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/profession/i)).toBeInTheDocument();
@@ -107,6 +107,9 @@ describe('ProfileModal Component', () => {
         screen.getByPlaceholderText('+12025551234'),
         '+15555550001'
       );
+
+      // Check SMS consent checkbox
+      await userEvent.click(screen.getByRole('checkbox', { name: /I agree to receive SMS/i }));
 
       // Submit form
       const submitButton = screen.getByRole('button', { name: /create profile/i });
