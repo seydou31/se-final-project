@@ -155,6 +155,10 @@ function checkinAtEvent(eventId, lat, lng) {
   });
 }
 
+function heartbeat(eventId) {
+  return makeRequest(`${baseUrl}/events/${eventId}/heartbeat`, { method: "POST" });
+}
+
 function checkoutFromEvent(eventId) {
   return makeRequest(`${baseUrl}/events/${eventId}/checkout`, { method: "POST" });
 }
@@ -236,8 +240,8 @@ function verifyEmail(token) {
   });
 }
 
-// Curated events — requires login OR event manager passphrase
-function createCuratedEvent(eventData, photoFile, passphrase = null) {
+// Curated events — requires event manager account
+function createCuratedEvent(eventData, photoFile) {
   const handleResponse = (res) => {
     if (!res.ok) {
       return res.json().then((data) => {
@@ -247,10 +251,7 @@ function createCuratedEvent(eventData, photoFile, passphrase = null) {
     return res.json();
   };
 
-  const extraHeaders = passphrase ? { "x-event-passphrase": passphrase } : {};
-
   if (photoFile) {
-    // Send multipart FormData when a photo is included
     const formData = new FormData();
     Object.entries(eventData).forEach(([key, value]) => {
       if (value !== undefined && value !== "") formData.append(key, value);
@@ -259,16 +260,14 @@ function createCuratedEvent(eventData, photoFile, passphrase = null) {
     return fetch(`${baseUrl}/events`, {
       method: "POST",
       credentials: "include",
-      headers: extraHeaders,
       body: formData,
     }).then(handleResponse);
   }
 
-  // No photo — send as JSON
   return fetch(`${baseUrl}/events`, {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json", ...extraHeaders },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(eventData),
   }).then(handleResponse);
 }
@@ -295,6 +294,7 @@ export {
   getAllEvents,
   markAsGoing,
   checkinAtEvent,
+  heartbeat,
   checkoutFromEvent,
   getUsersAtEvent,
   deleteProfile,
@@ -309,4 +309,74 @@ export {
   refreshToken,
   createCuratedEvent,
   getNearbyCuratedEvents,
+  eventManagerRegister,
+  eventManagerLogin,
+  eventManagerGetMe,
+  eventManagerGetDashboard,
+  eventManagerGetOnboardingLink,
+  eventManagerVerifyOnboarding,
 };
+
+// ── Event Manager ──────────────────────────────────────────────
+
+async function eventManagerRegister({ email, password }) {
+  const res = await fetch(`${baseUrl}/event-managers/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'Registration failed');
+  }
+  return res.json();
+}
+
+async function eventManagerLogin({ email, password }) {
+  const res = await fetch(`${baseUrl}/event-managers/signin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'Login failed');
+  }
+  return res.json();
+}
+
+async function eventManagerGetMe() {
+  const res = await fetch(`${baseUrl}/event-managers/me`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Not authenticated');
+  return res.json();
+}
+
+async function eventManagerGetDashboard() {
+  const res = await fetch(`${baseUrl}/event-managers/dashboard`, {
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to load dashboard');
+  return res.json();
+}
+
+async function eventManagerGetOnboardingLink() {
+  const res = await fetch(`${baseUrl}/event-managers/stripe/onboard`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to get onboarding link');
+  return res.json();
+}
+
+async function eventManagerVerifyOnboarding() {
+  const res = await fetch(`${baseUrl}/event-managers/stripe/verify`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  if (!res.ok) throw new Error('Failed to verify onboarding');
+  return res.json();
+}

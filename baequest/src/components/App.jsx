@@ -31,8 +31,13 @@ import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
 import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
 import WelcomeLanding from "./WelcomeLanding.jsx";
-import AddEvent from "../pages/AddEvent.jsx";
+import EventManagerCreateEvent from "../pages/AddEvent.jsx";
 import EventFeedbackPage from "./EventFeedbackPage.jsx";
+import EventManagerLanding from "../pages/EventManagerLanding.jsx";
+import EventManagerLogin from "../pages/EventManagerLogin.jsx";
+import EventManagerSignup from "../pages/EventManagerSignup.jsx";
+import EventManagerDashboard from "../pages/EventManagerDashboard.jsx";
+import EventManagerOnboarding from "../pages/EventManagerOnboarding.jsx";
 import {
   createProfile,
   createUser,
@@ -41,6 +46,7 @@ import {
   logout,
   updateProfile,
   checkinAtEvent,
+  heartbeat,
   getUsersAtEvent,
   checkoutFromEvent,
   deleteUser,
@@ -170,6 +176,59 @@ function App() {
       localStorage.removeItem("currentEvent");
     }
   }, [currentEvent]);
+
+  // Geolocation polling — auto-checkout if user leaves the event area
+  useEffect(() => {
+    if (!isCheckedIn || !currentEvent?._id) return;
+
+    const eventLng = currentEvent.location?.coordinates?.[0];
+    const eventLat = currentEvent.location?.coordinates?.[1];
+    if (!eventLat || !eventLng) return;
+
+    function haversineKm(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLng = ((lng2 - lng1) * Math.PI) / 180;
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    const interval = setInterval(() => {
+      // Check if event has ended
+      if (currentEvent.endTime && new Date() > new Date(currentEvent.endTime)) {
+        checkoutFromEvent(currentEvent._id).catch(() => {});
+        setCurrentEvent(null);
+        setOtherProfiles([]);
+        setIsCheckedIn(false);
+        toast('The event has ended. You have been checked out.', { icon: '🎉' });
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          const distanceKm = haversineKm(latitude, longitude, eventLat, eventLng);
+          if (distanceKm > 1.60934) {
+            // User left the area — auto-checkout
+            checkoutFromEvent(currentEvent._id).catch(() => {});
+            setCurrentEvent(null);
+            setOtherProfiles([]);
+            setIsCheckedIn(false);
+            toast('You have been checked out — you left the event area.', { icon: '📍' });
+          } else {
+            // Still in range — update server presence
+            heartbeat(currentEvent._id).catch(() => {});
+          }
+        },
+        () => {
+          // Geolocation denied/unavailable — only event end time triggers checkout
+          heartbeat(currentEvent._id).catch(() => {});
+        }
+      );
+    }, 3 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [isCheckedIn, currentEvent?._id]);
 
   function handleSignupModal() {
     setLoggingError("");
@@ -573,12 +632,14 @@ function App() {
       />
       <AppContext.Provider value={{ currentProfile, isLoggedIn }}>
         <div className="app-content">
-          <Header
-            isLoggedIn={isLoggedIn}
-            handleLoginModal={handleLoginModal}
-            handleLogout={handleLogout}
-            handleDeleteAccountModal={handleDeleteAccountModal}
-          />
+          {!location.pathname.startsWith('/event-manager') && (
+            <Header
+              isLoggedIn={isLoggedIn}
+              handleLoginModal={handleLoginModal}
+              handleLogout={handleLogout}
+              handleDeleteAccountModal={handleDeleteAccountModal}
+            />
+          )}
           <Routes>
             <Route path="/" element={<Main onClick={handleSignupModal} />} />
             <Route path="/welcome/:campaign" element={<WelcomeLanding onClick={handleSignupModal} />} />
@@ -596,8 +657,13 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/cookies" element={<CookiePolicy />} />
-            <Route path="/add-event" element={<AddEvent />} />
+            <Route path="/event-manager/create-event" element={<EventManagerCreateEvent />} />
             <Route path="/event-feedback" element={<EventFeedbackPage />} />
+            <Route path="/event-manager" element={<EventManagerLanding />} />
+            <Route path="/event-manager/login" element={<EventManagerLogin />} />
+            <Route path="/event-manager/signup" element={<EventManagerSignup />} />
+            <Route path="/event-manager/dashboard" element={<EventManagerDashboard />} />
+            <Route path="/event-manager/onboarding" element={<EventManagerOnboarding />} />
             <Route
               path="/profile"
               element={
@@ -689,7 +755,7 @@ function App() {
             onOverlayClick={handleModalOverlayClick}
             isDeletingAccount={isDeletingAccount}
           />
-          <Footer />
+          {!location.pathname.startsWith('/event-manager') && <Footer />}
         </div>
       </AppContext.Provider>
     </div>

@@ -1,0 +1,260 @@
+.em-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+}
+
+.em-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+}
+
+.em-card__title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #1a1a1a;
+}
+
+.em-card__subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 28px;
+}
+
+.em-form__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.em-form__input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 18px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.em-form__input:focus {
+  outline: none;
+  border-color: #6c47ff;
+}
+
+.em-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.em-btn--primary {
+  background-color: #6c47ff;
+  color: #fff;
+}
+
+.em-btn--primary:hover:not(:disabled) {
+  background-color: #5a38d6;
+}
+
+.em-btn--primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.em-btn--secondary {
+  background-color: #f0ecff;
+  color: #6c47ff;
+  margin-top: 10px;
+}
+
+.em-btn--secondary:hover {
+  background-color: #e2dbff;
+}
+
+.em-error {
+  color: #e53e3e;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.em-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #6c47ff;
+  text-decoration: none;
+}
+
+.em-link:hover {
+  text-decoration: underline;
+}
+
+/* Dashboard */
+.em-dashboard {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+}
+
+.em-dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto 32px;
+}
+
+.em-dashboard__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.em-dashboard__logout {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #555;
+}
+
+.em-dashboard__logout:hover {
+  background-color: #f0f0f0;
+}
+
+.em-stats {
+  display: flex;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto 32px;
+}
+
+.em-stat-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+}
+
+.em-stat-card__label {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 8px;
+}
+
+.em-stat-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.em-onboarding-banner {
+  max-width: 900px;
+  margin: 0 auto 24px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.em-onboarding-banner p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.em-onboarding-banner .em-btn {
+  width: auto;
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+.em-table-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.em-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.em-table th {
+  background: #f5f5f5;
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.em-table td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.em-table tr:last-child td {
+  border-bottom: none;
+}
+
+.em-table__empty {
+  text-align: center;
+  color: #999;
+  padding: 32px;
+}
+
+/* Onboarding page */
+.em-onboarding {
+  text-align: center;
+}
+
+.em-onboarding__icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .em-stats {
+    flex-direction: column;
+  }
+
+  .em-onboarding-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

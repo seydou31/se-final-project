@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createCuratedEvent } from "../utils/api";
 import "../blocks/add-event.css";
 
 export default function AddEvent() {
-  const [passphrase, setPassphrase] = useState("");
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -19,7 +20,6 @@ export default function AddEvent() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [status, setStatus] = useState({ type: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,49 +55,14 @@ export default function AddEvent() {
         link: formData.link,
       };
 
-      await createCuratedEvent(eventData, photoFile, passphrase);
-
-      setSubmitted(true);
-      setFormData({
-        name: "",
-        address: "",
-        city: "",
-        state: "",
-        zipcode: "",
-        startTime: "",
-        endTime: "",
-        description: "",
-        link: "",
-      });
-      setPhotoFile(null);
-      setPhotoPreview(null);
-      setPassphrase("");
+      await createCuratedEvent(eventData, photoFile);
+      navigate("/event-manager/dashboard");
     } catch (err) {
       setStatus({ type: "error", message: err.message || "Failed to create event" });
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  if (submitted) {
-    return (
-      <main className="add-event">
-        <div className="add-event__container">
-          <h1 className="add-event__title">Thank You!</h1>
-          <p className="add-event__subtitle">
-            Your event has been created successfully. Event attendees will be able to see other singles at the event and connect with compatible matches when they check in.
-          </p>
-          <button
-            type="button"
-            className="add-event__submit"
-            onClick={() => setSubmitted(false)}
-          >
-            Create Another Event
-          </button>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="add-event">
@@ -241,18 +206,6 @@ export default function AddEvent() {
               />
             </div>
           </div>
-
-          <div className="add-event__field">
-              <label className="add-event__label">Event Manager Passphrase</label>
-              <input
-                type="password"
-                value={passphrase}
-                onChange={(e) => setPassphrase(e.target.value)}
-                className="add-event__input"
-                placeholder="Enter your passphrase"
-                required
-              />
-            </div>
 
           <button
             type="submit"
