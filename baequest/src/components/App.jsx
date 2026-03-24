@@ -228,7 +228,7 @@ function App() {
     }, 3 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isCheckedIn, currentEvent?._id]);
+  }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.location?.coordinates]);
 
   function handleSignupModal() {
     setLoggingError("");
