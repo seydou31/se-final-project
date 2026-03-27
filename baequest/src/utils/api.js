@@ -319,12 +319,12 @@ export {
 
 // ── Event Manager ──────────────────────────────────────────────
 
-async function eventManagerRegister({ email, password }) {
+async function eventManagerRegister({ email, password, name, inviteCode }) {
   const res = await fetch(`${baseUrl}/event-managers/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, name, inviteCode }),
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
