@@ -135,6 +135,12 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
           </p>
         )}
 
+        {(event.liveMen > 0 || event.liveWomen > 0) && (
+          <p className="event__live-count">
+            🟢 {event.liveMen + event.liveWomen} checked in &nbsp;·&nbsp; {event.liveWomen}F &nbsp;·&nbsp; {event.liveMen}M
+          </p>
+        )}
+
         <div className="event__actions">
           <div className="event__button-with-info">
             <span className={`event__tooltip ${showGoingTooltip ? 'event__tooltip--visible' : ''}`}>

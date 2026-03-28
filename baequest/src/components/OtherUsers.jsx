@@ -75,7 +75,10 @@ export default function OtherUsers({
       <h2 className="others__subtitle">People Checked In</h2>
 
       {otherProfiles.length === 0 ? (
-        <p className="others__empty">No one else has checked in yet</p>
+        <div className="others__empty">
+          <p>No one else has checked in yet.</p>
+          <p>You&apos;ll be notified when other users arrive.</p>
+        </div>
       ) : (
         <div className="others__grid">
           {otherProfiles.map((user) => (
