@@ -19,6 +19,16 @@ export default function EventsPage({
   const [filters, setFilters] = useState({ state: "", city: "", zipcode: "", dateFrom: "", dateTo: "" });
 
   const coordsRef = useRef(null);
+  const prevIsCheckedIn = useRef(isCheckedIn);
+
+  // Re-fetch events after checkout so ended events disappear
+  useEffect(() => {
+    if (prevIsCheckedIn.current === true && !isCheckedIn) {
+      fetchEvents(coordsRef.current, {});
+    }
+    prevIsCheckedIn.current = isCheckedIn;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCheckedIn]);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
