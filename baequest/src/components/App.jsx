@@ -38,6 +38,7 @@ import EventManagerLogin from "../pages/EventManagerLogin.jsx";
 import EventManagerSignup from "../pages/EventManagerSignup.jsx";
 import EventManagerDashboard from "../pages/EventManagerDashboard.jsx";
 import EventManagerOnboarding from "../pages/EventManagerOnboarding.jsx";
+import socket from '../utils/socket';
 import {
   createProfile,
   createUser,
@@ -181,8 +182,8 @@ function App() {
   useEffect(() => {
     if (!isCheckedIn || !currentEvent?._id) return;
 
-    const eventLng = currentEvent.location?.coordinates?.[0];
-    const eventLat = currentEvent.location?.coordinates?.[1];
+    const eventLng = currentEvent.lng;
+    const eventLat = currentEvent.lat;
     if (!eventLat || !eventLng) return;
 
     function haversineKm(lat1, lng1, lat2, lng2) {
@@ -228,7 +229,23 @@ function App() {
     }, 3 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.location?.coordinates]);
+  }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.lat, currentEvent?.lng]);
+
+  // Server-push auto-checkout: fired by the server when an event ends
+  useEffect(() => {
+    if (!isCheckedIn || !currentEvent?._id) return;
+
+    function handleEventEnded({ eventId }) {
+      if (String(eventId) !== String(currentEvent._id)) return;
+      setCurrentEvent(null);
+      setOtherProfiles([]);
+      setIsCheckedIn(false);
+      toast('The event has ended. You have been checked out.', { icon: '🎉' });
+    }
+
+    socket.on('event-ended', handleEventEnded);
+    return () => socket.off('event-ended', handleEventEnded);
+  }, [isCheckedIn, currentEvent?._id]);
 
   function handleSignupModal() {
     setLoggingError("");
