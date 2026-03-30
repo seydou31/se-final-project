@@ -253,7 +253,6 @@ function App() {
       .catch(() => {
         toast.error("Payment received but check-in failed. Please contact support.");
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Server-push auto-checkout: fired by the server when an event ends
