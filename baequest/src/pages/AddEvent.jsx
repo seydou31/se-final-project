@@ -15,7 +15,6 @@ export default function AddEvent() {
     endTime: "",
     description: "",
     link: "",
-    ticketPrice: "",
   });
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -54,7 +53,6 @@ export default function AddEvent() {
         endTime: endISO,
         description: formData.description,
         link: formData.link,
-        ...(formData.ticketPrice !== "" && { ticketPrice: parseFloat(formData.ticketPrice) }),
       };
 
       await createCuratedEvent(eventData, photoFile);
@@ -170,20 +168,6 @@ export default function AddEvent() {
                 className="add-event__photo-preview"
               />
             )}
-          </div>
-
-          <div className="add-event__field">
-            <label className="add-event__label">Ticket Price (optional, in dollars)</label>
-            <input
-              type="number"
-              name="ticketPrice"
-              value={formData.ticketPrice}
-              onChange={handleChange}
-              className="add-event__input"
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-            />
           </div>
 
           <div className="add-event__field">
