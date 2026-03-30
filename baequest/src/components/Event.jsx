@@ -112,6 +112,10 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
 
         <p className="event__starts">{getRelativeTime(event.startTime)}</p>
 
+        {event.ticketPrice > 0 && (
+          <p className="event__price">🎟 ${(event.ticketPrice / 100).toFixed(2)} to attend</p>
+        )}
+
         {event.description && (
           <p className="event__description">{event.description}</p>
         )}

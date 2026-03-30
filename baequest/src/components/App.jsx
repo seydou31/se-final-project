@@ -231,6 +231,31 @@ function App() {
     return () => clearInterval(interval);
   }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.lat, currentEvent?.lng]);
 
+  // Restore checkin state after returning from Stripe payment
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get("checkin_success")) return;
+
+    const stored = sessionStorage.getItem("pendingCheckinEvent");
+    if (!stored) return;
+
+    const eventData = JSON.parse(stored);
+    sessionStorage.removeItem("pendingCheckinEvent");
+    window.history.replaceState({}, "", window.location.pathname);
+
+    getUsersAtEvent(eventData._id)
+      .then((users) => {
+        setCurrentEvent(eventData);
+        setOtherProfiles(users);
+        setIsCheckedIn(true);
+        toast.success("Payment successful! You are checked in.");
+      })
+      .catch(() => {
+        toast.error("Payment received but check-in failed. Please contact support.");
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Server-push auto-checkout: fired by the server when an event ends
   useEffect(() => {
     if (!isCheckedIn || !currentEvent?._id) return;
@@ -517,6 +542,11 @@ function App() {
           try {
             const { latitude: lat, longitude: lng } = pos.coords;
             const result = await checkinAtEvent(eventData._id, lat, lng);
+            if (result.requiresPayment && result.checkoutUrl) {
+              sessionStorage.setItem("pendingCheckinEvent", JSON.stringify(eventData));
+              window.location.href = result.checkoutUrl;
+              return;
+            }
             setCurrentEvent(eventData);
             setOtherProfiles(result.users || []);
             setIsCheckedIn(true);
