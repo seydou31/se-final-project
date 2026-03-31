@@ -1,43 +1,73 @@
-# instructions 
-To access the project go to https://baequests.com
-Backend is hosted at https://api.baequests.com
-Backend github repo at [this link](https://github.com/seydou31/se-final-project-backend)
-# 💞 BaeQuest
+# BaeQuest
 
-**BaeQuest** is a modern social dating platform designed to help people **meet face-to-face** through **real-world group events** rather than traditional profile-based or speed-dating formats.
+**BaeQuest** is a social dating platform that connects people through real-world events. Instead of swiping or messaging strangers, users physically attend curated local events, check in via geolocation, and discover other compatible attendees in the same room.
 
-Instead of endless swiping or awkward 3-minute sessions, BaeQuest curates relaxed, activity-based meetups — such as coffee gatherings, art workshops, hiking groups, or game nights — where users can form authentic connections through shared experiences and natural conversation.
-
-The platform operates on a **monthly subscription model** that gives members **unlimited access** to events in their area, emphasizing genuine chemistry, comfort, and fun.
+Live at: https://baequests.com
+Backend repo: https://github.com/seydou31/se-final-project-backend
 
 ---
 
-## 🌟 Core Features
+## Core Features
 
-1. **User Profiles** – Users sign up using email, phone, or social accounts, and add basic profile details.  
-2. **Event Discovery** – Users browse curated local dating events happening near them.  
-3. **Check-In System** – Geolocation-based check-in ensures users attend events physically.  
-4. **Navigation Prompt** – If a user is too far from an event, they’re prompted to open directions via Google Maps.  
-5. **Social Interaction** – Once checked in, users can see and interact with other attendees at the same event.  
+### For Users
+- **Event Discovery** – Browse curated dating events near you, sorted by distance
+- **Geolocation Check-In** – Check in only when physically present at the event (within ~500m)
+- **Auto-Checkout** – Automatically checked out when you leave the event area or the event ends
+- **Live Attendee View** – See compatible users currently checked in at the same event (real-time via Socket.io)
+- **Live Check-In Counts** – Events show a live breakdown of men and women checked in
+- **I'm Going** – Save events to your personal list before attending
+- **Post-Event Feedback** – Rate your experience via email link after checkout
+- **Stripe Payments** – Pay per event when a ticket price is set
 
+### For Event Managers
+- **Invite-Only Signup** – Register with an invite code
+- **Event Creation** – Create events with address, time, photo, and description (coordinates auto-detected)
+- **Dashboard** – View check-in counts and earnings per event
+- **Stripe Connect** – Connect a bank account to receive payouts
 
 ---
 
-## 🧠 Technologies Used
+## Tech Stack
 
-### Frontend
-- **React.js** – For building the user interface and handling page navigation.  
-- **React Router** – For protected routes and navigation between views (e.g., event page, user profiles, modals).  
-- **CSS** – For styling components with responsive and modern UI design.  
-- **Lucide React / Shadcn UI** – For icons and ready-made UI components. 
-- **Framer Motion** – For smooth animations and transitions (used in modals or cards).  
+- **React** – UI and routing
+- **React Router** – Protected routes and navigation
+- **Socket.io Client** – Real-time attendee updates
+- **Stripe.js** – Payment checkout redirect
+- **CSS** – Custom responsive styling
 
-### Geolocation & Maps
-- **Browser Geolocation API** – To get the user’s live coordinates for check-ins.  
-- **Google Maps API (Navigation)** – To open navigation directions to the event if the user is too far.  
+---
 
-Example:
-```js
-window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, "_blank");
+## Pages
 
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page |
+| `/events` | Event discovery and check-in |
+| `/event-manager/signup` | Event manager registration |
+| `/event-manager/login` | Event manager login |
+| `/event-manager/dashboard` | Event manager dashboard |
+| `/event-manager/create-event` | Create a new event |
+| `/event-manager/onboarding` | Stripe Connect onboarding |
+| `/about` | About page |
+| `/contact` | Contact page |
+| `/privacy-policy` | Privacy policy |
+| `/terms` | Terms of service |
 
+---
+
+## Local Development
+
+```bash
+git clone https://github.com/seydou31/se-final-project.git
+cd se-final-project/baequest
+npm install
+npm run dev
+```
+
+The app runs at `http://localhost:5173` by default.
+
+Set `VITE_API_URL` in a `.env` file if your backend runs on a different port:
+
+```env
+VITE_API_URL=http://localhost:3001
+```
