@@ -131,10 +131,12 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
           </a>
         )}
 
-        {goingCount > 0 && !(isGoing && goingCount === 1) && (
+        {goingCount > 0 && (
           <p className="event__attendees">
             {isGoing
-              ? `${goingCount - 1} other ${goingCount - 1 === 1 ? 'person' : 'people'} going`
+              ? goingCount === 1
+                ? "You're going"
+                : `You and ${goingCount - 1} other ${goingCount - 1 === 1 ? 'person' : 'people'} going`
               : `${goingCount} ${goingCount === 1 ? 'person' : 'people'} going`}
           </p>
         )}
