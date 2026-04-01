@@ -33,7 +33,6 @@ import CookiePolicy from "../pages/CookiePolicy.jsx";
 import WelcomeLanding from "./WelcomeLanding.jsx";
 import EventManagerCreateEvent from "../pages/AddEvent.jsx";
 import EventFeedbackPage from "./EventFeedbackPage.jsx";
-import EventManagerLanding from "../pages/EventManagerLanding.jsx";
 import EventManagerLogin from "../pages/EventManagerLogin.jsx";
 import EventManagerSignup from "../pages/EventManagerSignup.jsx";
 import EventManagerDashboard from "../pages/EventManagerDashboard.jsx";
@@ -705,9 +704,8 @@ function App() {
             <Route path="/cookies" element={<CookiePolicy />} />
             <Route path="/event-manager/create-event" element={<EventManagerCreateEvent />} />
             <Route path="/event-feedback" element={<EventFeedbackPage />} />
-            <Route path="/event-manager" element={<EventManagerLanding />} />
+            <Route path="/event-manager" element={<EventManagerSignup />} />
             <Route path="/event-manager/login" element={<EventManagerLogin />} />
-            <Route path="/event-manager/signup" element={<EventManagerSignup />} />
             <Route path="/event-manager/dashboard" element={<EventManagerDashboard />} />
             <Route path="/event-manager/onboarding" element={<EventManagerOnboarding />} />
             <Route
