@@ -138,7 +138,9 @@ function App() {
         // After getting profile, check if we have a saved event check-in
         const savedEvent = localStorage.getItem("currentEvent");
         if (savedEvent) {
-          const event = JSON.parse(savedEvent);
+          let event;
+          try { event = JSON.parse(savedEvent); } catch { localStorage.removeItem("currentEvent"); }
+          if (!event) return null;
           setCurrentEvent(event);
           setIsCheckedIn(true);
 
@@ -217,12 +219,24 @@ function App() {
             toast('You have been checked out — you left the event area.', { icon: '📍' });
           } else {
             // Still in range — update server presence
-            heartbeat(currentEvent._id).catch(() => {});
+            heartbeat(currentEvent._id).catch((err) => {
+              if (err === 'Session expired. Please login again.' || err?.includes?.('401')) {
+                setCurrentEvent(null);
+                setOtherProfiles([]);
+                setIsCheckedIn(false);
+              }
+            });
           }
         },
         () => {
           // Geolocation denied/unavailable — only event end time triggers checkout
-          heartbeat(currentEvent._id).catch(() => {});
+          heartbeat(currentEvent._id).catch((err) => {
+            if (err === 'Session expired. Please login again.' || err?.includes?.('401')) {
+              setCurrentEvent(null);
+              setOtherProfiles([]);
+              setIsCheckedIn(false);
+            }
+          });
         }
       );
     }, 3 * 60 * 1000);
