@@ -41,13 +41,13 @@ export default function OtherUsers({
     });
 
     socket.on("user-checked-out", ({ userId, eventId: outEventId }) => {
-      if (outEventId === eventId) {
-        setOtherProfiles((prev) => prev.filter((u) => u._id !== userId && u.owner !== userId));
+      if (String(outEventId) === String(eventId)) {
+        setOtherProfiles((prev) => prev.filter((u) => String(u.owner) !== String(userId)));
       }
     });
 
     socket.on("user-checked-in", ({ user, eventId: inEventId }) => {
-      if (inEventId === eventId) {
+      if (String(inEventId) === String(eventId)) {
         setOtherProfiles((prev) => {
           if (prev.some(p => p._id === user._id)) return prev;
           return [...prev, user];
