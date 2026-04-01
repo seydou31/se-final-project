@@ -101,7 +101,7 @@ describe('Event Component', () => {
       const eventUserGoing = { ...mockEvent, isUserGoing: true, goingCount: 5 };
       render(<Event event={eventUserGoing} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      expect(screen.getByText('4 other people going')).toBeInTheDocument();
+      expect(screen.getByText('You and 4 other people going')).toBeInTheDocument();
     });
 
     it('uses singular "person" for count of 1', () => {
@@ -115,7 +115,7 @@ describe('Event Component', () => {
       const eventOnlyUser = { ...mockEvent, goingCount: 1, isUserGoing: true };
       render(<Event event={eventOnlyUser} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      expect(screen.queryByText(/people going|person going/i)).not.toBeInTheDocument();
+      expect(screen.getByText("You're going")).toBeInTheDocument();
     });
   });
 
@@ -187,7 +187,7 @@ describe('Event Component', () => {
       await userEvent.click(screen.getByRole('button', { name: /i'm going/i }));
 
       await waitFor(() => {
-        expect(screen.getByText('5 other people going')).toBeInTheDocument();
+        expect(screen.getByText('You and 5 other people going')).toBeInTheDocument();
       });
     });
   });
