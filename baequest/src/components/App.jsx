@@ -210,7 +210,7 @@ function App() {
         (pos) => {
           const { latitude, longitude } = pos.coords;
           const distanceKm = haversineKm(latitude, longitude, eventLat, eventLng);
-          if (distanceKm > 1.60934) {
+          if (distanceKm > 0.80467) {
             // User left the area — auto-checkout
             checkoutFromEvent(currentEvent._id).catch(() => {});
             setCurrentEvent(null);
