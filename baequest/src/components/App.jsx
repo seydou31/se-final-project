@@ -758,15 +758,17 @@ function App() {
             />
           </Routes>
 
-          <CreateAccountModal
-            isOpen={activeModal === "createaccountmodal"}
-            onClose={handleCloseModal}
-            onOverlayClick={handleModalOverlayClick}
-            handleCreateAccountSubmit={handleCreateAccountSubmit}
-            handleGoogleSignup={handleGoogleSignup}
-            handleGoogleSignupWithToken={handleGoogleSignupWithToken}
-            loggingError={loggingError}
-          />
+          {activeModal === "createaccountmodal" && (
+            <CreateAccountModal
+              isOpen={true}
+              onClose={handleCloseModal}
+              onOverlayClick={handleModalOverlayClick}
+              handleCreateAccountSubmit={handleCreateAccountSubmit}
+              handleGoogleSignup={handleGoogleSignup}
+              handleGoogleSignupWithToken={handleGoogleSignupWithToken}
+              loggingError={loggingError}
+            />
+          )}
           <ProfileModal
             mode="create"
             isOpen={activeModal === "createprofilemodal"}
@@ -783,17 +785,19 @@ function App() {
             onSubmit={handleProfileUpdateSubmit}
             onPictureUpload={handleRefreshProfile}
           />
-          <LoginModal
-            handleLoginSubmit={handleLoginSubmit}
-            handleGoogleLogin={handleGoogleLogin}
-            handleGoogleLoginWithToken={handleGoogleLoginWithToken}
-            isOpen={activeModal === "loginmodal"}
-            onClose={handleCloseModal}
-            onOverlayClick={handleModalOverlayClick}
-            loggingError={loggingError}
-            handleForgotPasswordModal={handleForgotPasswordModal}
-            handleResendVerification={handleResendVerification}
-          />
+          {activeModal === "loginmodal" && (
+            <LoginModal
+              handleLoginSubmit={handleLoginSubmit}
+              handleGoogleLogin={handleGoogleLogin}
+              handleGoogleLoginWithToken={handleGoogleLoginWithToken}
+              isOpen={true}
+              onClose={handleCloseModal}
+              onOverlayClick={handleModalOverlayClick}
+              loggingError={loggingError}
+              handleForgotPasswordModal={handleForgotPasswordModal}
+              handleResendVerification={handleResendVerification}
+            />
+          )}
           <ForgotPasswordModal
             isOpen={activeModal === "forgotpasswordmodal"}
             onClose={handleCloseModal}
