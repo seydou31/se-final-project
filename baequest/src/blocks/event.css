@@ -192,6 +192,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   padding: 10px 20px;
+  margin-bottom: 8px;
   border-radius: var(--radius-full);
   transition: all var(--transition-base);
   display: inline-flex;
