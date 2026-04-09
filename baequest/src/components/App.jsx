@@ -692,7 +692,7 @@ function App() {
       />
       <AppContext.Provider value={{ currentProfile, isLoggedIn }}>
         <div className="app-content">
-          {!location.pathname.startsWith('/event-manager') && (
+          {!location.pathname.startsWith('/event-manager') && !location.pathname.startsWith('/admin') && (
             <Header
               isLoggedIn={isLoggedIn}
               handleLoginModal={handleLoginModal}
@@ -819,7 +819,7 @@ function App() {
             onOverlayClick={handleModalOverlayClick}
             isDeletingAccount={isDeletingAccount}
           />
-          {!location.pathname.startsWith('/event-manager') && <Footer />}
+          {!location.pathname.startsWith('/event-manager') && !location.pathname.startsWith('/admin') && <Footer />}
         </div>
       </AppContext.Provider>
     </div>
