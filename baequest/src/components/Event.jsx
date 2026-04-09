@@ -45,10 +45,15 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
   const formatEventTime = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    const dateStr = start.toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    const startDateStr = start.toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
     const startTime = start.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
     const endTime = end.toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-    return `${dateStr} • ${startTime} - ${endTime}`;
+    const isSameDay = start.toDateString() === end.toDateString();
+    if (isSameDay) {
+      return `${startDateStr} • ${startTime} - ${endTime}`;
+    }
+    const endDateStr = end.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+    return `${startDateStr} ${startTime} – ${endDateStr} ${endTime}`;
   };
 
   const getRelativeTime = (dateString) => {
@@ -150,14 +155,14 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
         <div className="event__actions">
           <div className="event__button-with-info">
             <span className={`event__tooltip ${showGoingTooltip ? 'event__tooltip--visible' : ''}`}>
-              {isGoing ? "Click to remove from My Events" : "Save this event to your My Events list"}
+              {isGoing ? "Click to cancel — removes from My Events" : "Join this event to save it to My Events"}
             </span>
             <button
               onClick={handleGoingClick}
               className={`event__going ${isGoing ? 'event__going--active' : ''}`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Loading...' : (isGoing ? '✓ Going' : "I'm Going")}
+              {isSubmitting ? 'Loading...' : (isGoing ? '✓ Joined' : "Join")}
             </button>
             <div className="event__info-wrapper">
               <Info size={16} className="event__info-icon" onClick={() => setShowGoingTooltip(!showGoingTooltip)} />
@@ -173,7 +178,7 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
               className="event__checkin"
               disabled={isCheckingIn}
             >
-              {isCheckingIn ? "Checking in..." : "I'm here"}
+              {isCheckingIn ? "Checking in..." : "Check In"}
             </button>
             <div className="event__info-wrapper">
               <Info size={16} className="event__info-icon" onClick={() => setShowCheckinTooltip(!showCheckinTooltip)} />

@@ -57,7 +57,7 @@ async function checkResponse(res, originalRequest) {
     } catch (err) {
       // Token refresh failed - user needs to login again
       // Clear any stored user data and redirect to login
-      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("tokenExists");
       window.location.href = "/";
       return Promise.reject("Session expired. Please login again.");
     }

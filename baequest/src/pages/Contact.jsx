@@ -39,9 +39,9 @@ export default function Contact() {
             Follow us for updates on new features and events:
           </p>
           <ul className="legal-page__list">
-            <li>Instagram: @baequests</li>
-            <li>Twitter: @baequests</li>
-            <li>Facebook: BaeQuest</li>
+            <li><a href="https://instagram.com/baequests" target="_blank" rel="noopener noreferrer" className="legal-page__link">Instagram: @baequests</a></li>
+            <li><a href="https://twitter.com/baequests" target="_blank" rel="noopener noreferrer" className="legal-page__link">Twitter: @baequests</a></li>
+            <li><a href="https://facebook.com/baequest" target="_blank" rel="noopener noreferrer" className="legal-page__link">Facebook: BaeQuest</a></li>
           </ul>
         </section>
 

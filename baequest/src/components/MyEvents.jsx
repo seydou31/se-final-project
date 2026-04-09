@@ -48,7 +48,7 @@ export default function MyEvents({ handleCheckin }) {
           <div className="my-events__empty-icon">📅</div>
           <h2 className="my-events__empty-title">No events yet</h2>
           <p className="my-events__empty-text">
-            Browse events and click "I'm Going" to add them here
+            Browse events and click "Join" to add them here
           </p>
         </div>
       ) : (

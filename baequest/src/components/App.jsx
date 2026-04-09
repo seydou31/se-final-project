@@ -379,7 +379,7 @@ function App() {
         setActiveModal("createprofilemodal");
       })
       .catch((err) => {
-        setLoggingError(err.message || "Failed to create account");
+        setLoggingError(typeof err === "string" ? err : (err.message || "Failed to create account"));
         throw err;
       });
   }
@@ -769,6 +769,7 @@ function App() {
               handleGoogleSignup={handleGoogleSignup}
               handleGoogleSignupWithToken={handleGoogleSignupWithToken}
               loggingError={loggingError}
+              onSwitchToLogin={handleLoginModal}
             />
           )}
           <ProfileModal
@@ -797,6 +798,7 @@ function App() {
               onOverlayClick={handleModalOverlayClick}
               loggingError={loggingError}
               handleForgotPasswordModal={handleForgotPasswordModal}
+              onSwitchToSignup={handleSignupModal}
               handleResendVerification={handleResendVerification}
             />
           )}

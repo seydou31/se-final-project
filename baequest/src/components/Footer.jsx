@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import baequestLogo from "../assets/baequest-logo.svg";
 import "../blocks/footer.css";
 
 export default function Footer() {
@@ -6,7 +7,10 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer__content">
         <div className="footer__section">
-          <h4 className="footer__title">BaeQuest</h4>
+          <Link to="/" className="footer__brand">
+            <img src={baequestLogo} alt="BaeQuest" className="footer__logo" />
+            <span className="footer__brand-name">BaeQuest</span>
+          </Link>
           <p className="footer__text">
             Online dating where you date people, not their profile.
           </p>

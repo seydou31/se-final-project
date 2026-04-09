@@ -6,7 +6,7 @@ import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 // Detect mobile devices
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, handleGoogleLogin, handleGoogleLoginWithToken, loggingError, handleForgotPasswordModal, handleResendVerification }) {
+export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, handleGoogleLogin, handleGoogleLoginWithToken, loggingError, handleForgotPasswordModal, handleResendVerification, onSwitchToSignup }) {
   const [showPassword, setShowPassword] = useState(false);
   // Custom Google login for mobile using implicit flow
   const mobileGoogleLogin = useGoogleLogin({
@@ -111,6 +111,13 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
            )}
           </fieldset>
         </form>
+
+        <p className="modal__switch-text">
+          Don't have an account?{" "}
+          <button type="button" className="modal__switch-link" onClick={onSwitchToSignup}>
+            Sign up
+          </button>
+        </p>
 
         <div className="modal__divider">
           <span>OR</span>

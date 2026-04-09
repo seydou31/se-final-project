@@ -308,6 +308,30 @@
   align-self: flex-start;
 }
 
+.modal__switch-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 8px 0 0;
+  padding: 0 32px;
+  width: 100%;
+}
+
+.modal__switch-link {
+  background: none;
+  border: none;
+  color: var(--pink-500);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.modal__switch-link:hover {
+  color: var(--pink-700);
+}
+
 .modal__input-wrapper {
   position: relative;
   width: 100%;

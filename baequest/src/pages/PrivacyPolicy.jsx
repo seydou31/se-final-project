@@ -5,7 +5,7 @@ export default function PrivacyPolicy() {
     <div className="legal-page">
       <div className="legal-page__container">
         <h1 className="legal-page__title">Privacy Policy</h1>
-        <p className="legal-page__date">Last updated: February 2025</p>
+        <p className="legal-page__date">Last updated: April 2026</p>
 
         <section className="legal-page__section">
           <h2>Introduction</h2>

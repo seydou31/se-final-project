@@ -15,6 +15,7 @@ export default function CreateAccountModal({
   handleGoogleSignup,
   handleGoogleSignupWithToken,
   loggingError,
+  onSwitchToLogin,
 }) {
   // Custom Google signup for mobile using implicit flow
   const mobileGoogleSignup = useGoogleLogin({
@@ -153,6 +154,13 @@ export default function CreateAccountModal({
             </button>
           </fieldset>
         </form>
+
+        <p className="modal__switch-text">
+          Already have an account?{" "}
+          <button type="button" className="modal__switch-link" onClick={onSwitchToLogin}>
+            Sign in
+          </button>
+        </p>
 
         <div className="modal__divider">
           <span>OR</span>

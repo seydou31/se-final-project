@@ -352,7 +352,12 @@ export default function ProfileModal({
               placeholder="+12025551234"
               name="phoneNumber"
               value={values.phoneNumber || ''}
-              onChange={handleChange}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/[^\d+\s\-()]/g, '');
+                setValues({ ...values, phoneNumber: cleaned });
+              }}
+              pattern="[+]?[\d\s\-()]{7,15}"
+              minLength={7}
               required
             />
             {mode === "create" ? (
