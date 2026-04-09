@@ -19,6 +19,7 @@ export default function AdminPage() {
   const [eventDateFrom, setEventDateFrom] = useState({});
   const [eventDateTo, setEventDateTo] = useState({});
   const [eventPages, setEventPages] = useState({});
+  const [managerPage, setManagerPage] = useState(0);
 
   const PAGE_SIZE = 10;
 
@@ -70,6 +71,8 @@ export default function AdminPage() {
   }
 
   const totalEarnings = data ? data.reduce((sum, m) => sum + m.totalEarnings, 0).toFixed(2) : null;
+  const totalManagerPages = Math.ceil((filteredManagers?.length || 0) / PAGE_SIZE);
+  const pagedManagers = filteredManagers.slice(managerPage * PAGE_SIZE, (managerPage + 1) * PAGE_SIZE);
 
   return (
     <div className="admin-page">
@@ -114,13 +117,13 @@ export default function AdminPage() {
               className="admin-search-input"
               placeholder="Search event managers by name or email..."
               value={managerSearch}
-              onChange={(e) => setManagerSearch(e.target.value)}
+              onChange={(e) => { setManagerSearch(e.target.value); setManagerPage(0); }}
             />
           </div>
 
           <div className="admin-managers">
             {filteredManagers.length === 0 && <p className="admin-empty">No event managers found.</p>}
-            {filteredManagers.map(manager => {
+            {pagedManagers.map(manager => {
               const filteredEvents = getFilteredEvents(manager);
               const currentPage = eventPages[manager._id] || 0;
               const totalPages = Math.ceil(filteredEvents.length / PAGE_SIZE);
@@ -229,6 +232,27 @@ export default function AdminPage() {
                 </div>
               );
             })}
+            {totalManagerPages > 1 && (
+              <div className="admin-pagination">
+                <button
+                  className="admin-pagination__btn"
+                  disabled={managerPage === 0}
+                  onClick={() => setManagerPage(p => p - 1)}
+                >
+                  Previous
+                </button>
+                <span className="admin-pagination__info">
+                  Page {managerPage + 1} of {totalManagerPages}
+                </span>
+                <button
+                  className="admin-pagination__btn"
+                  disabled={managerPage >= totalManagerPages - 1}
+                  onClick={() => setManagerPage(p => p + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}
