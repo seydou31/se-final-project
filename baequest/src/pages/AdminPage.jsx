@@ -18,6 +18,9 @@ export default function AdminPage() {
   const [eventSearches, setEventSearches] = useState({});
   const [eventDateFrom, setEventDateFrom] = useState({});
   const [eventDateTo, setEventDateTo] = useState({});
+  const [eventPages, setEventPages] = useState({});
+
+  const PAGE_SIZE = 10;
 
   async function handleFetch(e) {
     e.preventDefault();
@@ -119,6 +122,14 @@ export default function AdminPage() {
             {filteredManagers.length === 0 && <p className="admin-empty">No event managers found.</p>}
             {filteredManagers.map(manager => {
               const filteredEvents = getFilteredEvents(manager);
+              const currentPage = eventPages[manager._id] || 0;
+              const totalPages = Math.ceil(filteredEvents.length / PAGE_SIZE);
+              const pagedEvents = filteredEvents.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
+              function setPage(page) {
+                setEventPages(prev => ({ ...prev, [manager._id]: page }));
+              }
+
               return (
                 <div key={manager._id} className="admin-manager-card">
                   <div className="admin-manager-card__header" onClick={() => toggleExpand(manager._id)}>
@@ -167,28 +178,51 @@ export default function AdminPage() {
                       {filteredEvents.length === 0 ? (
                         <p className="admin-empty">No events match your search.</p>
                       ) : (
-                        <table className="admin-table">
-                          <thead>
-                            <tr>
-                              <th>Event</th>
-                              <th>Location</th>
-                              <th>Date</th>
-                              <th>Paid Check-ins</th>
-                              <th>Manager Earnings (30%)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {filteredEvents.map(event => (
-                              <tr key={event._id}>
-                                <td>{event.name}</td>
-                                <td>{event.city}, {event.state}</td>
-                                <td>{formatDate(event.startTime)}</td>
-                                <td>{event.paidCheckinCount}</td>
-                                <td>${event.earnings.toFixed(2)}</td>
+                        <>
+                          <table className="admin-table">
+                            <thead>
+                              <tr>
+                                <th>Event</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                                <th>Paid Check-ins</th>
+                                <th>Manager Earnings (30%)</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {pagedEvents.map(event => (
+                                <tr key={event._id}>
+                                  <td>{event.name}</td>
+                                  <td>{event.city}, {event.state}</td>
+                                  <td>{formatDate(event.startTime)}</td>
+                                  <td>{event.paidCheckinCount}</td>
+                                  <td>${event.earnings.toFixed(2)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          {totalPages > 1 && (
+                            <div className="admin-pagination">
+                              <button
+                                className="admin-pagination__btn"
+                                disabled={currentPage === 0}
+                                onClick={(e) => { e.stopPropagation(); setPage(currentPage - 1); }}
+                              >
+                                Previous
+                              </button>
+                              <span className="admin-pagination__info">
+                                Page {currentPage + 1} of {totalPages}
+                              </span>
+                              <button
+                                className="admin-pagination__btn"
+                                disabled={currentPage >= totalPages - 1}
+                                onClick={(e) => { e.stopPropagation(); setPage(currentPage + 1); }}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   )}
