@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
@@ -6,6 +7,7 @@ import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLoginSubmit, handleGoogleLogin, handleGoogleLoginWithToken, loggingError, handleForgotPasswordModal, handleResendVerification }) {
+  const [showPassword, setShowPassword] = useState(false);
   // Custom Google login for mobile using implicit flow
   const mobileGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => {
@@ -63,15 +65,20 @@ export default function LoginModal({ isOpen, onClose, onOverlayClick, handleLogi
             <label htmlFor="password" className="modal__label">
               Password
             </label>
-            <input
-              type="password"
-              className="modal__input"
-              id="loginpassword"
-              name="password"
-              value={values.password}
-              placeholder="Create Password"
-              onChange={handleChange}
-            />
+            <div className="modal__input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="modal__input"
+                id="loginpassword"
+                name="password"
+                value={values.password}
+                placeholder="Enter Password"
+                onChange={handleChange}
+              />
+              <button type="button" className="modal__pw-toggle" onClick={() => setShowPassword(p => !p)}>
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
             {errors.password && (
               <p className="modal__validation">{errors.password}</p>
             )}

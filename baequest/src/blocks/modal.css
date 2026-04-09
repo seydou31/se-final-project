@@ -308,6 +308,56 @@
   align-self: flex-start;
 }
 
+.modal__input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.modal__input-wrapper .modal__input {
+  padding-right: 60px;
+}
+
+.modal__pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-60%);
+  background: none;
+  border: none;
+  color: var(--pink-500);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+  transition: color var(--transition-fast);
+}
+
+.modal__pw-toggle:hover {
+  color: var(--pink-700);
+}
+
+.modal__terms-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.modal__terms-checkbox input {
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.modal__terms-link {
+  color: var(--pink-500);
+  text-decoration: underline;
+}
+
 .modal__login-error {
   width: 100%;
   padding: 16px 20px;

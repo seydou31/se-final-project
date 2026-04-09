@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "../hooks/useForm.js";
 import ModalWrapper from "./ModalWrapper.jsx";
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
@@ -33,11 +34,14 @@ export default function CreateAccountModal({
 
   const [confirmError, setConfirmError] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const hasErrors = errors && Object.keys(errors).length > 0;
   const emptyFields =
     !values.email || !values.password || confirmPassword.length === 0;
-  const isSubmitDisabled = hasErrors || emptyFields || isLoading;
+  const isSubmitDisabled = hasErrors || emptyFields || isLoading || !agreedToTerms;
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -80,44 +84,66 @@ export default function CreateAccountModal({
             <label htmlFor="password" className="modal__label">
               Password
             </label>
-            <input
-              type="password"
-              className="modal__input"
-              id="password"
-              name="password"
-              value={values.password}
-              placeholder="Create Password"
-              onChange={handleChange}
-            />
+            <div className="modal__input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                className="modal__input"
+                id="password"
+                name="password"
+                value={values.password}
+                placeholder="Create Password"
+                onChange={handleChange}
+              />
+              <button type="button" className="modal__pw-toggle" onClick={() => setShowPassword(p => !p)}>
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="modal__validation">{errors.password}</p>
+            )}
             <label htmlFor="confirmpassword" className="modal__label">
               Confirm Password
             </label>
-            <input
-              type="password"
-              className="modal__input"
-              id="confirmpassword"
-              name="confirmpassword"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                if (values.password !== e.target.value) {
-                  setConfirmError("Passwords do not match");
-                  return;
-                } else {
-                  setConfirmError("")
-                }
-              }}
-            />
+            <div className="modal__input-wrapper">
+              <input
+                type={showConfirm ? "text" : "password"}
+                className="modal__input"
+                id="confirmpassword"
+                name="confirmpassword"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (values.password !== e.target.value) {
+                    setConfirmError("Passwords do not match");
+                  } else {
+                    setConfirmError("");
+                  }
+                }}
+              />
+              <button type="button" className="modal__pw-toggle" onClick={() => setShowConfirm(p => !p)}>
+                {showConfirm ? "Hide" : "Show"}
+              </button>
+            </div>
             {confirmError && (
               <p className="modal__validation">{confirmError}</p>
-            )}
-            {errors.password && (
-              <p className="modal__validation">{errors.password}</p>
             )}
             {loggingError && (
               <p className="modal__validation">{loggingError}</p>
             )}
+            <label className="modal__terms-checkbox">
+              <input
+                type="checkbox"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+              />
+              <span>
+                By tapping 'Create Account', you agree to our{" "}
+                <Link to="/terms" className="modal__terms-link" onClick={onClose}>Terms of Service</Link>
+                {" "}and{" "}
+                <Link to="/privacy" className="modal__terms-link" onClick={onClose}>Privacy Policy</Link>.
+              </span>
+            </label>
             <button
               type="submit"
               className={`modal__submit-btn ${isLoading ? "modal__submit-btn--loading" : ""}`}
