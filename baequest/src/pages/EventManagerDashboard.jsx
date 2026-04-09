@@ -6,7 +6,10 @@ import {
   eventManagerGetOnboardingLink,
   logout,
 } from '../utils/api.js';
+import EventManagerTermsModal from '../components/EventManagerTermsModal.jsx';
 import '../blocks/event-manager.css';
+
+const TERMS_KEY = 'em_terms_accepted';
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -19,6 +22,7 @@ export default function EventManagerDashboard() {
   const [me, setMe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showTerms, setShowTerms] = useState(() => !localStorage.getItem(TERMS_KEY));
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,6 +51,11 @@ export default function EventManagerDashboard() {
     navigate('/event-manager/login');
   }
 
+  function handleAcceptTerms() {
+    localStorage.setItem(TERMS_KEY, 'true');
+    setShowTerms(false);
+  }
+
   if (loading) {
     return (
       <div className="em-page">
@@ -57,6 +66,7 @@ export default function EventManagerDashboard() {
 
   return (
     <div className="em-dashboard">
+      {showTerms && <EventManagerTermsModal onAccept={handleAcceptTerms} />}
       <div className="em-dashboard__header">
         <h1 className="em-dashboard__title">{me?.name ? `${me.name}'s Dashboard` : 'Event Manager Dashboard'}</h1>
         <div style={{ display: 'flex', gap: 10 }}>
