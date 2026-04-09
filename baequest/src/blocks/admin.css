@@ -1,0 +1,267 @@
+.admin-page {
+  min-height: 100vh;
+  padding: 40px 24px;
+  background: #f5f5f5;
+  font-family: inherit;
+}
+
+.admin-header {
+  max-width: 1000px;
+  margin: 0 auto 32px;
+}
+
+.admin-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px;
+}
+
+.admin-auth {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-secret-input {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  width: 260px;
+}
+
+.admin-secret-input:focus {
+  outline: none;
+  border-color: #6c47ff;
+}
+
+.admin-btn {
+  padding: 10px 20px;
+  background: #6c47ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-error {
+  color: #e53e3e;
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.admin-summary {
+  display: flex;
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto 28px;
+}
+
+.admin-stat {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-stat__label {
+  font-size: 13px;
+  color: #888;
+}
+
+.admin-stat__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.admin-managers {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-manager-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+.admin-manager-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-manager-card__header:hover {
+  background: #fafafa;
+}
+
+.admin-manager-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.admin-manager-card__name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.admin-manager-card__email {
+  font-size: 13px;
+  color: #666;
+}
+
+.admin-manager-card__stripe {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+}
+
+.admin-manager-card__stripe--connected {
+  color: #38a169;
+}
+
+.admin-manager-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.admin-manager-card__earnings {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.admin-manager-card__toggle {
+  font-size: 12px;
+  color: #999;
+}
+
+.admin-manager-card__events {
+  padding: 0 24px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.admin-table th {
+  background: #f5f5f5;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-search-bar {
+  max-width: 1000px;
+  margin: 0 auto 16px;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.admin-search-input--sm {
+  width: auto;
+  flex: 1;
+  min-width: 180px;
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: #6c47ff;
+}
+
+.admin-event-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0 10px;
+  flex-wrap: wrap;
+}
+
+.admin-date-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.admin-date-input:focus {
+  outline: none;
+  border-color: #6c47ff;
+}
+
+.admin-date-sep {
+  font-size: 13px;
+  color: #888;
+}
+
+.admin-empty {
+  font-size: 14px;
+  color: #999;
+  padding: 16px 0;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .admin-summary {
+    flex-direction: column;
+  }
+
+  .admin-manager-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .admin-table {
+    font-size: 12px;
+  }
+}

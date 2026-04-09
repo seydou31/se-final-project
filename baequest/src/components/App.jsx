@@ -37,6 +37,7 @@ import EventManagerLogin from "../pages/EventManagerLogin.jsx";
 import EventManagerSignup from "../pages/EventManagerSignup.jsx";
 import EventManagerDashboard from "../pages/EventManagerDashboard.jsx";
 import EventManagerOnboarding from "../pages/EventManagerOnboarding.jsx";
+import AdminPage from "../pages/AdminPage.jsx";
 import socket from '../utils/socket';
 import {
   createProfile,
@@ -722,6 +723,7 @@ function App() {
             <Route path="/event-manager/login" element={<EventManagerLogin />} />
             <Route path="/event-manager/dashboard" element={<EventManagerDashboard />} />
             <Route path="/event-manager/onboarding" element={<EventManagerOnboarding />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route
               path="/profile"
               element={
