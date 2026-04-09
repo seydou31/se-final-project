@@ -73,9 +73,7 @@ export default function Main({onClick}) {
               <li className="section1__card-item">
                 Conversation starters to break the ice
               </li>
-              <li className="section1__card-item">
-                Free to use - connect without limits
-              </li>
+
             </ul>
           </div>
         </div>
