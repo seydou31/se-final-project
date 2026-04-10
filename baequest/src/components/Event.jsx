@@ -155,14 +155,14 @@ export default function Event({ event, handleCheckin, handleImGoing }) {
         <div className="event__actions">
           <div className="event__button-with-info">
             <span className={`event__tooltip ${showGoingTooltip ? 'event__tooltip--visible' : ''}`}>
-              {isGoing ? "Click to cancel — removes from My Events" : "Join this event to save it to My Events"}
+              {isGoing ? "Click to remove from My Events" : "Save this event to your My Events list"}
             </span>
             <button
               onClick={handleGoingClick}
               className={`event__going ${isGoing ? 'event__going--active' : ''}`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Loading...' : (isGoing ? '✓ Joined' : "Join")}
+              {isSubmitting ? 'Loading...' : (isGoing ? '✓ Going' : "I'm Going")}
             </button>
             <div className="event__info-wrapper">
               <Info size={16} className="event__info-icon" onClick={() => setShowGoingTooltip(!showGoingTooltip)} />
