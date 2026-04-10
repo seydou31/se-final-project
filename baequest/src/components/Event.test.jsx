@@ -196,14 +196,14 @@ describe('Event Component', () => {
     it('renders "I\'m here" button', () => {
       render(<Event event={mockEvent} handleCheckin={vi.fn()} handleImGoing={vi.fn()} />);
 
-      expect(screen.getByRole('button', { name: /i'm here/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Check In/i })).toBeInTheDocument();
     });
 
     it('calls handleCheckin when clicked', async () => {
       const handleCheckin = vi.fn();
       render(<Event event={mockEvent} handleCheckin={handleCheckin} handleImGoing={vi.fn()} />);
 
-      const checkinButton = screen.getByRole('button', { name: /i'm here/i });
+      const checkinButton = screen.getByRole('button', { name: /Check In/i });
       await userEvent.click(checkinButton);
 
       expect(handleCheckin).toHaveBeenCalledWith(mockEvent);

@@ -89,7 +89,7 @@ describe('BaeQuest App - Integration Tests', () => {
       const modal = getOpenedModal();
       expect(modal).toBeTruthy();
       expect(within(modal).getByPlaceholderText('Enter email')).toBeInTheDocument();
-      expect(within(modal).getByPlaceholderText('Create Password')).toBeInTheDocument();
+      expect(within(modal).getByPlaceholderText('Enter Password')).toBeInTheDocument();
     });
 
     it('successfully logs in with email and password', async () => {
@@ -114,7 +114,7 @@ describe('BaeQuest App - Integration Tests', () => {
 
       const modal = getOpenedModal();
       await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'test@example.com');
-      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.type(within(modal).getByPlaceholderText('Enter Password'), 'Password1!');
 
       // Login button enabled once email and password pass validation
       await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
@@ -151,6 +151,7 @@ describe('BaeQuest App - Integration Tests', () => {
       await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'newuser@example.com');
       await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
       await userEvent.type(within(modal).getByPlaceholderText('Confirm Password'), 'Password1!');
+      await userEvent.click(within(modal).getByRole('checkbox', { name: /terms of service/i }));
 
       // Submit button text is "Continue"
       await userEvent.click(within(modal).getByRole('button', { name: /^Continue$/ }));
@@ -196,7 +197,7 @@ describe('BaeQuest App - Integration Tests', () => {
       await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
       let modal = getOpenedModal();
       await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'new@example.com');
-      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.type(within(modal).getByPlaceholderText('Enter Password'), 'Password1!');
       await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
 
       // After login with null profile, App opens the Create Profile modal
@@ -227,7 +228,7 @@ describe('BaeQuest App - Integration Tests', () => {
       await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
       let modal = getOpenedModal();
       await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'jane@example.com');
-      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.type(within(modal).getByPlaceholderText('Enter Password'), 'Password1!');
       await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
 
       // Step 2: wait for Create Profile modal to appear
@@ -270,7 +271,7 @@ describe('BaeQuest App - Integration Tests', () => {
 
       const modal = getOpenedModal();
       await userEvent.type(within(modal).getByPlaceholderText('Enter email'), 'wrong@example.com');
-      await userEvent.type(within(modal).getByPlaceholderText('Create Password'), 'Password1!');
+      await userEvent.type(within(modal).getByPlaceholderText('Enter Password'), 'Password1!');
       await userEvent.click(within(modal).getByRole('button', { name: /^Login$/ }));
 
       // loggingError renders in both LoginModal and CreateAccountModal (always in DOM);
