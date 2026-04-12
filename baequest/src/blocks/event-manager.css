@@ -1,3 +1,35 @@
+.em-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.em-pagination__btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.em-pagination__btn:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.em-pagination__btn:disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.em-pagination__info {
+  font-size: 14px;
+  color: #555;
+}
+
 .em-page {
   min-height: 100vh;
   display: flex;

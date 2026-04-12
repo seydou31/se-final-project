@@ -10,6 +10,7 @@ import EventManagerTermsModal from '../components/EventManagerTermsModal.jsx';
 import '../blocks/event-manager.css';
 
 const TERMS_KEY = 'em_terms_accepted';
+const PAGE_SIZE = 10;
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-US', {
@@ -23,6 +24,7 @@ export default function EventManagerDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showTerms, setShowTerms] = useState(() => !localStorage.getItem(TERMS_KEY));
+  const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -123,7 +125,7 @@ export default function EventManagerDashboard() {
                 </td>
               </tr>
             ) : (
-              data?.events.map((event) => (
+              data?.events.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((event) => (
                 <tr key={event._id}>
                   <td>{event.name}</td>
                   <td>{formatDate(event.startTime)}</td>
@@ -134,6 +136,13 @@ export default function EventManagerDashboard() {
             )}
           </tbody>
         </table>
+        {data?.events.length > PAGE_SIZE && (
+          <div className="em-pagination">
+            <button className="em-pagination__btn" onClick={() => setPage(p => p - 1)} disabled={page === 1}>← Prev</button>
+            <span className="em-pagination__info">Page {page} of {Math.ceil(data.events.length / PAGE_SIZE)}</span>
+            <button className="em-pagination__btn" onClick={() => setPage(p => p + 1)} disabled={page === Math.ceil(data.events.length / PAGE_SIZE)}>Next →</button>
+          </div>
+        )}
       </div>
     </div>
   );
