@@ -1,0 +1,52 @@
+/* Smooth UI */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Prevent horizontal scroll issues */
+html,
+body {
+    overflow-x: hidden;
+}
+
+/* Better font rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* Remove tap highlight (mobile) */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Better focus visibility */
+
+
+/* Chrome / Edge */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 100, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 100, 0.5);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.font-headline {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+}

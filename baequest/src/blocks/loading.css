@@ -1,4 +1,4 @@
-.loading {
+/* .loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -46,4 +46,112 @@
   .loading__message {
     font-size: 14px;
   }
+} */
+
+.loading {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px 20px;
+}
+
+.loading--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(190, 24, 93, 0.08),
+      transparent 45%
+    ),
+    rgba(255, 255, 255, 0.96);
+
+  backdrop-filter: blur(10px);
+}
+
+/* ========================================= */
+/* HARMONIUM LOADER */
+/* ========================================= */
+
+.loading__harmonium {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 60px;
+}
+
+.loading__harmonium span {
+  width: 10px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    180deg,
+    rgb(189 12 59 / var(--tw-bg-opacity, 1)) 0%,
+    #be185d 100%
+  );
+
+  animation: harmonium 1s ease-in-out infinite;
+
+  box-shadow:
+    0 4px 14px rgba(190, 24, 93, 0.25),
+    0 0 20px rgba(236, 72, 153, 0.2);
+}
+
+/* different heights */
+.loading__harmonium span:nth-child(1) {
+  height: 22px;
+  animation-delay: 0s;
+}
+
+.loading__harmonium span:nth-child(2) {
+  height: 42px;
+  animation-delay: 0.12s;
+}
+
+.loading__harmonium span:nth-child(3) {
+  height: 58px;
+  animation-delay: 0.24s;
+}
+
+.loading__harmonium span:nth-child(4) {
+  height: 42px;
+  animation-delay: 0.36s;
+}
+
+.loading__harmonium span:nth-child(5) {
+  height: 22px;
+  animation-delay: 0.48s;
+}
+
+@keyframes harmonium {
+  0%,
+  100% {
+    transform: scaleY(0.7);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: scaleY(1.15);
+    opacity: 1;
+  }
+}
+
+/* ========================================= */
+/* MESSAGE */
+/* ========================================= */
+
+.loading__message {
+  margin-top: 20px;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  color: #881337;
+
+  text-align: center;
 }

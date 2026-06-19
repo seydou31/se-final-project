@@ -6,6 +6,7 @@ import './index.css'
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { initGA } from './utils/analytics.js';
+import { EventManagerAuthProvider } from "./context/EventManagerAuthContext";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ErrorBoundary>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <BrowserRouter>
-          <App />
+          <EventManagerAuthProvider>
+            <App />
+          </EventManagerAuthProvider>
         </BrowserRouter>
       </GoogleOAuthProvider>
     </ErrorBoundary>

@@ -1,7 +1,7 @@
 import '../blocks/checkoutmodal.css';
 import ModalWrapper from './ModalWrapper.jsx';
 
-export default function CheckoutModal({isOpen, onClose, onOverlayClick, handleCheckout}){
+export default function CheckoutModal({isOpen, onClose, onOverlayClick, handleCheckout, isCheckingOut}){
     return (
         <ModalWrapper
             isOpen={isOpen}
@@ -11,7 +11,11 @@ export default function CheckoutModal({isOpen, onClose, onOverlayClick, handleCh
             className="checkout"
         >
             <p className="checkout__paragraph">People won't be able to see you anymore</p>
-            <button onClick={handleCheckout} className="checkout__checkout-btn">Check Out</button>
+            <button onClick={handleCheckout} 
+            disabled={isCheckingOut}
+            className="checkout__checkout-btn">
+            {isCheckingOut ? "Checking out…" : "Check Out"} 
+            </button>
             <button onClick={onClose} className="checkout__cancel-btn">Cancel</button>
         </ModalWrapper>
     )

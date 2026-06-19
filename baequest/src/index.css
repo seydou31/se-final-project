@@ -3,3 +3,6 @@
 
 /* Normalize */
 @import "./vendor/normalize.css";
+
+/* ── Global smooth UI (from style.css) ── */
+@import "./vendor/style.css";
