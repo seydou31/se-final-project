@@ -164,6 +164,7 @@ function ManagerCard({ manager, secret }) {
     if (open) {
       fetchEvents(evPage);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, evPage]);
 
   return (

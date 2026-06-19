@@ -112,6 +112,7 @@ function App() {
   function checkTokenExists() { return Boolean(localStorage.getItem("tokenExists")); }
   function removeTokenExists() { localStorage.removeItem("tokenExists"); }
 
+  // Run only once on initial app load
   useEffect(() => {
     if (!checkTokenExists()) {
       setIsLoggedInLoading(false);
@@ -182,6 +183,7 @@ function App() {
       .finally(() => {
         setIsLoggedInLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -232,7 +234,7 @@ function App() {
     }, 3 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.lat, currentEvent?.lng]);
+  }, [isCheckedIn, currentEvent?._id, currentEvent?.endTime, currentEvent?.lat, currentEvent?.lng, clearEventState]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

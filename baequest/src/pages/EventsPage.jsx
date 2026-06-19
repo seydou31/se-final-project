@@ -99,6 +99,7 @@ export default function EventsPage({
     if (!isCheckedIn) {
       fetchEvents(coordsRef.current, {}, true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isCheckedIn,
     eventVersion
