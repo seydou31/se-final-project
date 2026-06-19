@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaeQuest — Not a dating app. A going-out app.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #C41E3A;
+    --red-dark: #8B1426;
+    --red-light: #FAF0F2;
+    --ink: #1A1210;
+    --ink-2: #3D2E2B;
+    --ink-3: #7A6560;
+    --cream: #FAF8F5;
+    --cream-2: #F2EDE6;
+    --cream-3: #E8E0D5;
+    --white: #FFFFFF;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--cream);
+    border-bottom: 1px solid var(--cream-3);
+    padding: 0 5vw;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo { font-family: var(--font-display); font-size: 22px; font-weight: 900; color: var(--ink); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; align-items: center; gap: 32px; }
+  .nav-links a { font-size: 14px; font-weight: 400; color: var(--ink-3); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-cta {
+    background: var(--red); color: white;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    padding: 10px 22px; border-radius: 100px;
+    text-decoration: none; transition: background 0.2s, transform 0.15s;
+    border: none; cursor: pointer;
+  }
+  .nav-cta:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulse-dot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.7; } }
+  @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+  @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+
+  .fade-up { animation: fadeUp 0.7s ease forwards; }
+  .fade-up-1 { animation-delay: 0.1s; opacity: 0; }
+  .fade-up-2 { animation-delay: 0.25s; opacity: 0; }
+  .fade-up-3 { animation-delay: 0.4s; opacity: 0; }
+  .fade-up-4 { animation-delay: 0.55s; opacity: 0; }
+  .fade-up-5 { animation-delay: 0.7s; opacity: 0; }
+
+  /* HERO */
+  .hero {
+    min-height: 92vh;
+    padding: 80px 5vw 60px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--red); background: var(--red-light);
+    padding: 6px 14px; border-radius: 100px;
+    margin-bottom: 28px;
+  }
+  .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse-dot 2s ease-in-out infinite; }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 5.5vw, 72px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .hero h1 em { font-style: italic; color: var(--red); }
+
+  .hero-sub {
+    font-size: 18px; font-weight: 300; color: var(--ink-2);
+    line-height: 1.7; max-width: 480px; margin-bottom: 36px;
+  }
+  .hero-sub strong { font-weight: 500; color: var(--ink); }
+
+  .hero-ctas { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 40px; }
+  .btn-primary {
+    background: var(--red); color: white;
+    font-family: var(--font-body); font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 100px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+  .btn-secondary {
+    font-size: 15px; font-weight: 400; color: var(--ink-2);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    padding: 14px 4px; border-bottom: 1px solid var(--cream-3);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  .place-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .place-tag {
+    font-size: 12px; font-weight: 400; color: var(--ink-3);
+    background: var(--cream-2); border: 1px solid var(--cream-3);
+    padding: 6px 14px; border-radius: 100px;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .place-tag:hover { background: var(--cream-3); color: var(--ink); }
+
+  /* HERO VISUAL PANEL */
+  .hero-visual {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .venue-card-stack { position: relative; width: 340px; height: 480px; }
+
+  .venue-card {
+    position: absolute;
+    background: var(--white);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid var(--cream-3);
+    width: 300px;
+  }
+  .venue-card.main {
+    top: 40px; left: 20px;
+    z-index: 3;
+    width: 310px;
+  }
+  .venue-card.back1 {
+    top: 20px; left: 50px;
+    z-index: 2;
+    transform: rotate(4deg);
+    background: var(--cream-2);
+    width: 300px;
+  }
+  .venue-card.back2 {
+    top: 10px; left: 70px;
+    z-index: 1;
+    transform: rotate(8deg);
+    background: var(--cream-3);
+    width: 290px;
+  }
+
+  .venue-img {
+    width: 100%; height: 140px; border-radius: 12px;
+    background: var(--cream-2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden; position: relative;
+  }
+  .venue-img-bg {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #C41E3A22, #8B142622);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .venue-img-icon { font-size: 40px; margin-bottom: 6px; }
+  .venue-img-label { font-size: 12px; color: var(--ink-3); }
+
+  .venue-name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .venue-address { font-size: 12px; color: var(--ink-3); margin-bottom: 14px; display: flex; align-items: center; gap: 4px; }
+
+  .venue-who { margin-bottom: 14px; }
+  .venue-who-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .avatar-row { display: flex; align-items: center; gap: -4px; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 2px solid white;
+    margin-right: -8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; color: white;
+    flex-shrink: 0;
+  }
+  .avatar-count {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--cream-2); border: 2px solid white;
+    margin-left: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; color: var(--ink-2);
+    flex-shrink: 0;
+  }
+  .venue-who-text { font-size: 13px; color: var(--ink-2); margin-left: 16px; }
+
+  .rsvp-btn {
+    width: 100%; background: var(--red); color: white;
+    border: none; border-radius: 100px; padding: 12px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .rsvp-btn:hover { background: var(--red-dark); }
+
+  .live-badge {
+    position: absolute; top: -10px; right: -10px;
+    background: var(--red); color: white;
+    font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+    display: flex; align-items: center; gap: 5px;
+    z-index: 10;
+  }
+  .live-dot { width: 5px; height: 5px; border-radius: 50%; background: white; animation: pulse-dot 1.5s ease-in-out infinite; }
+
+  .notification-bubble {
+    position: absolute; bottom: 30px; right: -20px; z-index: 10;
+    background: var(--ink); color: white;
+    border-radius: 16px; padding: 12px 16px;
+    font-size: 13px; width: 200px;
+    animation: slideInLeft 0.8s 1s ease both;
+  }
+  .notif-name { font-weight: 500; margin-bottom: 2px; }
+  .notif-msg { font-size: 12px; color: rgba(255,255,255,0.65); }
+
+  /* TRUST BAR */
+  .trust-bar {
+    background: var(--cream-2);
+    border-top: 1px solid var(--cream-3);
+    border-bottom: 1px solid var(--cream-3);
+    padding: 20px 5vw;
+    display: flex; align-items: center; justify-content: center; gap: 48px;
+    flex-wrap: wrap;
+  }
+  .trust-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-3); }
+  .trust-icon { font-size: 18px; }
+  .trust-num { font-weight: 500; color: var(--ink); }
+
+  /* SECTION GENERIC */
+  section { padding: 100px 5vw; max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--red); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before { content: ''; width: 24px; height: 1px; background: var(--red); }
+  .section-h { font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; color: var(--ink); margin-bottom: 20px; }
+  .section-h em { font-style: italic; color: var(--red); }
+  .section-sub { font-size: 18px; font-weight: 300; color: var(--ink-2); line-height: 1.7; max-width: 560px; margin-bottom: 56px; }
+
+  /* HOW IT WORKS */
+  .how-wrap { background: var(--cream); }
+  .how-inner { max-width: 1200px; margin: 0 auto; padding: 100px 5vw; }
+
+  .steps-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid var(--cream-3);
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .step-card:hover { transform: translateY(-4px); border-color: var(--cream-3); }
+  .step-card.featured { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .step-number {
+    font-family: var(--font-display); font-size: 72px; font-weight: 900;
+    line-height: 1; color: var(--cream-3); margin-bottom: 20px;
+    letter-spacing: -3px;
+  }
+  .step-card.featured .step-number { color: rgba(255,255,255,0.15); }
+
+  .step-icon { font-size: 28px; margin-bottom: 12px; }
+  .step-title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+  .step-card.featured .step-title { color: white; }
+  .step-body { font-size: 15px; font-weight: 300; color: var(--ink-2); line-height: 1.7; }
+  .step-card.featured .step-body { color: rgba(255,255,255,0.7); }
+
+  .step-badge {
+    position: absolute; top: 24px; right: 24px;
+    background: var(--red); color: white;
+    font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+  }
+
+  /* RSVP HIGHLIGHT */
+  .rsvp-section {
+    background: var(--ink);
+    padding: 100px 5vw;
+  }
+  .rsvp-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .rsvp-content .section-label { color: rgba(255,255,255,0.5); }
+  .rsvp-content .section-label::before { background: rgba(255,255,255,0.3); }
+  .rsvp-content .section-h { color: white; }
+  .rsvp-content .section-sub { color: rgba(255,255,255,0.6); max-width: 440px; margin-bottom: 36px; }
+
+  .rsvp-benefits { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
+  .rsvp-benefit { display: flex; align-items: flex-start; gap: 14px; }
+  .rsvp-benefit-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .rsvp-benefit-text h4 { font-size: 14px; font-weight: 500; color: white; margin-bottom: 3px; }
+  .rsvp-benefit-text p { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+  /* RSVP CARD VISUAL */
+  .rsvp-visual { display: flex; flex-direction: column; gap: 16px; }
+
+  .rsvp-event-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .rsvp-event-card:hover { background: rgba(255,255,255,0.1); }
+  .rsvp-event-card.active { background: rgba(196,30,58,0.2); border-color: rgba(196,30,58,0.5); }
+
+  .event-time-block {
+    background: rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 10px 14px; text-align: center; flex-shrink: 0;
+  }
+  .event-time { font-size: 16px; font-weight: 500; color: white; display: block; }
+  .event-day { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.45); }
+
+  .event-info { flex: 1; }
+  .event-name { font-size: 15px; font-weight: 500; color: white; margin-bottom: 3px; }
+  .event-venue { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+  .event-going { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .going-count { font-size: 12px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+  .going-pill {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+    background: var(--red); color: white;
+    white-space: nowrap;
+  }
+  .going-pill.joined { background: rgba(255,255,255,0.15); color: white; }
+
+  /* PROBLEM SECTION */
+  .problem-section { background: var(--cream-2); padding: 100px 0; }
+  .problem-inner { max-width: 1200px; margin: 0 auto; padding: 0 5vw; }
+
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  .problem-left .section-h { margin-bottom: 24px; }
+  .problem-pull {
+    font-family: var(--font-display); font-size: 22px; font-weight: 700; font-style: italic;
+    color: var(--ink-2); line-height: 1.4;
+    border-left: 3px solid var(--red);
+    padding-left: 20px; margin-top: 32px;
+  }
+
+  .pain-cards { display: flex; flex-direction: column; gap: 14px; }
+  .pain-card {
+    background: var(--white);
+    border-radius: 16px; padding: 20px 24px;
+    border: 1px solid var(--cream-3);
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: transform 0.2s;
+  }
+  .pain-card:hover { transform: translateX(4px); }
+  .pain-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .pain-title { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .pain-body { font-size: 13px; font-weight: 300; color: var(--ink-3); line-height: 1.6; }
+
+  /* FEATURES */
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .feat-card {
+    background: var(--cream-2); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--cream-3);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .feat-card:hover { transform: translateY(-4px); background: var(--white); }
+  .feat-icon-wrap {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--cream-3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 16px;
+    transition: background 0.2s;
+  }
+  .feat-card:hover .feat-icon-wrap { background: var(--red-light); }
+  .feat-title { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+  .feat-body { font-size: 13px; font-weight: 300; color: var(--ink-3); line-height: 1.6; }
+
+  /* TESTIMONIALS */
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .testi-card {
+    background: var(--white); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--cream-3);
+  }
+  .testi-card:first-child { grid-column: 1 / 3; }
+  .testi-stars { color: var(--red); font-size: 14px; margin-bottom: 16px; letter-spacing: 2px; }
+  .testi-quote {
+    font-family: var(--font-display); font-size: 17px; font-weight: 700; font-style: italic;
+    color: var(--ink); line-height: 1.5; margin-bottom: 20px;
+  }
+  .testi-card:first-child .testi-quote { font-size: 20px; }
+  .testi-person { display: flex; align-items: center; gap: 12px; }
+  .testi-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 500; color: white; flex-shrink: 0;
+  }
+  .testi-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .testi-detail { font-size: 12px; color: var(--ink-3); }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; max-width: 720px; }
+  .faq-item { border-bottom: 1px solid var(--cream-3); }
+  .faq-q {
+    width: 100%; background: none; border: none; cursor: pointer;
+    padding: 22px 0; text-align: left;
+    font-family: var(--font-body); font-size: 16px; font-weight: 500; color: var(--ink);
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--red); }
+  .faq-arrow { font-size: 18px; color: var(--ink-3); transition: transform 0.3s; flex-shrink: 0; }
+  .faq-item.open .faq-arrow { transform: rotate(45deg); color: var(--red); }
+  .faq-a {
+    font-size: 15px; font-weight: 300; color: var(--ink-2); line-height: 1.7;
+    padding: 0 0 20px; display: none;
+    max-width: 600px;
+  }
+  .faq-item.open .faq-a { display: block; }
+
+  /* FINAL CTA */
+  .final-cta-section {
+    padding: 120px 5vw;
+    text-align: center;
+    background: var(--cream);
+    max-width: 100%;
+  }
+  .final-cta-inner { max-width: 640px; margin: 0 auto; }
+  .final-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 24px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .final-label::before, .final-label::after { content: ''; flex: 0 0 32px; height: 1px; background: var(--cream-3); }
+  .final-h {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900; letter-spacing: -2px;
+    color: var(--ink); line-height: 1.05; margin-bottom: 20px;
+  }
+  .final-h em { font-style: italic; color: var(--red); }
+  .final-sub { font-size: 18px; font-weight: 300; color: var(--ink-2); line-height: 1.7; margin-bottom: 40px; }
+
+  .final-cta-btns { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .btn-large {
+    background: var(--red); color: white;
+    font-family: var(--font-body); font-size: 16px; font-weight: 500;
+    padding: 16px 36px; border-radius: 100px; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+  }
+  .btn-large:hover { background: var(--red-dark); transform: translateY(-2px); }
+
+  .final-note { font-size: 12px; color: var(--ink-3); margin-top: 20px; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); padding: 48px 5vw;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+  }
+  .footer-logo { font-family: var(--font-display); font-size: 20px; font-weight: 900; color: white; }
+  .footer-logo span { color: var(--red); }
+  .footer-tagline { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+  .footer-links { display: flex; gap: 28px; flex-wrap: wrap; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: white; }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); width: 100%; }
+
+  /* FULL-WIDTH WRAPPERS */
+  .full-rsvp { background: var(--ink); }
+  .full-problem { background: var(--cream-2); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 48px; }
+    .hero-visual { display: none; }
+    .steps-container { grid-template-columns: 1fr; }
+    .rsvp-inner { grid-template-columns: 1fr; gap: 48px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .testi-card:first-child { grid-column: 1; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Bae<span>Quest</span></div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="#cta" class="nav-cta">Check in tonight</a>
+</nav>
+
+<!-- HERO -->
+<div style="background: var(--cream);">
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow fade-up fade-up-1">
+      <span class="eyebrow-dot"></span>
+      Not a dating app. A going-out app.
+    </div>
+    <h1 class="fade-up fade-up-2">
+      You're going out<br><em>anyway.</em>
+    </h1>
+    <p class="hero-sub fade-up fade-up-3">
+      RSVP to a nearby bar, arcade, or cafe. See who else is going. <strong>Say hello when you get there.</strong> No swiping. No pressure. Just people in the same room.
+    </p>
+    <div class="hero-ctas fade-up fade-up-4">
+      <a href="#cta" class="btn-primary">See who's out near me →</a>
+      <a href="#how" class="btn-secondary">How it works ↓</a>
+    </div>
+    <div class="place-tags fade-up fade-up-5">
+      <span class="place-tag">🍺 Bars & pubs</span>
+      <span class="place-tag">🎮 Arcades</span>
+      <span class="place-tag">🎱 Pool halls</span>
+      <span class="place-tag">☕ Cafes</span>
+      <span class="place-tag">🎵 Live music</span>
+    </div>
+  </div>
+
+  <div class="hero-visual fade-up fade-up-3">
+    <div class="venue-card-stack">
+      <div class="venue-card back2"></div>
+      <div class="venue-card back1"></div>
+      <div class="venue-card main">
+        <div class="live-badge">
+          <span class="live-dot"></span> 14 people going tonight
+        </div>
+        <div class="venue-img">
+          <div class="venue-img-bg">
+            <div class="venue-img-icon">🍺</div>
+            <div class="venue-img-label">The Anchor, Shoreditch</div>
+          </div>
+        </div>
+        <div class="venue-name">The Anchor</div>
+        <div class="venue-address">📍 23 Brick Lane, Shoreditch · 0.3 mi</div>
+        <div class="venue-who">
+          <div class="venue-who-label">Going tonight</div>
+          <div style="display:flex; align-items:center;">
+            <div class="avatar-row">
+              <div class="avatar" style="background:#C41E3A;">PK</div>
+              <div class="avatar" style="background:#3D2E2B;">AR</div>
+              <div class="avatar" style="background:#8B1426;">MJ</div>
+              <div class="avatar" style="background:#7A6560;">SL</div>
+            </div>
+            <span class="venue-who-text">+10 others</span>
+          </div>
+        </div>
+        <button class="rsvp-btn">RSVP — I'm going tonight</button>
+      </div>
+      <div class="notification-bubble">
+        <div class="notif-name">Priya checked in ✓</div>
+        <div class="notif-msg">She's at The Anchor right now</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item">
+    <span class="trust-icon">📍</span>
+    <span><span class="trust-num">500+</span> venues listed</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">👥</span>
+    <span><span class="trust-num">No swiping.</span> Ever.</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">🔒</span>
+    <span>Check-in <span class="trust-num">expires</span> when you leave</span>
+  </div>
+  <div class="trust-item">
+    <span class="trust-icon">💬</span>
+    <span>Break the ice <span class="trust-num">in-app</span> first</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div id="how" class="how-wrap">
+<div class="how-inner">
+  <div class="section-label">How it works</div>
+  <h2 class="section-h">Four steps.<br><em>Zero awkwardness.</em></h2>
+  <p class="section-sub">The whole point is that you're already going somewhere. BaeQuest just makes sure you know who else will be there — before you even walk in.</p>
+
+  <div class="steps-container">
+    <div class="step-card">
+      <div class="step-number">01</div>
+      <div class="step-icon">📍</div>
+      <div class="step-title">Find a place nearby</div>
+      <div class="step-body">Browse venues near you — bars, arcades, cafes, pool halls. See what's happening tonight and who's planning to go.</div>
+    </div>
+    <div class="step-card featured">
+      <div class="step-badge">The key step</div>
+      <div class="step-number">02</div>
+      <div class="step-icon">✅</div>
+      <div class="step-title">RSVP before you go</div>
+      <div class="step-body">Commit to a place. The moment you RSVP, you can see everyone else who's going — and they can see you. The ice is already broken before you arrive.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-number">03</div>
+      <div class="step-icon">💬</div>
+      <div class="step-title">Say hello in the app</div>
+      <div class="step-body">Browse who's going. Send a quick message if something sparks. By the time you're in the same room, you're not strangers anymore.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-number">04</div>
+      <div class="step-icon">🤝</div>
+      <div class="step-title">Walk over. That's it.</div>
+      <div class="step-body">Show up, check in, and let the night take over. No host. No name badge. Just you, a great spot, and people who chose to be there too.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- RSVP SECTION -->
+<div class="full-rsvp">
+<div class="rsvp-inner">
+  <div class="rsvp-content">
+    <div class="section-label">Why RSVP matters</div>
+    <h2 class="section-h" style="color:white;">The hardest part of going out<br><em style="color:#E05A73;">is going alone.</em></h2>
+    <p class="section-sub">RSVP removes that fear entirely. You're not cold-walking into a bar hoping for the best — you know someone will be there, and they know you're coming.</p>
+    <div class="rsvp-benefits">
+      <div class="rsvp-benefit">
+        <div class="rsvp-benefit-icon">👀</div>
+        <div class="rsvp-benefit-text">
+          <h4>See who's going before you commit</h4>
+          <p>Browse the people who've RSVP'd before you even decide to go. No more mystery about who you'll meet.</p>
+        </div>
+      </div>
+      <div class="rsvp-benefit">
+        <div class="rsvp-benefit-icon">🧊</div>
+        <div class="rsvp-benefit-text">
+          <h4>Break the ice before you arrive</h4>
+          <p>Send a message, share a common interest, or just wave in the app. The first hello happens on your phone, not in the middle of a crowded bar.</p>
+        </div>
+      </div>
+      <div class="rsvp-benefit">
+        <div class="rsvp-benefit-icon">🎯</div>
+        <div class="rsvp-benefit-text">
+          <h4>Arrive with context, not anxiety</h4>
+          <p>You know the place. You know a face or two. Walking in doesn't feel like walking into the unknown anymore.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rsvp-visual">
+    <div style="font-size:11px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:12px;">Tonight near you</div>
+
+    <div class="rsvp-event-card active">
+      <div class="event-time-block">
+        <span class="event-time">8 PM</span>
+        <span class="event-day">Tonight</span>
+      </div>
+      <div class="event-info">
+        <div class="event-name">The Anchor, Shoreditch</div>
+        <div class="event-venue">🍺 Pub · 14 people RSVP'd</div>
+      </div>
+      <div class="event-going">
+        <span class="going-count">You're going</span>
+        <span class="going-pill joined">✓ RSVP'd</span>
+      </div>
+    </div>
+
+    <div class="rsvp-event-card">
+      <div class="event-time-block">
+        <span class="event-time">7 PM</span>
+        <span class="event-day">Tonight</span>
+      </div>
+      <div class="event-info">
+        <div class="event-name">Level Up Arcade Bar</div>
+        <div class="event-venue">🎮 Arcade · 9 people RSVP'd</div>
+      </div>
+      <div class="event-going">
+        <span class="going-count">9 going</span>
+        <span class="going-pill">RSVP →</span>
+      </div>
+    </div>
+
+    <div class="rsvp-event-card">
+      <div class="event-time-block">
+        <span class="event-time">9 PM</span>
+        <span class="event-day">Tonight</span>
+      </div>
+      <div class="event-info">
+        <div class="event-name">Corner Pocket, Dalston</div>
+        <div class="event-venue">🎱 Pool hall · 6 people RSVP'd</div>
+      </div>
+      <div class="event-going">
+        <span class="going-count">6 going</span>
+        <span class="going-pill">RSVP →</span>
+      </div>
+    </div>
+
+    <div class="rsvp-event-card">
+      <div class="event-time-block">
+        <span class="event-time">8 PM</span>
+        <span class="event-day">Tomorrow</span>
+      </div>
+      <div class="event-info">
+        <div class="event-name">Monmouth Coffee, Borough</div>
+        <div class="event-venue">☕ Cafe · 5 people RSVP'd</div>
+      </div>
+      <div class="event-going">
+        <span class="going-count">5 going</span>
+        <span class="going-pill">RSVP →</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PROBLEM SECTION -->
+<div class="full-problem">
+<div class="problem-inner">
+  <div style="padding: 100px 0;">
+  <div class="section-label">The real problem</div>
+  <div class="problem-grid">
+    <div class="problem-left">
+      <h2 class="section-h">Dating apps were never<br><em>the answer.</em><br>The screen was.</h2>
+      <blockquote class="problem-pull">
+        "The spark you feel when you actually meet someone — no algorithm can manufacture that."
+      </blockquote>
+    </div>
+    <div class="pain-cards">
+      <div class="pain-card">
+        <div class="pain-icon">📱</div>
+        <div>
+          <div class="pain-title">Mindless swiping</div>
+          <div class="pain-body">Hours spent judging people by three photos and a bio. You never really know someone until you're in the same room.</div>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">👻</div>
+        <div>
+          <div class="pain-title">Ghosting and dead matches</div>
+          <div class="pain-body">Great conversation, then nothing. Without a real-world connection, there's no gravity holding it together.</div>
+        </div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">😬</div>
+        <div>
+          <div class="pain-title">The cold walk-in</div>
+          <div class="pain-body">You want to meet people. But showing up alone with no context — not knowing a single face — is terrifying.</div>
+        </div>
+      </div>
+      <div class="pain-card" style="background: var(--red-light); border-color: #F4C0D1;">
+        <div class="pain-icon">✅</div>
+        <div>
+          <div class="pain-title" style="color: var(--red);">BaeQuest skips all of it</div>
+          <div class="pain-body">RSVP. See who's going. Say hello in-app. Walk in knowing someone. The hard part is already done.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-label">Features</div>
+  <h2 class="section-h">Built for real life.<br><em>Not your phone screen.</em></h2>
+  <p class="section-sub">Every feature exists to get you off the app and into the room faster.</p>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon-wrap">📍</div>
+      <div class="feat-title">Real places, real people</div>
+      <div class="feat-body">Every connection happens at an actual venue. You know where you're meeting before you even leave home.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">✅</div>
+      <div class="feat-title">RSVP gives you confidence</div>
+      <div class="feat-body">Know who's going before you commit. Walk in prepared, not anxious.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">🛡️</div>
+      <div class="feat-title">Zero pressure, always</div>
+      <div class="feat-body">We're not promising you a date. We're showing you who's around. What happens next is entirely yours to decide.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">⚡</div>
+      <div class="feat-title">Tonight, not next week</div>
+      <div class="feat-body">No scheduling weeks ahead. Browse tonight's spots and RSVP in seconds. Real life moves fast.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">🔒</div>
+      <div class="feat-title">Your check-in, your choice</div>
+      <div class="feat-body">You appear only when you RSVP. Your check-in expires when you leave. You're never trackable 24/7.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">❤️</div>
+      <div class="feat-title">Friends, dates, or just good company</div>
+      <div class="feat-body">We're not labelling what you're looking for. BaeQuest works for whatever the night turns into.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<div style="background: var(--cream-2); padding: 100px 0;">
+<div style="max-width:1200px; margin:0 auto; padding:0 5vw;">
+  <div class="section-label">What happens when you show up</div>
+  <h2 class="section-h" style="margin-bottom:48px;">Real nights.<br><em>Real stories.</em></h2>
+  <div class="testimonials-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"I signed up thinking it was another Tinder. It's not. It's more like giving yourself permission to talk to strangers in the places you already love. I RSVP'd to a pub near mine on a Tuesday — walked in knowing two names already. Left with five."</div>
+      <div class="testi-person">
+        <div class="testi-avatar" style="background:#C41E3A;">AK</div>
+        <div>
+          <div class="testi-name">Aisha K.</div>
+          <div class="testi-detail">26, Birmingham</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"I hate dating apps. The RSVP made all the difference — by the time I walked in, we'd already messaged. No cold approach."</div>
+      <div class="testi-person">
+        <div class="testi-avatar" style="background:#3D2E2B;">MR</div>
+        <div>
+          <div class="testi-name">Marcus R.</div>
+          <div class="testi-detail">33, Manchester</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-quote">"I was going to the arcade anyway. RSVPing took 10 seconds. Met three people I'm still friends with."</div>
+      <div class="testi-person">
+        <div class="testi-avatar" style="background:#854F0B;">JP</div>
+        <div>
+          <div class="testi-name">Jamie P.</div>
+          <div class="testi-detail">29, London</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FAQ -->
+<section id="faq">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start;">
+    <div>
+      <div class="section-label">FAQ</div>
+      <h2 class="section-h">Questions you're<br><em>probably thinking</em></h2>
+      <p style="font-size:16px; font-weight:300; color:var(--ink-2); line-height:1.7; margin-top:16px;">We know what you're wondering. Here's the honest answer to all of it.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is this a dating app? <span class="faq-arrow">+</span></button>
+        <div class="faq-a">Not exactly. BaeQuest is a check-in and RSVP app that lets you see who's at the same place as you. Whether that goes anywhere romantically is entirely up to you. We're not in the matchmaking business — we're in the "you're already in the same room" business.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Why does the RSVP matter so much? <span class="faq-arrow">+</span></button>
+        <div class="faq-a">Because the hardest part of meeting people isn't the conversation — it's the cold walk-in. When you RSVP, you can see who's going and message them before you arrive. By the time you walk through the door, you're not a stranger anymore.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is it safe? <span class="faq-arrow">+</span></button>
+        <div class="faq-a">Yes. You only appear when you actively RSVP or check in. Your visibility expires when you leave. You're never broadcasting your location continuously — only when you choose to, at a specific venue, for a specific window of time.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What if I'm shy? <span class="faq-arrow">+</span></button>
+        <div class="faq-a">That's exactly who BaeQuest is for. You can browse who's going, message someone in-app before you arrive, and have a soft introduction sorted before you set foot in the place. No cold approach required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Does it work if I'm already out with friends? <span class="faq-arrow">+</span></button>
+        <div class="faq-a">Absolutely. RSVP as a group or solo. BaeQuest works whether you're flying solo or with a crowd — it just shows you who else is going to the same spot.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<div id="cta" class="final-cta-section">
+  <div class="final-cta-inner">
+    <div class="final-label">Tonight could go anywhere</div>
+    <h2 class="final-h">RSVP somewhere.<br><em>See what happens.</em></h2>
+    <p class="final-sub">Check in, see who's going, say hello before you even arrive. The rest is up to you.</p>
+    <div class="final-cta-btns">
+      <a href="#" class="btn-large">See who's out near me tonight →</a>
+    </div>
+    <p class="final-note">No subscription. No swiping. No pressure.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Bae<span>Quest</span></div>
+    <div class="footer-tagline">Not a dating app. A going-out app.</div>
+  </div>
+  <div class="footer-links">
+    <a href="#">How it works</a>
+    <a href="#">Find places</a>
+    <a href="#">About</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 BaeQuest. All rights reserved.</div>
+</footer>
+
+<script>
+function toggleFaq(btn) {
+  var item = btn.parentElement;
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(el) { el.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+document.querySelector('.faq-item').classList.add('open');
+</script>
+</body>
+</html>

@@ -1,131 +1,202 @@
-import { useEffect } from "react";
+// src/pages/OtherUsers.jsx
+
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from '../utils/socket';
+
+import useEventStore from "../store/useEventStore";
+
 import "../blocks/otherusers.css";
 
-export default function OtherUsers({
-  otherProfiles,
-  setOtherProfiles,
-  handleCheckoutModal,
-  currentEvent,
-}) {
+import getImageUrl from "../utils/getImageUrl";
+
+export default function OtherUsers({ handleCheckoutModal }) {
   const navigate = useNavigate();
 
-  const baseUrl = import.meta.env.PROD
-    ? "https://api.baequests.com"
-    : "http://localhost:3001";
+  const { currentEvent, otherProfiles } = useEventStore();
 
-  const getImageUrl = (pictureUrl) => {
-    if (!pictureUrl) return null;
-    if (pictureUrl.startsWith('http://') || pictureUrl.startsWith('https://')) {
-      return pictureUrl;
-    }
-    return `${baseUrl}${pictureUrl}`;
-  };
+  // remove duplicates + invalid users
+  const users = useMemo(() => {
+    const map = new Map();
+
+    (otherProfiles || []).forEach((user) => {
+      if (!user?._id) return;
+
+      if (!map.has(user._id)) {
+        map.set(user._id, user);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [otherProfiles]);
 
   useEffect(() => {
     if (!currentEvent?._id) {
       navigate("/events");
-      return;
     }
-
-    const eventId = currentEvent._id;
-    socket.emit("join-event", { eventId });
-
-    socket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
-    });
-
-    socket.on("error", (error) => {
-      console.error("Socket error:", error);
-    });
-
-    socket.on("user-checked-out", ({ userId, eventId: outEventId }) => {
-      if (String(outEventId) === String(eventId)) {
-        setOtherProfiles((prev) => prev.filter((u) => String(u.owner) !== String(userId)));
-      }
-    });
-
-    socket.on("user-checked-in", ({ user, eventId: inEventId }) => {
-      if (String(inEventId) === String(eventId)) {
-        setOtherProfiles((prev) => {
-          if (prev.some(p => p._id === user._id)) return prev;
-          return [...prev, user];
-        });
-      }
-    });
-
-    return () => {
-      socket.off("user-checked-in");
-      socket.off("user-checked-out");
-      socket.off("connect_error");
-      socket.off("error");
-      socket.emit("leave-event", { eventId });
-    };
-  }, [currentEvent, navigate, setOtherProfiles]);
+  }, [currentEvent, navigate]);
 
   return (
-    <div className="others">
-      <div className="others__event-info">
-        <h1 className="others__title">{currentEvent?.name || "Event"}</h1>
-        {currentEvent?.address && (
-          <p className="others__location">{currentEvent.address}</p>
-        )}
-      </div>
-      <h2 className="others__subtitle">People Checked In</h2>
+    <main className="pt-24 pb-28 px-4 md:px-8 max-w-7xl mx-auto">
+      {/* ===================================== */}
+      {/* EVENT INFO */}
+      {/* ===================================== */}
 
-      {otherProfiles.length === 0 ? (
-        <div className="others__empty">
-          <p>No one else has checked in yet.</p>
-          <p>You&apos;ll be notified when other users arrive.</p>
+      <div className="mb-6 sm:mb-8 md:mb-10 text-center px-4">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-headline font-extrabold text-on-surface tracking-tight mb-2">
+          People Checked In
+        </h1>
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-primary font-semibold font-headline text-sm sm:text-base md:text-lg">
+            {currentEvent?.name || "Event"}
+          </span>
+          <div className="flex items-center gap-1.5 text-on-surface-variant">
+            <span className="material-symbols-outlined text-base sm:text-[18px]">
+              location_on
+            </span>
+            <span className="text-xs sm:text-sm font-medium">
+              {currentEvent?.address && currentEvent.address}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ===================================== */}
+      {/* USERS */}
+      {/* ===================================== */}
+
+      {users.length === 0 ? (
+        <div className="relative group px-4">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+          <div className="relative bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-lg p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col items-center justify-center text-center shadow-sm">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-surface-container-low rounded-full flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
+              <span className="material-symbols-outlined text-3xl sm:text-4xl md:text-5xl text-on-surface-variant/40">
+                person_search
+              </span>
+            </div>
+            <h3 className="text-lg sm:text-xl font-headline font-bold text-on-surface mb-2 sm:mb-3">
+              Waiting for company?
+            </h3>
+            <p className="text-xs sm:text-sm md:text-base text-on-surface-variant leading-relaxed max-w-xs sm:max-w-sm">
+              No one else has checked in yet. You'll be notified when other
+              users arrive.
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="others__grid">
-          {otherProfiles.map((user) => (
-            <div className="others__card" key={user._id}>
-              <div className="others__header">
-                <div className="others__avatar">
-                  {user.profilePicture ? (
-                    <img
-                      key={user.profilePicture}
-                      src={getImageUrl(user.profilePicture)}
-                      alt={`${user.name}'s profile`}
-                      className="others__avatar-image"
-                    />
-                  ) : (
-                    <div className="others__avatar-placeholder">
-                      {user.name ? user.name.charAt(0).toUpperCase() : "?"}
-                    </div>
-                  )}
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+          {users.map((user) => (
+            <div
+              key={user.owner || user._id}
+              className="group bg-white rounded-[24px] sm:rounded-[30px] overflow-hidden border border-pink-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer"
+            >
+              {/* IMAGE */}
+              <div className="relative w-full h-[220px] sm:h-[240px] md:h-[260px] lg:h-[280px] overflow-hidden bg-gray-100">
+                {user.profilePicture ? (
+                  <img
+                    src={getImageUrl(user.profilePicture)}
+                    alt={user.name || "User"}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary-50 text-5xl sm:text-6xl font-bold text-gray-600">
+                    {user.name?.charAt(0)?.toUpperCase() || "?"}
+                  </div>
+                )}
+
+                {/* Online Dot */}
+                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-green-500 border-[3px] border-white shadow-md" />
               </div>
 
-              <div className="others__content">
-                <h2 className="others__name">
-                  {user.name}, {user.age}
-                </h2>
-                {user.profession && (
-                  <p className="others__profession">{user.profession}</p>
-                )}
-                <p className="others__bio">{user.bio}</p>
+              {/* CONTENT */}
+              <div className="p-4 sm:p-5 lg:p-6">
+                {/* Name + Age */}
+                <div>
+                  <h2 className="text-[20px] sm:text-[22px] lg:text-[24px] font-bold text-priamry leading-tight break-words">
+                    {user.name || "Anonymous"}
 
-                <div className="others__interests">
-                  {user.interests.map((interest, i) => (
-                    <span className="others__interest" key={i}>
-                      {interest}
-                    </span>
-                  ))}
+                    {user.age && (
+                      <span className="font-medium text-gray-500">
+                        , {user.age}
+                      </span>
+                    )}
+                  </h2>
+
+                  {user.profession && (
+                    <p className="text-gray-500 text-sm sm:text-[15px] mt-1">
+                      {user.profession}
+                    </p>
+                  )}
                 </div>
 
-                <p className="others__starter">{user.convoStarter}</p>
+                {/* Bio */}
+                {user.bio && (
+                  <p className="text-gray-600 text-sm sm:text-base leading-6 sm:leading-7 mt-4 line-clamp-3">
+                    {user.bio}
+                  </p>
+                )}
+
+                {/* Interests */}
+                {(user.interests || []).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4 sm:mt-5">
+                    {user.interests.map((interest, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1.5 rounded-full bg-primary-50 text-primary text-xs sm:text-sm font-medium border border-pink-100"
+                      >
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Conversation Starter */}
+                {user.convoStarter && (
+                  <div className="flex items-start gap-3 mt-4 sm:mt-5 p-3 sm:p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                    <div className="shrink-0 mt-1 text-gray-500">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 10h8M8 14h5m-9 7 1.405-4.215A9 9 0 1 1 21 12a9 9 0 0 1-9 9H4z"
+                        />
+                      </svg>
+                    </div>
+
+                    <p className="text-gray-700 text-sm sm:text-[15px] leading-6 sm:leading-7 break-words">
+                      {user.convoStarter}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
-      <button onClick={handleCheckoutModal} type="button" className="others__checkout">
-        Check Out
-      </button>
-    </div>
+
+      {/* ===================================== */}
+      {/* CHECKOUT */}
+      {/* ===================================== */}
+      <div className="pt-10 sm:pt-14 md:pt-20 w-full px-4 sm:px-6 flex justify-center pointer-events-none">
+        <div className="w-full max-w-md sm:max-w-lg xl:max-w-xl pointer-events-auto">
+          <button
+            className="w-full py-3 sm:py-4 md:py-5 rounded-lg bg-primary text-white font-headline font-bold text-sm sm:text-base md:text-lg shadow-[0_20px_50px_rgba(189,12,59,0.2)] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3"
+            onClick={handleCheckoutModal}
+          >
+            <span className="material-symbols-outlined text-base sm:text-lg">
+              logout
+            </span>
+            Check Out
+          </button>
+        </div>
+      </div>
+    </main>
   );
 }

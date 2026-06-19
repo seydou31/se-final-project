@@ -63,8 +63,7 @@
 }
 
 .modal__title {
-  font-family: var(--font-display);
-  color: var(--pink-600);
+  color: #BD0C3B;
   font-size: 1.75rem;
   font-weight: 700;
   padding-top: 40px;
