@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useContext, useState } from "react";
 import AppContext from "../context/AppContext";
@@ -9,7 +9,6 @@ export default function Header({ isLoggedIn, handleLoginModal, handleLogout, isL
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const closeMenu = () => { setMenuOpen(false); setUserMenuOpen(false); };
 

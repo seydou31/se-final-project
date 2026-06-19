@@ -18,7 +18,6 @@ export default function EventsPage({
   const { isCheckedIn, currentEvent } = useEventStore();
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [userCoords, setUserCoords] = useState(null);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [filters, setFilters] = useState({ state: "", city: "", zipcode: "", dateFrom: "", dateTo: "" });
@@ -63,9 +62,7 @@ export default function EventsPage({
 
   const fetchEvents = async (coords, filterOverrides, silent = false) => {
     try {
-      if (silent) {
-        setIsRefreshing(true);
-      } else {
+      if (!silent) {
         setIsLoading(true);
       }
       const activeFilters = { ...filters, ...filterOverrides };
@@ -77,7 +74,6 @@ export default function EventsPage({
       toast.error("Failed to load events");
     } finally {
       setIsLoading(false);
-      setIsRefreshing(false);
     }
   };
 

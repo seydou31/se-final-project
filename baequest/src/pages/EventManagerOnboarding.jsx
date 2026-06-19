@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { eventManagerGetOnboardingLink, eventManagerVerifyOnboarding } from "../utils/api.js";
-import logo from "../assets/logo.png";
 
 function StatusScreen({ icon, iconFill, title, subtitle, children }) {
   return (

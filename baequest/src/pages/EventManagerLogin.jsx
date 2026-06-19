@@ -24,7 +24,9 @@ export default function EventManagerLogin() {
       // If a regular user session is active, log it out first —
       // the EM login will overwrite the shared jwt cookie server-side anyway.
       if (isLoggedIn) {
-        try { await logout(); } catch {}
+        try { await logout(); } catch (err) {
+          console.error(err);
+        }
         localStorage.removeItem('tokenExists');
       }
       const res = await eventManagerLogin({ email, password });

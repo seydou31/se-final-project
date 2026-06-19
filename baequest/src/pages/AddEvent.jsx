@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createCuratedEvent, eventManagerGetMe } from "../utils/api.js";
+import { createCuratedEvent } from "../utils/api.js";
 import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
-import Footer from "../components/Footer.jsx";
 import { useEventManagerAuth } from "../context/EventManagerAuthContext";
 
 const inputClass =

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "../hooks/useForm.js";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import logo from "../assets/logo.png";
@@ -18,7 +18,6 @@ export default function SignUpPage({
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const mobileGoogleSignup = useGoogleLogin({
     onSuccess: (tokenResponse) => handleGoogleSignupWithToken(tokenResponse.access_token),

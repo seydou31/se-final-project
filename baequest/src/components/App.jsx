@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Routes,
   Route,
-  Navigate,
   useNavigate,
   useLocation,
 } from "react-router-dom";
@@ -90,9 +89,7 @@ function App() {
     otherProfiles,
     isCheckedIn,
     checkInSuccess,
-    setCurrentEvent,
     setOtherProfiles,
-    setCheckedIn,
     clearEventState,
   } = useEventStore();
 
@@ -341,7 +338,12 @@ function App() {
     setIsLoggingOut(true);
     try {
       if (currentEvent?._id) {
-        try { await checkoutFromEvent(currentEvent._id); } catch {}
+        try { 
+          await checkoutFromEvent(currentEvent._id); 
+        } 
+        catch (err) {
+          console.error(err);
+        }
       }
       await logout();
       setIsLoggedIn(false);
@@ -561,7 +563,12 @@ const handleCheckin = async (eventData) => {
     setIsDeletingAccount(true);
     try {
       if (isCheckedIn && currentEvent?._id) {
-        try { await checkoutFromEvent(currentEvent._id); clearEventState(); } catch {}
+        try { 
+          await checkoutFromEvent(currentEvent._id); clearEventState(); 
+        } 
+        catch (err) {
+          console.error(err);
+        }
       }
       await Promise.all([deleteProfile(), deleteUser()]);
       handleCloseModal();

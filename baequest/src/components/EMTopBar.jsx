@@ -12,12 +12,15 @@ export default function EMTopBar({ title, me }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropOpen, setDropOpen]  = useState(false);
+  //const [dropOpen, setDropOpen]  = useState(false);
 
   const initial = me?.name?.charAt(0).toUpperCase() ?? "?";
 
   async function handleLogout() {
-    try { await logout(); } catch {}
+    try { await logout(); } 
+    catch (err) {
+      console.error(err);
+    }
     navigate("/event-manager/login");
   }
 

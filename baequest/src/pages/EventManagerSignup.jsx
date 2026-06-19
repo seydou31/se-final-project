@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { eventManagerRegister } from '../utils/api.js';
 import logo from '../assets/logo.png';
 
@@ -8,7 +8,6 @@ export default function EventManagerSignup() {
   const [error, setError]     = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
 
   const set = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
 

@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  eventManagerGetMe,
   eventManagerGetEvents,
 } from "../utils/api.js";
 import EMSidebar from "../components/EMSidebar.jsx";
@@ -325,10 +324,10 @@ export default function EventManagerMyEvents() {
   );
 }
 
-function LoadingSkeleton({ cols }) {
+function LoadingSkeleton({ cols = 5 }) {
   return (
     <div className="p-5 space-y-3">
-      {[...Array(5)].map((_, i) => (
+      {[...Array(cols)].map((_, i) => (
         <div key={i} className="flex gap-4 animate-pulse">
           <div className="w-12 h-12 rounded-lg bg-surface-container" />
           <div className="flex-1 space-y-2 py-1">

@@ -20,7 +20,9 @@ export default function EMSidebar({ me }) {
   async function handleLogout() {
     try {
       await logout();
-    } catch {}
+    } catch (err) {
+      console.error(err);
+    }
 
     logoutLocal(); // Clear Event Manager auth state
 

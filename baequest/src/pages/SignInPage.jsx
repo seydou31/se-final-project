@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "../hooks/useForm.js";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import logo from "../assets/logo.png";
@@ -15,7 +15,6 @@ export default function SignInPage({
   handleResendVerification,
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
 
   const mobileGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => handleGoogleLoginWithToken(tokenResponse.access_token),
