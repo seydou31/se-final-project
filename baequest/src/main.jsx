@@ -6,7 +6,7 @@ import './index.css'
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { initGA } from './utils/analytics.js';
-import { EventManagerAuthProvider } from "./context/EventManagerAuthContext";
+import { EventManagerAuthProvider } from "./context/EventManagerAuthProvider";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
