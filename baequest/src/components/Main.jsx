@@ -9,17 +9,16 @@ export default function Main({ onClick }) {
         <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="order-2 md:order-1 text-center md:text-left">
             <h1 className="font-headline text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight md:leading-none mb-4 sm:mb-6">
-              Show up.<span className="text-primary">See who's </span> there.
+              Meet people locally.<span className="text-primary">pick a vibe</span> see who's there.
             </h1>
             <p className="text-on-surface-variant text-base sm:text-lg md:text-xl leading-relaxed max-w-md mx-auto md:mx-0">
-              Walking into a room full of strangers is uncomfortable — because
-              you have no context and don't know who's open to talking.
+              Walking into a room full of strangers is uncomfortable — Because You don't know who to approach.
             </p>
             <p className="text-on-surface-variant text-small mt-6 mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-md mx-auto md:mx-0">
               BaeQuest gives you that context. Mark a nearby bar or arcade as
-              your plan for tonight. Show up. Check in. The people in that room
-              appear — and you appear to them.
+              your plan for tonight. Show up. Check in. The app shows you singles in that room. 
             </p>
+            
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
               <button
                 onClick={onClick}
@@ -42,7 +41,7 @@ export default function Main({ onClick }) {
                 Next Event: Friday Night Mix
               </p>
               <p className="text-on-surface-variant text-xs sm:text-sm mt-1">
-                $1 · 24 people going
+                $3 · 24 people going
               </p>
             </div>
           </div>
@@ -120,7 +119,7 @@ export default function Main({ onClick }) {
                 {
                   icon: "check_circle",
                   title: "BaeQuest gives you context",
-                  text: "Before the first conversation starts, you know someone else chose the same place tonight — and they know you did too.",
+                  text: "You know who's open to talking and have enough context to start a conversation naturally",
                   featured: true,
                 },
               ].map(({ icon, title, text, featured }) => (
@@ -279,8 +278,7 @@ export default function Main({ onClick }) {
               <p className="relative z-10 text-white/80 text-sm sm:text-base leading-relaxed mb-6">
                 Walk through the door. Open BaeQuest. Check in. Everyone else
                 who's checked in at the same place right now appears — and you
-                appear to them. Say hello in the app, then look up from your
-                phone.
+                appear to them. 
               </p>
 
               {/* Note */}
@@ -422,7 +420,7 @@ export default function Main({ onClick }) {
             {/* Left Content */}
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-white/10 text-primary text-[11px] sm:text-sm font-semibold tracking-wide uppercase mb-5">
-                Why This Exists
+                Why meeting people feels hard
               </span>
 
               <h2 className="font-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white mb-5 sm:mb-6">
@@ -668,7 +666,7 @@ export default function Main({ onClick }) {
             <div className="max-w-3xl mx-auto bg-white/10 border border-white/10 backdrop-blur-sm rounded-3xl p-5 sm:p-6 md:p-7 mb-8 sm:mb-10">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-4">
                 <span className="text-4xl sm:text-5xl font-black tracking-tight">
-                  $5
+                  $3
                 </span>
 
                 <div className="text-center sm:text-left">

@@ -1,6 +1,7 @@
 import {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -57,4 +58,12 @@ export function EventManagerAuthProvider({ children }) {
       {children}
     </EventManagerAuthContext.Provider>
   );
+}
+
+export function useEventManagerAuth() {
+  const context = useContext(EventManagerAuthContext);
+  if (!context) {
+    throw new Error("useEventManagerAuth must be used within an EventManagerAuthProvider");
+  }
+  return context;
 }
