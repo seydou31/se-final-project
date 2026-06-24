@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+import { describe, test, vi } from "vitest";
 import RequireEventManagerAuth from "./RequireEventManagerAuth";
 
 vi.mock(

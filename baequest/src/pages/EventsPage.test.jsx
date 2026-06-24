@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 import EventsPage from "./EventsPage";
 import SocketContext from "../context/SocketContext";
@@ -61,7 +61,7 @@ useEventStore.mockReturnValue({
   currentEvent: null,
 });
 
-global.navigator.geolocation = {
+globalThis.navigator.geolocation = {
   getCurrentPosition: vi.fn((success) =>
     success({
       coords: {
