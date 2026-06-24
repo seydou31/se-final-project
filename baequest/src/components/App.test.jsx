@@ -65,7 +65,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../context/EventManagerAuthContext",
+  "../hooks/useEventManagerAuth",
   () => ({
     useEventManagerAuth: () => ({
       loading: false,

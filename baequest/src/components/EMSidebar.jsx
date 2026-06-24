@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { logout } from "../utils/api";
 import toast from "react-hot-toast";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 
 const NAV = [
   { to: "/event-manager/dashboard",   icon: "dashboard",    label: "Overview"   },

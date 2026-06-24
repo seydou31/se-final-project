@@ -8,7 +8,7 @@ import {
 
 import { eventManagerGetMe } from "../utils/api";
 
-const EventManagerAuthContext = createContext(null);
+export const EventManagerAuthContext = createContext(null);
 
 export function EventManagerAuthProvider({ children }) {
   const [me, setMe] = useState(null);

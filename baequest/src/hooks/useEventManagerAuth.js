@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { EventManagerAuthContext } from "./EventManagerAuthContext";
+import { EventManagerAuthContext } from "../context/EventManagerAuthContext";
 
 export function useEventManagerAuth() {
   const context = useContext(EventManagerAuthContext);

@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 import Loading from "./Loading";
 
 export default function RequireEventManagerAuth() {

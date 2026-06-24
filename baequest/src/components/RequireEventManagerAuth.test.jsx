@@ -4,7 +4,7 @@ import { describe, test, vi } from "vitest";
 import RequireEventManagerAuth from "./RequireEventManagerAuth";
 
 vi.mock(
-  "../context/EventManagerAuthContext",
+  "../hooks/useEventManagerAuth",
   () => ({
     useEventManagerAuth: () => ({
       loading: false,
