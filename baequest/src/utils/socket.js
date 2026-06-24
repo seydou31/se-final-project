@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
 
-// Use localhost in development, production URL in production
-const socketUrl = import.meta.env.VITE_API_BASE_URL.replace(/^http/, "ws"); // Convert http(s) to ws(s) for WebSocket connection
+const apiBaseUrl =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+const socketUrl = apiBaseUrl.replace(/^http/, "ws");
 
 const socket = io(socketUrl, {
   autoConnect: false, // IMPORTANT: Don't connect until we have the token
