@@ -9,14 +9,13 @@ export default function Main({ onClick }) {
         <div className="grid md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="order-2 md:order-1 text-center md:text-left">
             <h1 className="font-headline text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight md:leading-none mb-4 sm:mb-6">
-              Meet people locally.<span className="text-primary">pick a vibe</span> see who's there.
+            <span className="text-primary">Meet singles in real life.</span> Not on a screen.
             </h1>
             <p className="text-on-surface-variant text-base sm:text-lg md:text-xl leading-relaxed max-w-md mx-auto md:mx-0">
-              Walking into a room full of strangers is uncomfortable — Because You don't know who to approach.
+              Meeting singles isn't the hard part. — Knowing who's open to meeting someone is.
             </p>
             <p className="text-on-surface-variant text-small mt-6 mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-md mx-auto md:mx-0">
-              BaeQuest gives you that context. Mark a nearby bar or arcade as
-              your plan for tonight. Show up. Check in. The app shows you singles in that room. 
+             BaeQuest gives you that context. Pick a venue, check in when you arrive, and instantly see other singles who are there, learn a little about them, and start the conversation naturally.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
@@ -118,8 +117,8 @@ export default function Main({ onClick }) {
                 },
                 {
                   icon: "check_circle",
-                  title: "BaeQuest gives you context",
-                  text: "You know who's open to talking and have enough context to start a conversation naturally",
+                  title: "Know who's open to meeting people.",
+                  text: "See who's here, learn a little about them, and walk over with a reason to say hello.",
                   featured: true,
                 },
               ].map(({ icon, title, text, featured }) => (
@@ -350,7 +349,7 @@ export default function Main({ onClick }) {
               {
                 num: "04",
                 icon: "forum",
-                title: "Say hello — in app or real life",
+                title: "Say hello",
                 text: "Break the ice with a message or just walk over. You're already in the same room.",
               },
             ].map(({ num, icon, title, text, featured }) => (
@@ -606,7 +605,7 @@ export default function Main({ onClick }) {
               {
                 icon: "shield",
                 title: "We don't label what you're looking for",
-                text: "BaeQuest is for meeting people. What that becomes — conversation, friendship, or more — is yours to figure out.",
+                text: "BaeQuest is for singles who want to meet other singles. Whether it becomes a conversation, a date, or something more is up to you.",
               },
               {
                 icon: "groups",
@@ -657,7 +656,7 @@ export default function Main({ onClick }) {
             </h2>
 
             <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Mark yourself as going. Walk in. Check in. The rest isn't up to an
+              Pick a place. Let others know you're going. Walk in. Check in. The rest isn't up to an
               algorithm —
               <span className="font-semibold text-white"> it's up to you.</span>
             </p>
@@ -696,7 +695,7 @@ export default function Main({ onClick }) {
               </div>
             </div>
             <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Just one check-in when you decide to participate.
+              The best nights usually start with one conversation. BaeQuest helps you start it.
             </p>
 
             {/* CTA Button */}
