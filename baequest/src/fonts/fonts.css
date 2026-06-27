@@ -1,0 +1,51 @@
+/*
+  Self-hosted fonts.
+  Drop the matching .woff2 files into this folder, then point each
+  src url() below at the filename you saved. Get the files from
+  https://fonts.google.com — search the family, "Get font", then
+  use a converter like https://gwfh.mranftl.com/fonts (google-webfonts-helper)
+  to grab woff2 instead of ttf.
+
+  Families needed (per index.html / index.css before this change):
+    - Inter            weights 300, 400, 500, 600, 700
+    - Plus Jakarta Sans weights 400, 500, 600, 700, 800
+    - Playfair Display  weights 600, 700
+    - Material Symbols Outlined (variable font, used as an icon font)
+*/
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('./inter-variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./plus-jakarta-sans-variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('./playfair-display-variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: block;
+  src: url('./material-symbols-outlined.woff2') format('woff2');
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

@@ -9,7 +9,7 @@ import {
 import EventManagerTermsModal from "../components/EventManagerTermsModal.jsx";
 import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 import getImageUrl from "../utils/getImageUrl.js";
 
 const TERMS_KEY = "em_terms_accepted";

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { eventManagerLogin, logout } from '../utils/api.js';
-import { useEventManagerAuth } from '../context/EventManagerAuthContext.jsx';
+import { useEventManagerAuth } from '../hooks/useEventManagerAuth';
 import AppContext from '../context/AppContext.js';
 import { useContext } from 'react';
 import logo from '../assets/logo.png';

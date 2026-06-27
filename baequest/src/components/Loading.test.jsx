@@ -1,25 +1,77 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import Loading from './Loading';
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import Loading from "./Loading";
 
-describe('Loading Component', () => {
-  it('renders loading spinner', () => {
+describe("Loading Component", () => {
+  it("renders default loading message", () => {
     render(<Loading />);
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Loading...")
+    ).toBeInTheDocument();
   });
 
-  it('displays custom message when provided', () => {
-    render(<Loading message="Please wait..." />);
-    expect(screen.getByText('Please wait...')).toBeInTheDocument();
+  it("renders custom loading message", () => {
+    render(
+      <Loading message="Fetching data..." />
+    );
+
+    expect(
+      screen.getByText("Fetching data...")
+    ).toBeInTheDocument();
   });
 
-  it('renders fullscreen variant when specified', () => {
-    const { container } = render(<Loading fullScreen />);
-    expect(container.querySelector('.loading--fullscreen')).toBeInTheDocument();
+  it("does not render message when empty string is passed", () => {
+    render(<Loading message="" />);
+
+    expect(
+      screen.queryByText("Loading...")
+    ).not.toBeInTheDocument();
   });
 
-  it('renders normal variant by default', () => {
+  it("renders fullscreen class when fullScreen=true", () => {
+    const { container } = render(
+      <Loading fullScreen />
+    );
+
+    const wrapper =
+      container.querySelector(".loading");
+
+    expect(wrapper).toHaveClass(
+      "loading--fullscreen"
+    );
+  });
+
+  it("renders normal loading class by default", () => {
     const { container } = render(<Loading />);
-    expect(container.querySelector('.loading--fullscreen')).not.toBeInTheDocument();
+
+    const wrapper =
+      container.querySelector(".loading");
+
+    expect(wrapper).not.toHaveClass(
+      "loading--fullscreen"
+    );
+  });
+
+  it("renders harmonium loader", () => {
+    const { container } = render(<Loading />);
+
+    const loader =
+      container.querySelector(
+        ".loading__harmonium"
+      );
+
+    expect(loader).toBeInTheDocument();
+  });
+
+  it("renders exactly 5 harmonium bars", () => {
+    const { container } = render(<Loading />);
+
+    const bars =
+      container.querySelectorAll(
+        ".loading__harmonium span"
+      );
+
+    expect(bars).toHaveLength(5);
   });
 });

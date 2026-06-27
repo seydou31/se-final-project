@@ -5,7 +5,7 @@ import {
 } from "../utils/api.js";
 import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 import getImageUrl from "../utils/getImageUrl.js";
 
 const PAGE_LIMIT = 10;

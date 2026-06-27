@@ -65,7 +65,7 @@ import AppContext from "../context/AppContext.js";
 import { trackPageView } from "../utils/analytics.js";
 import { SocketProvider } from "../context/SocketProvider.jsx";
 import RequireEventManagerAuth from "./RequireEventManagerAuth.jsx";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext.jsx";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 import useEventStore from "../store/useEventStore.js";
 import NotFound from "../pages/NotFound.jsx";
 import AuthRedirectRoute from "../routes/AuthRedirectRoute.jsx";

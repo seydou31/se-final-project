@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useForm } from "../hooks/useForm.js";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import logo from "../assets/logo.png";
+import socialevent from "../assets/socialevent.png";
+import SocialCommunity from "../assets/SocialCommunity.png";
 
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -151,7 +153,7 @@ export default function SignUpPage({
           <div className="hidden lg:flex lg:w-[45%] xl:w-[55%] p-6">
             <div className="w-full h-full rounded-xl overflow-hidden shadow-2xl">
               <img className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuATVv8LNSCq9MyjlUWc1Z9ci1dGsIwLSD_3CcsCxFaaN0O9f-bfqCYk7x5-oKclbL1utK5mYT1me3Vn6-TpCsTsdYh43SvN2Uc1-VhPqi6R2rnP_lk58gplw4K40U4NRzjZURbFlRkar_gEieqzFzRHrG5qozQnAxHyCvHqFpLVGA68zayJVp-ujPgrEnqWifX8EmuRkCbYR1Ox5MKIhOLbJrbHNb3hYE4ICUWbugGiSjYg_OwMdWnPfy-GUGRNn4iemRJktrM_Ag"
+                src={socialevent}
                 alt="People at a social event" />
             </div>
           </div>
@@ -163,7 +165,7 @@ export default function SignUpPage({
       <div className="lg:hidden w-full px-6 py-8 flex justify-center">
         <div className="w-full max-w-md h-40 rounded-xl overflow-hidden relative">
           <img alt="Social Community" className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxYX0yu37l8gENkVf0zcal229L0HHNdWIUuLyir2-P9a9wffVQhp57LX1edRQyss8b9YtkyVil7c-Qn8PAFqDGL7sd2-u8mneCZVgo222m5FIS4oeg-vxYGIaRpUkuXqq7T_YcugkOgTUZLHs9oYJ3bo4moJ_JdjQlp-fMf4NiEeKfiEcNvURkZDcWsloWoYsO5wWy-XNUDN2sUTlxOmIQNeQre915_6DflL-L9vZWs1kmUMVnoGlU_Weecbpe3yEGXw-1eNPltQ" />
+            src={SocialCommunity} />
           <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
         </div>
       </div>

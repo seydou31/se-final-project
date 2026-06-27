@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useForm } from "../hooks/useForm.js";
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import logo from "../assets/logo.png";
+import community from "../assets/community.png";
+import SocialCommunity from "../assets/SocialCommunity.png";
 
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -61,7 +63,7 @@ export default function SignInPage({
               </div>
               <div className="relative w-full aspect-square rounded-xl overflow-hidden shadow-2xl">
                 <img className="w-full h-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe3E6VzgAEFLGQFZHWD3CBsipayvMHeVkcSxOsrvJ-tGQeOO6eKZF-0I0yos40kFS27WdUWoCJR433m7buy_KukQ39FvW2KOU3nTudQaER8Ubl6dK-NiUq1hA_CNvmcvv7p33kOBKZZW0cscOsOzMPMxfgJKLYuN01P3VGl7RZK4HCv3FhdflCf6JUfQXIh4vNpoU1XCzAzXLxNm27re-Wf8Dk_9jZc07_VMVY84CL12RZpjoDEjH4yLTvM1-oIIW1eckmpmZkIQ"
+                  src={community}
                   alt="People connecting at an event" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 text-white">
@@ -173,7 +175,7 @@ export default function SignInPage({
       <div className="lg:hidden w-full px-6 py-8 flex justify-center">
         <div className="w-full max-w-md h-40 rounded-xl overflow-hidden relative">
           <img alt="Social Community" className="w-full h-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxYX0yu37l8gENkVf0zcal229L0HHNdWIUuLyir2-P9a9wffVQhp57LX1edRQyss8b9YtkyVil7c-Qn8PAFqDGL7sd2-u8mneCZVgo222m5FIS4oeg-vxYGIaRpUkuXqq7T_YcugkOgTUZLHs9oYJ3bo4moJ_JdjQlp-fMf4NiEeKfiEcNvURkZDcWsloWoYsO5wWy-XNUDN2sUTlxOmIQNeQre915_6DflL-L9vZWs1kmUMVnoGlU_Weecbpe3yEGXw-1eNPltQ" />
+            src={SocialCommunity} />
           <div className="absolute inset-0 bg-primary/20 mix-blend-overlay" />
         </div>
       </div>

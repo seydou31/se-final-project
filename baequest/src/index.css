@@ -1,8 +1,12 @@
-/* Google Fonts - Sophisticated Typography */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+/* Self-hosted fonts — see src/fonts/fonts.css */
+@import "./fonts/fonts.css";
 
 /* Normalize */
 @import "./vendor/normalize.css";
 
 /* ── Global smooth UI (from style.css) ── */
 @import "./vendor/style.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

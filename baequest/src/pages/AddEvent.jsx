@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createCuratedEvent } from "../utils/api.js";
 import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
-import { useEventManagerAuth } from "../context/EventManagerAuthContext";
+import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 
 const inputClass =
   "w-full bg-surface-container rounded-lg px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base placeholder:text-on-surface-variant/40 transition-shadow duration-200 hover:shadow-sm";

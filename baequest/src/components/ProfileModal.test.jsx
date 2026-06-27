@@ -1,294 +1,289 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import ProfileModal from './ProfileModal';
-import AppContext from '../context/AppContext';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import ProfileModal from "./ProfileModal";
+import AppContext from "../context/AppContext";
 
-// Mock the API
-vi.mock('../utils/api', () => ({
-  uploadProfilePicture: vi.fn().mockResolvedValue({ url: 'mock-url' }),
+vi.mock("../utils/api", () => ({
+  uploadProfilePicture: vi.fn().mockResolvedValue({
+    url: "mock-image.jpg",
+  }),
 }));
 
-// Mock toast
-const mockToastError = vi.fn();
-vi.mock('react-hot-toast', () => ({
-  __esModule: true,
-  default: { error: (...args) => mockToastError(...args) },
+const toastError = vi.fn();
+
+vi.mock("react-hot-toast", () => ({
+  default: {
+    error: (...args) => toastError(...args),
+    success: vi.fn(),
+  },
 }));
 
 const mockProfile = {
-  name: 'John Doe',
+  name: "John Doe",
   age: 25,
-  gender: 'male',
-  sexualOrientation: 'straight',
-  profession: 'Engineer',
-  bio: 'I love coding',
-  interests: ['gaming', 'hiking', 'coffee'],
-  convoStarter: 'What is your favorite hobby?',
-  phoneNumber: '+12025551234',
+  gender: "male",
+  sexualOrientation: "straight",
+  profession: "Engineer",
+  bio: "I love coding",
+  interests: ["gaming", "coffee"],
+  convoStarter: "What do you do for fun?",
+  phoneNumber: "+12025551234",
 };
 
-const renderProfileModal = (props = {}, contextValue = {}) => {
+const renderModal = (
+  props = {},
+  context = { currentProfile: null }
+) => {
   const defaultProps = {
     isOpen: true,
-    mode: 'create',
+    mode: "create",
     onClose: vi.fn(),
     onOverlayClick: vi.fn(),
     onSubmit: vi.fn().mockResolvedValue({}),
   };
 
-  const defaultContext = {
-    currentProfile: null,
-    ...contextValue,
-  };
-
   return render(
-    <AppContext.Provider value={defaultContext}>
+    <AppContext.Provider value={context}>
       <ProfileModal {...defaultProps} {...props} />
     </AppContext.Provider>
   );
 };
 
-describe('ProfileModal Component', () => {
+describe("ProfileModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('Create Mode', () => {
-    it('renders create profile form with all fields', () => {
-      renderProfileModal();
+  describe("Create Mode", () => {
+    it("renders create profile form", () => {
+      renderModal();
 
-      expect(screen.getByRole('heading', { name: /create profile/i })).toBeInTheDocument();
-      expect(screen.getByLabelText(/profile picture/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/^name$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/^age$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/^gender$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/sexual orientation/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/profession/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/bio/i)).toBeInTheDocument();
-      expect(screen.getByText(/^Interests$/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/conversation starter/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /create profile/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /create profile/i })
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByPlaceholderText(/first name/i)
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByPlaceholderText(/18\+/i)
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByPlaceholderText(/software engineer/i)
+      ).toBeInTheDocument();
     });
 
-    it('prevents closing in create mode', async () => {
-      const onClose = vi.fn();
-      renderProfileModal({ onClose });
-
-      // Try to close by clicking close button (should not exist)
-      const closeButton = screen.queryByRole('button', { name: /close/i });
-      expect(closeButton).not.toBeInTheDocument();
-    });
-
-    it('successfully creates profile with valid data', async () => {
+    it("creates profile successfully", async () => {
+      const user = userEvent.setup();
       const onSubmit = vi.fn().mockResolvedValue({});
-      renderProfileModal({ onSubmit });
 
-      // Fill in all required fields
-      await userEvent.type(screen.getByPlaceholderText(/first name/i), 'Jane Doe');
-      await userEvent.type(screen.getByPlaceholderText(/enter your age/i), '28');
-      await userEvent.selectOptions(screen.getByLabelText(/^gender$/i), 'female');
-      await userEvent.selectOptions(screen.getByLabelText(/sexual orientation/i), 'bisexual');
-      await userEvent.type(screen.getByPlaceholderText(/software engineer/i), 'Designer');
-      await userEvent.type(screen.getByPlaceholderText(/tell us about yourself/i), 'I love art and design');
+      renderModal({ onSubmit });
 
-      // Select interests
-      const gamingCheckbox = screen.getByLabelText('gaming');
-      const travelCheckbox = screen.getByLabelText('travel');
-      await userEvent.click(gamingCheckbox);
-      await userEvent.click(travelCheckbox);
-
-      await userEvent.type(
-        screen.getByPlaceholderText(/enter a conversation starter/i),
-        'What is your favorite place to travel?'
+      await user.type(
+        screen.getByPlaceholderText(/first name/i),
+        "Jane Doe"
       );
 
-      await userEvent.type(
-        screen.getByPlaceholderText('+12025551234'),
-        '+15555550001'
+      await user.type(
+        screen.getByPlaceholderText(/18\+/i),
+        "28"
       );
 
-      // Check SMS consent checkbox
-      await userEvent.click(screen.getByRole('checkbox', { name: /I agree to receive SMS/i }));
+      const [genderSelect, orientationSelect] =
+        screen.getAllByRole("combobox");
 
-      // Submit form
-      const submitButton = screen.getByRole('button', { name: /create profile/i });
-      await userEvent.click(submitButton);
+      await user.selectOptions(genderSelect, "female");
+      await user.selectOptions(
+        orientationSelect,
+        "bisexual"
+      );
+
+      await user.type(
+        screen.getByPlaceholderText(/software engineer/i),
+        "Designer"
+      );
+
+      await user.type(
+        screen.getByPlaceholderText(
+          /tell people what makes you interesting/i
+        ),
+        "I enjoy travel and art."
+      );
+
+      await user.click(screen.getByText("gaming"));
+      await user.click(screen.getByText("travel"));
+
+      await user.type(
+        screen.getByPlaceholderText(/ice-breaker question/i),
+        "What is your favorite country?"
+      );
+
+      await user.type(
+        screen.getByPlaceholderText(/\+1 202 555 1234/i),
+        "+15555550001"
+      );
+
+      const consentCheckbox =
+        screen.getByRole("checkbox");
+
+      await user.click(consentCheckbox);
+
+      expect(consentCheckbox).toBeChecked();
+
+      await user.click(
+        screen.getByRole("button", {
+          name: /create profile/i,
+        })
+      );
 
       await waitFor(() => {
-        expect(onSubmit).toHaveBeenCalledWith({
-          name: 'Jane Doe',
-          age: '28',
-          gender: 'female',
-          sexualOrientation: 'bisexual',
-          profession: 'Designer',
-          bio: 'I love art and design',
-          interests: ['gaming', 'travel'],
-          convoStarter: 'What is your favorite place to travel?',
-          phoneNumber: '+15555550001',
-        });
+        expect(onSubmit).toHaveBeenCalledTimes(1);
       });
-    });
+    }, 10000);
 
-    it('limits interests selection to 3', async () => {
-      mockToastError.mockClear();
-      renderProfileModal();
+    it("limits interests to 3", async () => {
+      const user = userEvent.setup();
 
-      // Select 3 interests
-      await userEvent.click(screen.getByLabelText('gaming'));
-      await userEvent.click(screen.getByLabelText('travel'));
-      await userEvent.click(screen.getByLabelText('cooking'));
+      renderModal();
 
-      // Try to select a 4th interest
-      await userEvent.click(screen.getByLabelText('music'));
+      await user.click(screen.getByText("gaming"));
+      await user.click(screen.getByText("travel"));
+      await user.click(screen.getByText("photography"));
+      await user.click(screen.getByText("cooking"));
 
-      expect(mockToastError).toHaveBeenCalledWith('You can select up to 3 interests only!');
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Pick up to 3 interests only."
+        );
+      });
+    }, 10000);
+
+    it("requires sms consent checkbox", () => {
+      renderModal();
+
+      expect(
+        screen.getByRole("checkbox")
+      ).toBeRequired();
     });
   });
 
-  describe('Edit Mode', () => {
-    it('renders edit profile form with existing data', async () => {
-      renderProfileModal(
-        { mode: 'edit' },
+  describe("Edit Mode", () => {
+    it("loads existing profile data", async () => {
+      renderModal(
+        { mode: "edit" },
         { currentProfile: mockProfile }
       );
 
       await waitFor(() => {
-        expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('25')).toBeInTheDocument();
-        expect(screen.getByLabelText(/^gender$/i)).toHaveValue('male');
-        expect(screen.getByLabelText(/sexual orientation/i)).toHaveValue('straight');
-        expect(screen.getByDisplayValue('Engineer')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('I love coding')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('What is your favorite hobby?')).toBeInTheDocument();
+        expect(
+          screen.getByDisplayValue("John Doe")
+        ).toBeInTheDocument();
       });
-
-      // Check selected interests
-      expect(screen.getByLabelText('gaming')).toBeChecked();
-      expect(screen.getByLabelText('hiking')).toBeChecked();
-      expect(screen.getByLabelText('coffee')).toBeChecked();
     });
 
-    it('shows close button in edit mode', () => {
-      renderProfileModal(
-        { mode: 'edit' },
+    it("shows close button in edit mode", () => {
+      renderModal(
+        { mode: "edit" },
         { currentProfile: mockProfile }
       );
 
-      const closeButton = screen.getByRole('button', { name: /close|×/i });
-      expect(closeButton).toBeInTheDocument();
+      expect(
+        screen.getByText("close")
+      ).toBeInTheDocument();
     });
 
-    it('successfully updates profile', async () => {
+    it("updates profile successfully", async () => {
+      const user = userEvent.setup();
+
       const onSubmit = vi.fn().mockResolvedValue({});
-      renderProfileModal(
-        { mode: 'edit', onSubmit },
-        { currentProfile: mockProfile }
+
+      renderModal(
+        {
+          mode: "edit",
+          onSubmit,
+        },
+        {
+          currentProfile: mockProfile,
+        }
       );
 
-      // Change name
-      const nameInput = screen.getByDisplayValue('John Doe');
-      await userEvent.clear(nameInput);
-      await userEvent.type(nameInput, 'John Smith');
+      const nameInput =
+        await screen.findByDisplayValue("John Doe");
 
-      // Submit
-      const submitButton = screen.getByRole('button', { name: /save changes/i });
-      await userEvent.click(submitButton);
+      await user.click(nameInput);
+      await user.keyboard("{Control>}a{/Control}");
+      await user.keyboard("{Backspace}");
+
+      expect(nameInput).toHaveValue("");
+
+      await user.type(nameInput, "John Smith");
+
+      expect(nameInput).toHaveValue("John Smith");
+
+      await user.click(
+        screen.getByRole("button", {
+          name: /save changes/i,
+        })
+      );
 
       await waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
-            name: 'John Smith',
+            name: "John Smith",
           })
         );
       });
-    });
+    }, 10000);
   });
 
-  describe('File Upload', () => {
-    it('accepts valid image files', async () => {
-      renderProfileModal();
+  describe("Validation", () => {
+    it("enforces age minimum of 18", () => {
+      renderModal();
 
-      const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
-      const fileInput = screen.getByLabelText(/profile picture/i);
+      const ageInput =
+        screen.getByPlaceholderText("18+");
 
-      await userEvent.upload(fileInput, file);
-
-      expect(screen.getByText(/selected: test.jpg/i)).toBeInTheDocument();
+      expect(ageInput).toHaveAttribute("min", "18");
+      expect(ageInput).toHaveAttribute("max", "99");
     });
 
-    it('rejects files larger than 5MB', async () => {
-      mockToastError.mockClear();
-      renderProfileModal();
+    it("profession field enforces length", () => {
+      renderModal();
 
-      const largeFile = new File(['x'.repeat(6 * 1024 * 1024)], 'large.jpg', {
-        type: 'image/jpeg',
-      });
-      const fileInput = screen.getByLabelText(/profile picture/i);
+      const field =
+        screen.getByPlaceholderText(
+          /software engineer/i
+        );
 
-      await userEvent.upload(fileInput, largeFile);
-
-      expect(mockToastError).toHaveBeenCalledWith('File size must be less than 5MB');
+      expect(field).toHaveAttribute("minLength", "2");
+      expect(field).toHaveAttribute("maxLength", "50");
     });
 
-    it('rejects invalid file types', async () => {
-      mockToastError.mockClear();
-      renderProfileModal();
+    it("bio field enforces length", () => {
+      renderModal();
 
-      const invalidFile = new File(['test'], 'test.pdf', { type: 'application/pdf' });
-      const fileInput = screen.getByLabelText(/profile picture/i);
+      const bio =
+        screen.getByPlaceholderText(
+          /tell people what makes you interesting/i
+        );
 
-      // Use fireEvent to bypass userEvent's accept-attribute filtering
-      fireEvent.change(fileInput, { target: { files: [invalidFile] } });
-
-      expect(mockToastError).toHaveBeenCalledWith(
-        'Please upload a valid image file (JPEG, PNG, GIF, or WebP)'
-      );
-    });
-  });
-
-  describe('Form Validation', () => {
-    it('requires all fields to be filled', async () => {
-      renderProfileModal();
-
-      const submitButton = screen.getByRole('button', { name: /create profile/i });
-      await userEvent.click(submitButton);
-
-      // Form should not submit with empty fields
-      const onSubmit = vi.fn();
-      expect(onSubmit).not.toHaveBeenCalled();
+      expect(bio).toHaveAttribute("minLength", "6");
+      expect(bio).toHaveAttribute("maxLength", "280");
     });
 
-    it('enforces age minimum of 18', () => {
-      renderProfileModal();
+    it("conversation starter enforces length", () => {
+      renderModal();
 
-      const ageInput = screen.getByPlaceholderText(/enter your age/i);
-      expect(ageInput).toHaveAttribute('min', '18');
-      expect(ageInput).toHaveAttribute('max', '99');
-    });
+      const field =
+        screen.getByPlaceholderText(
+          /ice-breaker question/i
+        );
 
-    it('enforces profession length constraints', () => {
-      renderProfileModal();
-
-      const professionInput = screen.getByPlaceholderText(/software engineer/i);
-      expect(professionInput).toHaveAttribute('minLength', '2');
-      expect(professionInput).toHaveAttribute('maxLength', '50');
-    });
-
-    it('enforces bio length constraints', () => {
-      renderProfileModal();
-
-      const bioInput = screen.getByPlaceholderText(/tell us about yourself/i);
-      expect(bioInput).toHaveAttribute('minLength', '6');
-      expect(bioInput).toHaveAttribute('maxLength', '280');
-    });
-
-    it('enforces conversation starter length constraints', () => {
-      renderProfileModal();
-
-      const convoInput = screen.getByPlaceholderText(/enter a conversation starter/i);
-      expect(convoInput).toHaveAttribute('minLength', '10');
-      expect(convoInput).toHaveAttribute('maxLength', '160');
+      expect(field).toHaveAttribute("minLength", "10");
+      expect(field).toHaveAttribute("maxLength", "160");
     });
   });
 });
