@@ -260,8 +260,12 @@ export default function AddEvent() {
                         <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-sm">$</span>
                           <input
-                            type="number" min="0.01" step="0.01" name="priceInput"
-                            value={priceInput} onChange={e => setPriceInput(e.target.value)}
+                            type="text" inputMode="decimal" name="priceInput"
+                            value={priceInput}
+                            onChange={e => {
+                              const v = e.target.value;
+                              if (v === "" || /^\d*\.?\d{0,2}$/.test(v)) setPriceInput(v);
+                            }}
                             placeholder="10.00" required={isPaid}
                             className={`${inputClass} pl-7`}
                           />
