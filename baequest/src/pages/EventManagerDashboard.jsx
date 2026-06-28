@@ -114,7 +114,7 @@ export default function EventManagerDashboard() {
     { icon: "calendar_today",      iconColor: "text-primary",            badge: "THIS MONTH", value: stats?.totalEvents ?? stats?.events?.length ?? 0, label: "Total Events"       },
     { icon: "person_check",        iconColor: "text-secondary",          badge: "ALL TIME",   value: stats?.totalCheckins ?? 0,                         label: "Total Check-ins"   },
     { icon: "payments",            iconColor: "text-tertiary",           badge: "ESTIMATED",  value: `$${stats?.totalEarnings ?? 0}`,                   label: "Projected Earnings"},
-    { icon: "confirmation_number", iconColor: "text-on-surface-variant", badge: "BASE",       value: `$${(stats?.ticketPrice ?? 0).toFixed(2)}`,        label: "Ticket Price"      },
+    { icon: "confirmation_number", iconColor: "text-on-surface-variant", badge: "ALL TIME",   value: stats?.totalPaidCheckins ?? 0,                     label: "Paid Check-ins"    },
   ];
 
   return (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createCuratedEvent } from "../utils/api.js";
+import { createCuratedEvent, eventManagerGetOnboardingLink } from "../utils/api.js";
 import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
 import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
@@ -21,9 +21,24 @@ export default function AddEvent() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [error, setError]               = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPaid, setIsPaid]             = useState(false);
+  const [priceInput, setPriceInput]     = useState("");
+  const [stripeErr, setStripeErr]       = useState("");
+
+  const canChargeForTickets = !!me?.stripeOnboardingComplete;
 
   const handleChange = e =>
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  async function handleConnectStripe() {
+    setStripeErr("");
+    try {
+      const res = await eventManagerGetOnboardingLink();
+      window.location.href = res.url;
+    } catch {
+      setStripeErr("Could not start Stripe onboarding. Please try again.");
+    }
+  }
 
   const handlePhotoChange = e => {
     const file = e.target.files[0];
@@ -34,13 +49,25 @@ export default function AddEvent() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError("");
+
+    let ticketPrice = 0;
+    if (isPaid) {
+      const dollars = parseFloat(priceInput);
+      if (!priceInput || Number.isNaN(dollars) || dollars <= 0) {
+        setError("Enter a ticket price greater than $0, or switch this to a free event.");
+        return;
+      }
+      ticketPrice = Math.round(dollars * 100);
+    }
+
+    setIsSubmitting(true);
     try {
       const eventData = {
         ...formData,
         startTime: new Date(formData.startTime).toISOString(),
         endTime:   new Date(formData.endTime).toISOString(),
+        ticketPrice,
       };
       await createCuratedEvent(eventData, photoFile);
       navigate("/event-manager/my-events");
@@ -182,6 +209,70 @@ export default function AddEvent() {
                 </div>
               </div>
 
+              {/* Pricing */}
+              <div className="pt-2 sm:pt-4">
+                <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                  <span className="h-px flex-grow bg-surface-variant" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-outline">Pricing</span>
+                  <span className="h-px flex-grow bg-surface-variant" />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsPaid(false)}
+                    className={`flex-1 py-3 rounded-lg text-sm font-bold border transition-colors ${
+                      !isPaid ? "bg-primary text-white border-primary" : "bg-surface-container border-transparent text-on-surface-variant"
+                    }`}
+                  >
+                    Free Event
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsPaid(true)}
+                    className={`flex-1 py-3 rounded-lg text-sm font-bold border transition-colors ${
+                      isPaid ? "bg-primary text-white border-primary" : "bg-surface-container border-transparent text-on-surface-variant"
+                    }`}
+                  >
+                    Paid Event
+                  </button>
+                </div>
+
+                {isPaid && (
+                  <div className="mt-5 space-y-3">
+                    {!canChargeForTickets ? (
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex items-start gap-3">
+                          <span className="material-symbols-outlined text-amber-600 mt-0.5 shrink-0">account_balance</span>
+                          <p className="text-sm text-amber-800 font-medium">Connect your bank account to charge for tickets and receive payouts.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleConnectStripe}
+                          className="shrink-0 bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md hover:bg-primary-dim hover:-translate-y-0.5 active:scale-95 transition-all whitespace-nowrap"
+                        >
+                          Connect Bank Account
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 max-w-xs">
+                        <label className={labelClass}>Ticket Price (USD)</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-sm">$</span>
+                          <input
+                            type="number" min="0.01" step="0.01" name="priceInput"
+                            value={priceInput} onChange={e => setPriceInput(e.target.value)}
+                            placeholder="10.00" required={isPaid}
+                            className={`${inputClass} pl-7`}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {stripeErr && <p className="text-error text-sm bg-red-50 px-4 py-3 rounded-lg border border-red-100">{stripeErr}</p>}
+                  </div>
+                )}
+              </div>
+
               {/* Description */}
               <div className="space-y-2 pt-2 sm:pt-4">
                 <label className={labelClass}>Description (Optional)</label>
@@ -204,7 +295,7 @@ export default function AddEvent() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || (isPaid && !canChargeForTickets)}
                   className="w-full md:w-auto bg-primary text-white font-bold text-sm sm:text-base md:text-lg px-8 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 rounded-lg shadow-xl shadow-primary/20 hover:bg-primary-dim hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isSubmitting ? "Creating…" : "Create Event"}
