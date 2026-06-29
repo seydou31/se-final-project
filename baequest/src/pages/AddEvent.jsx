@@ -44,7 +44,9 @@ export default function AddEvent() {
     const file = e.target.files[0];
     if (!file) return;
     setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async e => {
