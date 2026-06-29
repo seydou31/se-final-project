@@ -269,7 +269,7 @@ export default function AddEvent() {
                               if (v === "" || /^\d*\.?\d{0,2}$/.test(v)) setPriceInput(v);
                             }}
                             placeholder="10.00" required={isPaid}
-                            className={`${inputClass} pl-7`}
+                            className={`${inputClass} pl-9`}
                           />
                         </div>
                       </div>
