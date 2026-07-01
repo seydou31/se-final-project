@@ -18,12 +18,12 @@ export default function AboutUs() {
               About BaeQuest
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl font-bold text-on-surface mb-4">
-              Helping singles meet in real life.
+              Helping singles meet naturally in real life.
             </p>
             <p className="text-base sm:text-lg md:text-xl text-on-surface-variant leading-relaxed">
               We believe the best connections don't start with endless swiping.
               They start when two people choose the same place, on the same
-              night, and have a reason to say hello.
+              night, and have a reason to start a conversation.
             </p>
           </div>
           <div className="relative">
