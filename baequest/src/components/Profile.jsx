@@ -140,6 +140,20 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* Next step CTA */}
+      <div className="bg-primary rounded-lg p-6 sm:p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        <div>
+          <p className="text-on-primary font-bold text-lg sm:text-xl mb-1">Your profile is ready.</p>
+          <p className="text-on-primary/80 text-sm sm:text-base">Now go find your people at a real event near you.</p>
+        </div>
+        <button
+          onClick={() => navigate("/events")}
+          className="shrink-0 bg-white text-primary font-bold text-sm sm:text-base px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-50 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 shadow-md whitespace-nowrap"
+        >
+          Go Meet People
+        </button>
+      </div>
+
     </main>
   );
 }
