@@ -104,6 +104,13 @@ export default function AboutUs() {
                 </p>
                 <p>We built BaeQuest to remove that uncertainty.</p>
                 <p>
+                  We believe meeting someone shouldn't be an occasional
+                  event—it should be part of everyday life. That's why we built
+                  BaeQuest to make it possible to meet other singles any night
+                  of the week, without expensive events or complicated planning.
+                  Just pick a place, show up, and see who's there.
+                </p>
+                <p>
                   Instead of replacing real life, BaeQuest enhances it by
                   helping you discover other singles who chose the same place at
                   the same time.
