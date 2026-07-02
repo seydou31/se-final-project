@@ -8,6 +8,23 @@ import EMTopBar from "../components/EMTopBar.jsx";
 import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 import getImageUrl from "../utils/getImageUrl.js";
 
+function buildShareText(ev) {
+  const venue = [ev.name, ev.city, ev.state].filter(Boolean).join(", ");
+  const fmt = { hour: "numeric", minute: "2-digit", hour12: true };
+  const startStr = new Date(ev.startTime).toLocaleString("en-US", fmt);
+  const endStr   = ev.endTime ? new Date(ev.endTime).toLocaleString("en-US", fmt) : "Close";
+  return `🍸 Singles Night Just Got Better
+
+Heading out tonight?
+
+Check in with BaeQuest when you arrive and instantly see other singles who are here and open to meeting people.
+
+📍 Tonight at ${venue}
+🕗 ${startStr} – ${endStr}
+
+Go to baequests.com when you arrive.`;
+}
+
 const PAGE_LIMIT = 10;
 
 function formatDateTime(d) {
@@ -57,7 +74,61 @@ export default function EventManagerMyEvents() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch]         = useState("");
   const [page, setPage]             = useState(1);
+  const [sharingEvent, setSharingEvent] = useState(null);
+  const [shareText, setShareText]       = useState("");
+  const [copied, setCopied]             = useState(false);
   const navigate = useNavigate();
+
+  function openShare(ev) {
+    setSharingEvent(ev);
+    setShareText(buildShareText(ev));
+    setCopied(false);
+  }
+
+  function closeShare() { setSharingEvent(null); }
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function shareTwitter() {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank");
+  }
+
+  function shareWhatsApp() {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank");
+  }
+
+  async function downloadImage(ev) {
+    const url = getImageUrl(ev.photo ?? ev.image);
+    if (!url) return;
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `${ev.name ?? "event"}.jpg`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  async function shareNative(ev) {
+    if (!navigator.share) return;
+    const photoUrl = getImageUrl(ev.photo ?? ev.image);
+    if (photoUrl && navigator.canShare) {
+      try {
+        const res = await fetch(photoUrl);
+        const blob = await res.blob();
+        const file = new File([blob], `${ev.name ?? "event"}.jpg`, { type: blob.type });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text: shareText });
+          return;
+        }
+      } catch { /* fall through to text-only share */ }
+    }
+    await navigator.share({ text: shareText });
+  }
 
   // Events
   const loadEvents = useCallback(() => {
@@ -157,6 +228,7 @@ export default function EventManagerMyEvents() {
                       <th className="text-left px-5 py-3.5 font-bold">Status</th>
                       <th className="text-left px-5 py-3.5 font-bold">Check-ins</th>
                       <th className="text-left px-5 py-3.5 font-bold">Earnings</th>
+                      <th className="px-5 py-3.5" />
                     </tr>
                   </thead>
                   <tbody>
@@ -213,6 +285,16 @@ export default function EventManagerMyEvents() {
                         <td className="px-5 py-3.5 font-bold text-primary">
                           ${(ev.earnings ?? 0).toLocaleString()}
                         </td>
+                        {/* Share */}
+                        <td className="px-5 py-3.5">
+                          <button
+                            onClick={() => openShare(ev)}
+                            className="flex items-center gap-1 text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors px-2.5 py-1.5 rounded-lg hover:bg-surface-container"
+                          >
+                            <span className="material-symbols-outlined text-base">share</span>
+                            Share
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -265,6 +347,13 @@ export default function EventManagerMyEvents() {
                             {ev.checkinCount ?? 0} check-ins
                           </span>
                           <span className="font-bold text-primary">${(ev.earnings ?? 0).toLocaleString()}</span>
+                          <button
+                            onClick={() => openShare(ev)}
+                            className="flex items-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors ml-auto"
+                          >
+                            <span className="material-symbols-outlined text-sm">share</span>
+                            <span>Share</span>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -310,6 +399,102 @@ export default function EventManagerMyEvents() {
           <p className="text-xs text-on-surface-variant">© {new Date().getFullYear()} BaeQuest</p>
         </footer>
       </main>
+
+      {/* Share modal */}
+      {sharingEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeShare} />
+          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-outline-variant/10">
+              <div>
+                <p className="font-bold text-on-surface">Share Event</p>
+                <p className="text-xs text-on-surface-variant mt-0.5">{sharingEvent.name}</p>
+              </div>
+              <button onClick={closeShare} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                <span className="material-symbols-outlined text-base">close</span>
+              </button>
+            </div>
+
+            {/* Event image */}
+            {(sharingEvent.photo || sharingEvent.image) && (
+              <div className="px-5 pt-4">
+                <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Event Image</p>
+                <div className="relative rounded-lg overflow-hidden aspect-video bg-surface-container-low">
+                  <img
+                    src={getImageUrl(sharingEvent.photo ?? sharingEvent.image)}
+                    alt={sharingEvent.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={() => downloadImage(sharingEvent)}
+                    className="absolute bottom-2 right-2 flex items-center gap-1.5 bg-black/60 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-black/80 transition-colors backdrop-blur-sm"
+                  >
+                    <span className="material-symbols-outlined text-sm">download</span>
+                    Download
+                  </button>
+                </div>
+                <p className="text-[10px] text-on-surface-variant mt-1.5">Download and attach this image when posting to Instagram or Facebook.</p>
+              </div>
+            )}
+
+            {/* Template textarea */}
+            <div className="p-5 flex-1 overflow-y-auto">
+              <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Post template</p>
+              <textarea
+                value={shareText}
+                onChange={e => setShareText(e.target.value)}
+                rows={10}
+                className="w-full bg-surface-container-low rounded-lg px-4 py-3 text-sm text-on-surface leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <p className="text-[10px] text-on-surface-variant mt-1.5">You can edit the text above before sharing.</p>
+            </div>
+
+            {/* Actions */}
+            <div className="px-5 py-4 border-t border-outline-variant/10 space-y-3">
+              {/* Copy */}
+              <button
+                onClick={handleCopy}
+                className={`w-full flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-sm transition-all ${
+                  copied ? "bg-green-600 text-white" : "bg-primary text-white hover:bg-primary-dim"
+                }`}
+              >
+                <span className="material-symbols-outlined text-base">{copied ? "check" : "content_copy"}</span>
+                {copied ? "Copied!" : "Copy to Clipboard"}
+              </button>
+
+              {/* Platform buttons */}
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={shareTwitter}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-outline-variant/20 text-sm font-semibold hover:bg-surface-container transition-colors"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  Post on X
+                </button>
+                <button
+                  onClick={shareWhatsApp}
+                  className="flex items-center justify-center gap-2 py-2.5 rounded-lg border border-outline-variant/20 text-sm font-semibold hover:bg-surface-container transition-colors"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                  WhatsApp
+                </button>
+              </div>
+
+              {/* Native share (mobile) */}
+              {typeof navigator !== "undefined" && !!navigator.share && (
+                <button
+                  onClick={() => shareNative(sharingEvent)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-outline-variant/20 text-sm font-semibold hover:bg-surface-container transition-colors"
+                >
+                  <span className="material-symbols-outlined text-base">ios_share</span>
+                  More options…
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile FAB */}
       <div className="md:hidden fixed bottom-5 right-5 z-30">
