@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ||
-  'https://api.baequests.com';
+const API_BASE = import.meta.env.PROD
+  ? import.meta.env.VITE_API_BASE_URL
+  : 'http://localhost:3001';
 
 const PAGE_SIZE = 10;
 
@@ -176,12 +176,12 @@ function ManagerCard({ manager, secret }) {
       >
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-            {manager.name.charAt(0).toUpperCase()}
+            {(manager.name ?? manager.email ?? '?').charAt(0).toUpperCase()}
           </div>
 
           <div className="min-w-0">
             <p className="font-semibold text-sm text-on-surface truncate">
-              {manager.name}
+              {manager.name ?? <span className="text-on-surface-variant italic">No name</span>}
             </p>
 
             <p className="text-xs text-on-surface-variant truncate">
@@ -312,7 +312,11 @@ function ManagerCard({ manager, secret }) {
                       </th>
 
                       <th className="text-left px-5 py-3 font-bold">
-                        Paid Check-ins
+                        Check-ins
+                      </th>
+
+                      <th className="text-left px-5 py-3 font-bold">
+                        Gender Split
                       </th>
 
                       <th className="text-left px-5 py-3 font-bold">
@@ -322,7 +326,12 @@ function ManagerCard({ manager, secret }) {
                   </thead>
 
                   <tbody>
-                    {eventsData.map((ev) => (
+                    {eventsData.map((ev) => {
+                      const m = ev.genderSplit?.male   || 0;
+                      const f = ev.genderSplit?.female || 0;
+                      const total = m + f;
+                      const malePct = total > 0 ? Math.round((m / total) * 100) : 0;
+                      return (
                       <tr
                         key={ev._id}
                         className="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors duration-150"
@@ -340,14 +349,31 @@ function ManagerCard({ manager, secret }) {
                         </td>
 
                         <td className="px-5 py-3.5">
-                          {ev.paidCheckinCount}
+                          <span className="font-medium">{ev.totalCheckins ?? ev.paidCheckinCount}</span>
+                        </td>
+
+                        <td className="px-5 py-3.5">
+                          {total > 0 ? (
+                            <div className="min-w-[80px]">
+                              <p className="text-xs text-on-surface-variant mb-1">
+                                {m}M · {f}F
+                              </p>
+                              <div className="h-1.5 bg-surface-container rounded-full overflow-hidden flex w-20">
+                                <div className="h-full bg-primary" style={{ width: `${malePct}%` }} />
+                                <div className="h-full bg-secondary flex-1" />
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-on-surface-variant">—</span>
+                          )}
                         </td>
 
                         <td className="px-5 py-3.5 font-bold text-primary">
                           ${ev.earnings.toFixed(2)}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -390,7 +416,7 @@ function ManagerCard({ manager, secret }) {
  * ─────────────────────────────────────────────
  */
 export default function AdminPage() {
-  const [secret, setSecret] = useState('');
+  const [secret, setSecret] = useState(() => sessionStorage.getItem('admin_secret') || '');
 
   const [data, setData] = useState(null);
 
@@ -403,6 +429,11 @@ export default function AdminPage() {
 
   const [managerPage, setManagerPage] =
     useState(1);
+
+  useEffect(() => {
+    if (secret) fetchOverview(1, '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function fetchOverview(
     page = 1,
@@ -441,6 +472,7 @@ export default function AdminPage() {
 
       const result = await res.json();
 
+      sessionStorage.setItem('admin_secret', secret);
       setData(result);
     } catch (err) {
       console.error(err);
@@ -535,10 +567,18 @@ export default function AdminPage() {
       {data && (
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
           {/* STATS */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+            <StatCard
+              icon="people"
+              iconColor="text-primary"
+              badge="REGISTERED"
+              value={(stats.totalUsers || 0).toLocaleString()}
+              label="App Users"
+            />
+
             <StatCard
               icon="group"
-              iconColor="text-primary"
+              iconColor="text-secondary"
               badge="REGISTERED"
               value={stats.totalManagers || 0}
               label="Event Managers"
@@ -553,13 +593,98 @@ export default function AdminPage() {
             />
 
             <StatCard
-              icon="payments"
+              icon="person_check"
               iconColor="text-tertiary"
+              badge="ALL TIME"
+              value={(stats.totalCheckins || 0).toLocaleString()}
+              label="Total Check-ins"
+            />
+
+            <StatCard
+              icon="payments"
+              iconColor="text-on-surface-variant"
               badge="COMBINED"
               value={`$${stats.totalEarnings || 0}`}
               label="Manager Earnings"
             />
           </div>
+
+          {/* USER INSIGHTS */}
+          {stats.userInsights && (() => {
+            const ui = stats.userInsights;
+            const total = ui.genderSplit.male + ui.genderSplit.female;
+            const malePct  = total > 0 ? Math.round((ui.genderSplit.male   / total) * 100) : 0;
+            const femalePct = total > 0 ? Math.round((ui.genderSplit.female / total) * 100) : 0;
+            return (
+              <div>
+                <h2 className="text-base font-bold text-on-surface mb-4">User Insights</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                  {/* Profile completion */}
+                  <div className="bg-white rounded-lg p-5 shadow-sm border border-outline-variant/10">
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Profile Completion</p>
+                    <p className="text-3xl font-black text-on-surface mb-1">{ui.profileCompletion}%</p>
+                    <p className="text-xs text-on-surface-variant">{stats.totalUsers} signed up · {total} profiles created</p>
+                    <div className="mt-3 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${ui.profileCompletion}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Gender split */}
+                  <div className="bg-white rounded-lg p-5 shadow-sm border border-outline-variant/10">
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Gender Split</p>
+                    <div className="flex items-end gap-4 mb-2">
+                      <div>
+                        <p className="text-3xl font-black text-primary">{malePct}%</p>
+                        <p className="text-xs text-on-surface-variant">Male ({ui.genderSplit.male})</p>
+                      </div>
+                      <div>
+                        <p className="text-3xl font-black text-secondary">{femalePct}%</p>
+                        <p className="text-xs text-on-surface-variant">Female ({ui.genderSplit.female})</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 h-1.5 bg-surface-container rounded-full overflow-hidden flex">
+                      <div className="h-full bg-primary" style={{ width: `${malePct}%` }} />
+                      <div className="h-full bg-secondary flex-1" />
+                    </div>
+                  </div>
+
+                  {/* Email verified */}
+                  <div className="bg-white rounded-lg p-5 shadow-sm border border-outline-variant/10">
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Email Verified</p>
+                    <p className="text-3xl font-black text-on-surface mb-1">{ui.verifiedUsers}</p>
+                    <p className="text-xs text-on-surface-variant">
+                      {stats.totalUsers > 0 ? Math.round((ui.verifiedUsers / stats.totalUsers) * 100) : 0}% of app users activated
+                    </p>
+                    <div className="mt-3 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                      <div className="h-full bg-green-500 rounded-full" style={{ width: `${stats.totalUsers > 0 ? (ui.verifiedUsers / stats.totalUsers) * 100 : 0}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Live now */}
+                  <div className="bg-white rounded-lg p-5 shadow-sm border border-outline-variant/10">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Live Now</p>
+                    </div>
+                    <p className="text-3xl font-black text-on-surface mb-1">{ui.liveNow}</p>
+                    <p className="text-xs text-on-surface-variant">Users currently checked into an event</p>
+                  </div>
+
+                  {/* Engaged users */}
+                  <div className="bg-white rounded-lg p-5 shadow-sm border border-outline-variant/10">
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Engaged Users</p>
+                    <p className="text-3xl font-black text-on-surface mb-1">{ui.engagedUsers}</p>
+                    <p className="text-xs text-on-surface-variant">
+                      Users who checked in at least once
+                      {stats.totalUsers > 0 && ` · ${Math.round((ui.engagedUsers / stats.totalUsers) * 100)}% of all users`}
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            );
+          })()}
 
           {/* SEARCH */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
