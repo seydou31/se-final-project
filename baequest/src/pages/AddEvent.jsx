@@ -5,6 +5,30 @@ import EMSidebar from "../components/EMSidebar.jsx";
 import EMTopBar from "../components/EMTopBar.jsx";
 import { useEventManagerAuth } from "../hooks/useEventManagerAuth";
 
+import imgArcade       from "../assets/arcade.png";
+import imgBars         from "../assets/Bars.png";
+import imgBrewery      from "../assets/Brewery-and-Taproom.png";
+import imgLounge       from "../assets/Lounge.png";
+import imgOutdoor      from "../assets/Outdoor-events.png";
+import imgRooftop      from "../assets/Rooftop-bar.png";
+import imgPoolHall     from "../assets/pool-hall.png";
+import imgTrivia       from "../assets/Trivia-night.png";
+import imgSocial       from "../assets/socialevent.png";
+import imgCommunity    from "../assets/community.png";
+
+const PRESET_IMAGES = [
+  { label: "Bar",       src: imgBars      },
+  { label: "Lounge",    src: imgLounge    },
+  { label: "Rooftop",   src: imgRooftop   },
+  { label: "Arcade",    src: imgArcade    },
+  { label: "Brewery",   src: imgBrewery   },
+  { label: "Pool Hall", src: imgPoolHall  },
+  { label: "Outdoor",   src: imgOutdoor   },
+  { label: "Trivia",    src: imgTrivia    },
+  { label: "Social",    src: imgSocial    },
+  { label: "Community", src: imgCommunity },
+];
+
 const inputClass =
   "w-full bg-surface-container rounded-lg px-4 sm:px-5 py-3 sm:py-4 text-sm sm:text-base placeholder:text-on-surface-variant/40 transition-shadow duration-200 hover:shadow-sm";
 const labelClass =
@@ -24,6 +48,7 @@ export default function AddEvent() {
   const [isPaid, setIsPaid]             = useState(false);
   const [priceInput, setPriceInput]     = useState("");
   const [stripeErr, setStripeErr]       = useState("");
+  const [selectedPreset, setSelectedPreset] = useState(null);
 
   const canChargeForTickets = !!me?.stripeOnboardingComplete;
 
@@ -43,11 +68,24 @@ export default function AddEvent() {
   const handlePhotoChange = e => {
     const file = e.target.files[0];
     if (!file) return;
+    setSelectedPreset(null);
     setPhotoFile(file);
     const reader = new FileReader();
     reader.onload = () => setPhotoPreview(reader.result);
     reader.readAsDataURL(file);
   };
+
+  async function handlePresetSelect(index) {
+    const preset = PRESET_IMAGES[index];
+    setSelectedPreset(index);
+    const res = await fetch(preset.src);
+    const blob = await res.blob();
+    const file = new File([blob], `${preset.label}.png`, { type: "image/png" });
+    setPhotoFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setPhotoPreview(reader.result);
+    reader.readAsDataURL(file);
+  }
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -144,8 +182,10 @@ export default function AddEvent() {
                 </div>
 
                 {/* Photo upload */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <label className={labelClass}>Event Photo</label>
+
+                  {/* Upload dropzone */}
                   <label className="relative group block h-36 sm:h-40 md:h-[164px] cursor-pointer">
                     <input type="file" accept="image/jpeg,image/png,image/webp,image/gif"
                       onChange={handlePhotoChange} className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" />
@@ -163,6 +203,30 @@ export default function AddEvent() {
                       )}
                     </div>
                   </label>
+
+                  {/* Preset image picker */}
+                  <div>
+                    <p className={`${labelClass} mb-2`}>Or choose a template</p>
+                    <div className="grid grid-cols-5 gap-2">
+                      {PRESET_IMAGES.map((preset, i) => (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => handlePresetSelect(i)}
+                          className={`relative rounded-md overflow-hidden aspect-video border-2 transition-all ${
+                            selectedPreset === i
+                              ? "border-primary shadow-md scale-[1.03]"
+                              : "border-transparent hover:border-primary/40"
+                          }`}
+                        >
+                          <img src={preset.src} alt={preset.label} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-0 inset-x-0 bg-black/50 text-white text-[9px] text-center py-0.5 font-medium">
+                            {preset.label}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
