@@ -367,7 +367,7 @@ function App() {
       setCurrentProfile(res);
       setIsLoggedIn(true);
       storeTokenExists();
-      navigate("/profile");
+      navigate("/profile", { state: { newProfile: true } });
     } catch (err) {
       toast.error(`Failed to create profile: ${err.message || err}`);
       throw err;

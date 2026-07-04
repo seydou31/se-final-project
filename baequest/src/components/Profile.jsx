@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import AppContext from "../context/AppContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const baseUrl = import.meta.env.PROD ? import.meta.env.VITE_API_BASE_URL : "http://localhost:3001";
 
@@ -22,6 +22,8 @@ const interestIcons = {
 export default function Profile() {
   const { currentProfile } = useContext(AppContext);
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const isNewProfile = !!state?.newProfile;
   const {
     name, age, gender, profession, bio,
     interests = [], convoStarter, profilePicture,
@@ -140,8 +142,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Next step CTA */}
-      <div className="bg-primary rounded-lg p-6 sm:p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+      {/* Next step CTA — only shown right after profile creation */}
+      {isNewProfile && <div className="bg-primary rounded-lg p-6 sm:p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
         <div>
           <p className="text-on-primary font-bold text-lg sm:text-xl mb-1">Your profile is ready.</p>
           <p className="text-on-primary/80 text-sm sm:text-base">Now go find your people at a real event near you.</p>
@@ -152,7 +154,7 @@ export default function Profile() {
         >
           Go Meet People
         </button>
-      </div>
+      </div>}
 
     </main>
   );
