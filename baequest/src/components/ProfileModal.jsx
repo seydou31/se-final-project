@@ -78,7 +78,9 @@ export default function ProfileModal({
     if (!validTypes.includes(file.type)) { toast.error("Please upload a JPEG, PNG, GIF, or WebP image."); return; }
     if (file.size > 5 * 1024 * 1024) { toast.error("File size must be less than 5MB."); return; }
     setValues({ ...values, profilePicture: file });
-    setPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onload = () => setPreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleInterest = (value) => {
