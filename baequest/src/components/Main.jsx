@@ -665,7 +665,7 @@ export default function Main({ onClick }) {
             <div className="max-w-3xl mx-auto bg-white/10 border border-white/10 backdrop-blur-sm rounded-3xl p-5 sm:p-6 md:p-7 mb-8 sm:mb-10">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5 mb-4">
                 <span className="text-4xl sm:text-5xl font-black tracking-tight">
-                  $3
+                  Starting at $3
                 </span>
 
                 <div className="text-center sm:text-left">
