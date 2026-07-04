@@ -94,8 +94,8 @@ export default function AddEvent() {
     let ticketPrice = 0;
     if (isPaid) {
       const dollars = parseFloat(priceInput);
-      if (!priceInput || Number.isNaN(dollars) || dollars <= 0) {
-        setError("Enter a ticket price greater than $0, or switch this to a free event.");
+      if (!priceInput || Number.isNaN(dollars) || dollars < 3) {
+        setError("Ticket price must be at least $3.00, or switch this to a free event.");
         return;
       }
       ticketPrice = Math.round(dollars * 100);
