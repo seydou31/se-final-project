@@ -34,6 +34,7 @@ import EventManagerMyEvents from "../pages/EventManagerMyEvents.jsx";
 import EventFeedbackPage from "./EventFeedbackPage.jsx";
 import EventManagerLogin from "../pages/EventManagerLogin.jsx";
 import EventManagerSignup from "../pages/EventManagerSignup.jsx";
+import EventManagerLanding from "../pages/EventManagerLanding.jsx";
 import EventManagerDashboard from "../pages/EventManagerDashboard.jsx";
 import EventManagerOnboarding from "../pages/EventManagerOnboarding.jsx";
 import AdminPage from "../pages/AdminPage.jsx";
@@ -686,7 +687,8 @@ const handleCheckin = async (eventData) => {
                 <Route path="/event-manager/my-events" element={<EventManagerMyEvents />} />
               </Route>
               <Route path="/event-feedback" element={<EventFeedbackPage />} />
-              <Route path="/event-manager" 
+              <Route path="/event-manager" element={<EventManagerLanding />} />
+              <Route path="/event-manager/signup"
                 element={
                   <AuthRedirectRoute
                     isLoggedIn={isEMAuthenticated}
@@ -694,8 +696,8 @@ const handleCheckin = async (eventData) => {
                   >
                     <EventManagerSignup />
                   </AuthRedirectRoute>
-                  } 
-                />
+                }
+              />
               <Route path="/event-manager/login"
                 element={
                   <AuthRedirectRoute

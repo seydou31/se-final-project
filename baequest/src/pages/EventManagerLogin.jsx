@@ -125,7 +125,7 @@ export default function EventManagerLogin() {
             {/* Footer */}
             <p className="mt-6 sm:mt-8 md:mt-10 text-center text-xs sm:text-sm text-on-surface-variant">
               Don&apos;t have an account yet?{' '}
-              <Link to="/event-manager" className="text-primary font-bold hover:underline ml-1 transition-opacity hover:opacity-80">
+              <Link to="/event-manager/signup" className="text-primary font-bold hover:underline ml-1 transition-opacity hover:opacity-80">
                 Sign Up
               </Link>
             </p>
