@@ -81,6 +81,17 @@ export default function Event({ event, handleCheckin, handleImGoing, currentTime
     finally { setIsCheckingIn(false); }
   };
 
+  const handleShareClick = async () => {
+    const text = `Check out ${event.name} on BaeQuest! 🍸\n${formatEventTime(event.startTime, event.endTime)}${event.address ? `\n${event.address}` : ''}\n\nJoin the singles social → baequests.com`;
+    if (navigator.share) {
+      try { await navigator.share({ title: event.name, text, url: 'https://baequests.com' }); }
+      catch {}
+    } else {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard!');
+    }
+  };
+
   return (
     <div className="group bg-white rounded-lg overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(42,52,57,0.12)] shadow-sm">
 
@@ -199,6 +210,15 @@ export default function Event({ event, handleCheckin, handleImGoing, currentTime
                 : "Check In"}
             </button>
           )}
+
+          {/* Share */}
+          <button
+            onClick={handleShareClick}
+            className="w-full py-2.5 rounded-lg text-sm font-semibold text-on-surface-variant border border-surface-container-highest hover:bg-surface-container hover:text-on-surface transition-all duration-200 flex items-center justify-center gap-1.5"
+          >
+            <span className="material-symbols-outlined text-[16px]">share</span>
+            Share Event
+          </button>
 
           {/* External link */}
           {event.link && (

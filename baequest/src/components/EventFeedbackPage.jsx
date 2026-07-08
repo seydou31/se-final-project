@@ -28,6 +28,8 @@ export default function EventFeedbackPage() {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
   const [showVenueSuggestion, setShowVenueSuggestion] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [shareText, setShareText] = useState('');
 
   const [venueSuggestion, setVenueSuggestion] = useState({
     name: '',
@@ -109,11 +111,8 @@ export default function EventFeedbackPage() {
         throw new Error(data.error || 'Failed to submit feedback');
       }
 
+      setShareText(`Just had an amazing night at ${eventData?.eventName} on BaeQuest! 🍸 If you're single and looking to meet people IRL, check it out → baequests.com`);
       setSuccess(true);
-      // Redirect to home after 3 seconds
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 3000);
     } catch (err) {
       setError(err.message);
       setSubmitting(false);
@@ -139,13 +138,78 @@ export default function EventFeedbackPage() {
   }
 
   if (success) {
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+
+    const handleCopy = async () => {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // fallback: select textarea text
+      }
+    };
+
+    const handleNativeShare = async () => {
+      try {
+        await navigator.share({ title: 'BaeQuest', text: shareText, url: 'https://baequests.com' });
+      } catch {}
+    };
+
     return (
       <div className="event-feedback">
         <div className="event-feedback__success-container">
           <h1>🎉 Thank You!</h1>
-          <p>Your feedback has been submitted successfully.</p>
+          <p>Your feedback has been submitted.</p>
           <p>We appreciate you taking the time to help us improve BaeQuest!</p>
-          <p className="event-feedback__redirect">Redirecting to home...</p>
+
+          <div className="event-feedback__share">
+            <h2>Share your night ✨</h2>
+            <p>Let your friends know — help us grow!</p>
+            <textarea
+              className="event-feedback__share-textarea"
+              value={shareText}
+              onChange={(e) => setShareText(e.target.value)}
+              rows={4}
+            />
+            <div className="event-feedback__share-buttons">
+              <button
+                onClick={handleCopy}
+                className={`event-feedback__share-btn event-feedback__share-btn--copy${copied ? ' event-feedback__share-btn--copied' : ''}`}
+              >
+                {copied ? '✓ Copied!' : '📋 Copy'}
+              </button>
+              <a
+                href={twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="event-feedback__share-btn event-feedback__share-btn--twitter"
+              >
+                𝕏 Twitter/X
+              </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="event-feedback__share-btn event-feedback__share-btn--whatsapp"
+              >
+                WhatsApp
+              </a>
+              {typeof navigator !== 'undefined' && navigator.share && (
+                <button
+                  onClick={handleNativeShare}
+                  className="event-feedback__share-btn event-feedback__share-btn--native"
+                >
+                  ↑ Share
+                </button>
+              )}
+            </div>
+          </div>
+
+          <button onClick={() => navigate('/')} className="event-feedback__button">
+            Back to Home
+          </button>
         </div>
       </div>
     );

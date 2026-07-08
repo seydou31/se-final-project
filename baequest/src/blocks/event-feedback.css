@@ -241,9 +241,10 @@
   text-align: center;
   background: white;
   border-radius: 16px;
-  padding: 60px 40px;
+  padding: 48px 36px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
 }
 
 .event-feedback__error-container h1 {
@@ -261,6 +262,114 @@
   font-size: 16px;
   color: #666;
   margin: 10px 0;
+}
+
+.event-feedback__share {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0 16px;
+  text-align: left;
+}
+
+.event-feedback__share h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.event-feedback__share > p {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 14px 0;
+}
+
+.event-feedback__share-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  color: #333;
+  line-height: 1.5;
+}
+
+.event-feedback__share-textarea:focus {
+  outline: none;
+  border-color: #ff3b6c;
+}
+
+.event-feedback__share-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.event-feedback__share-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.event-feedback__share-btn--copy {
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  color: #333;
+}
+
+.event-feedback__share-btn--copy:hover {
+  border-color: #ff3b6c;
+  color: #ff3b6c;
+}
+
+.event-feedback__share-btn--copied {
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+.event-feedback__share-btn--twitter {
+  background: #000;
+  color: #fff;
+}
+
+.event-feedback__share-btn--twitter:hover {
+  background: #222;
+}
+
+.event-feedback__share-btn--whatsapp {
+  background: #25d366;
+  color: #fff;
+}
+
+.event-feedback__share-btn--whatsapp:hover {
+  background: #20b358;
+}
+
+.event-feedback__share-btn--native {
+  background: #ff3b6c;
+  color: #fff;
+}
+
+.event-feedback__share-btn--native:hover {
+  background: #e63360;
 }
 
 .event-feedback__redirect {
