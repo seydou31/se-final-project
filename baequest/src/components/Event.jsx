@@ -85,7 +85,7 @@ export default function Event({ event, handleCheckin, handleImGoing, currentTime
     const text = `Check out ${event.name} on BaeQuest! 🍸\n${formatEventTime(event.startTime, event.endTime)}${event.address ? `\n${event.address}` : ''}\n\nJoin the singles social → baequests.com`;
     if (navigator.share) {
       try { await navigator.share({ title: event.name, text, url: 'https://baequests.com' }); }
-      catch (_) { /* user cancelled or share not supported */ }
+      catch (err) { if (err.name !== 'AbortError') throw err; }
     } else {
       await navigator.clipboard.writeText(text);
       toast.success('Copied to clipboard!');

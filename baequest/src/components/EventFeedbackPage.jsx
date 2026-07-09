@@ -154,7 +154,7 @@ export default function EventFeedbackPage() {
     const handleNativeShare = async () => {
       try {
         await navigator.share({ title: 'BaeQuest', text: shareText, url: 'https://baequests.com' });
-      } catch (_) { /* user cancelled or share not supported */ }
+      } catch (err) { if (err.name !== 'AbortError') throw err; }
     };
 
     return (
