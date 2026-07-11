@@ -169,7 +169,17 @@ export default function EventManagerDashboard() {
           {/* Events table */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-outline-variant/10">
-              <h2 className="text-base font-bold text-on-surface">Recent Events</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-base font-bold text-on-surface">Recent Events</h2>
+                <a
+                  href="/baequest-flyer.pdf"
+                  download="BaeQuest Promo Flyer.pdf"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary border border-primary/30 px-3 py-1.5 rounded-full hover:bg-primary/5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[14px]">download</span>
+                  Get Promo Flyer
+                </a>
+              </div>
               <div className="relative w-full sm:w-64">
                 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-base pointer-events-none">search</span>
                 <input
