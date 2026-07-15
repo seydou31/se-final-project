@@ -22,6 +22,7 @@ export default function Footer() {
           <Link className="text-slate-500 hover:text-primary transition-colors" to="/privacy">Privacy</Link>
           <Link className="text-slate-500 hover:text-primary transition-colors" to="/terms">Terms</Link>
           <Link className="text-slate-500 hover:text-primary transition-colors" to="/cookies">Cookies</Link>
+          <Link className="text-slate-500 hover:text-primary transition-colors" to="/acceptable-use">Acceptable Use</Link>
         </div>
 
         {/* Social Icons */}
