@@ -29,6 +29,7 @@ import PrivacyPolicy from "../pages/PrivacyPolicy.jsx";
 import TermsOfService from "../pages/TermsOfService.jsx";
 import CookiePolicy from "../pages/CookiePolicy.jsx";
 import AcceptableUsePolicy from "../pages/AcceptableUsePolicy.jsx";
+import LawEnforcementGuidelines from "../pages/LawEnforcementGuidelines.jsx";
 import WelcomeLanding from "./WelcomeLanding.jsx";
 import EventManagerCreateEvent from "../pages/AddEvent.jsx";
 import EventManagerMyEvents from "../pages/EventManagerMyEvents.jsx";
@@ -680,6 +681,7 @@ const handleCheckin = async (eventData) => {
               <Route path="/terms" element={<TermsOfService />} />
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/acceptable-use" element={<AcceptableUsePolicy />} />
+              <Route path="/law-enforcement" element={<LawEnforcementGuidelines />} />
 
                {/* Protected */}
               <Route element={<RequireEventManagerAuth />}>
