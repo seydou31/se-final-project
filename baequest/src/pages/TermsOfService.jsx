@@ -9,7 +9,7 @@ export default function TermsOfService() {
         </h1>
 
         <p className="text-slate-500 mt-3 text-sm md:text-base">
-          Last updated: April 2026
+          Last updated: July 2026
         </p>
       </header>
 
@@ -139,7 +139,51 @@ export default function TermsOfService() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">
-          8. Termination
+          8. Payments and Refunds
+        </h2>
+        <div className="h-px bg-slate-100 w-full mb-6" />
+
+        <p className="text-slate-600 leading-relaxed">
+          Certain BaeQuest events require a check-in fee to unlock access to the
+          live event room. Payments are processed securely through Stripe.
+        </p>
+
+        <h3 className="text-lg font-semibold text-slate-800">No Refund Policy</h3>
+        <p className="text-slate-600 leading-relaxed">
+          All check-in fees are <strong>non-refundable</strong>. When you complete
+          a payment to check in to an event, you are immediately granted access to
+          that event's live room. Because the service is delivered at the moment of
+          payment, we do not offer refunds once a transaction is processed.
+        </p>
+
+        <h3 className="text-lg font-semibold text-slate-800 mt-2">Exceptions</h3>
+        <p className="text-slate-600 leading-relaxed">
+          Refunds may be considered at our sole discretion in the following
+          circumstances:
+        </p>
+        <ul className="space-y-3">
+          {[
+            "A duplicate charge was made due to a technical error on our end.",
+            "An event was cancelled by the Event Manager after payment was collected.",
+          ].map((item, index) => (
+            <li key={index} className="flex items-start gap-3">
+              <span className="w-2 h-2 mt-2.5 rounded-full bg-primary shrink-0" />
+              <span className="text-slate-600">{item}</span>
+            </li>
+          ))}
+        </ul>
+        <p className="text-slate-600 leading-relaxed mt-2">
+          To request a refund under one of the above exceptions, contact us at{" "}
+          <a href="mailto:support@baequests.com" className="text-primary font-medium hover:underline">
+            support@baequests.com
+          </a>{" "}
+          within 7 days of the charge.
+        </p>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-slate-900">
+          10. Termination
         </h2>
         <div className="h-px bg-slate-100 w-full mb-6" />
 
@@ -153,7 +197,7 @@ export default function TermsOfService() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">
-          9. Disclaimer of Warranties
+          11. Disclaimer of Warranties
         </h2>
         <div className="h-px bg-slate-100 w-full mb-6" />
 
@@ -166,7 +210,7 @@ export default function TermsOfService() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">
-          10. Limitation of Liability
+          12. Limitation of Liability
         </h2>
         <div className="h-px bg-slate-100 w-full mb-6" />
 
@@ -179,7 +223,7 @@ export default function TermsOfService() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900">
-          11. Changes to Terms
+          13. Changes to Terms
         </h2>
         <div className="h-px bg-slate-100 w-full mb-6" />
 
@@ -191,7 +235,7 @@ export default function TermsOfService() {
 
       <section className="space-y-4 pb-8">
         <h2 className="text-2xl font-bold text-slate-900">
-          12. Contact
+          14. Contact
         </h2>
         <div className="h-px bg-slate-100 w-full mb-6" />
 
