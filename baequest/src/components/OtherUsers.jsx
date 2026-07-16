@@ -23,6 +23,8 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
 export default function OtherUsers({ handleCheckoutModal }) {
   const navigate = useNavigate();
   const [reportingUserId, setReportingUserId] = useState(null);
+  const [customReason, setCustomReason] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
   const [submittingReport, setSubmittingReport] = useState(false);
 
   const { currentEvent, otherProfiles } = useEventStore();
@@ -43,6 +45,16 @@ export default function OtherUsers({ handleCheckoutModal }) {
     } finally {
       setSubmittingReport(false);
       setReportingUserId(null);
+      setShowCustomInput(false);
+      setCustomReason("");
+    }
+  };
+
+  const handleReasonClick = (userId, reason) => {
+    if (reason === "Other") {
+      setShowCustomInput(true);
+    } else {
+      handleReport(userId, reason);
     }
   };
 
@@ -211,25 +223,57 @@ export default function OtherUsers({ handleCheckoutModal }) {
                 {/* Report */}
                 {reportingUserId === (user.owner || user._id) ? (
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-500 mb-2">Select a reason:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {REPORT_REASONS.map((reason) => (
-                        <button
-                          key={reason}
-                          onClick={() => handleReport(user.owner || user._id, reason)}
-                          disabled={submittingReport}
-                          className="text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                        >
-                          {reason}
-                        </button>
-                      ))}
-                      <button
-                        onClick={() => setReportingUserId(null)}
-                        className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
+                    {showCustomInput ? (
+                      <div className="flex flex-col gap-2">
+                        <p className="text-xs text-gray-500">Describe the issue:</p>
+                        <textarea
+                          autoFocus
+                          rows={3}
+                          maxLength={500}
+                          value={customReason}
+                          onChange={(e) => setCustomReason(e.target.value)}
+                          placeholder="Tell us what's wrong..."
+                          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 resize-none focus:outline-none focus:border-red-300"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleReport(user.owner || user._id, customReason.trim())}
+                            disabled={submittingReport || !customReason.trim()}
+                            className="flex-1 text-xs px-3 py-1.5 rounded-full bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+                          >
+                            {submittingReport ? "Submitting..." : "Submit"}
+                          </button>
+                          <button
+                            onClick={() => { setShowCustomInput(false); setCustomReason(""); }}
+                            className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors"
+                          >
+                            Back
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-xs text-gray-500 mb-2">Select a reason:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {REPORT_REASONS.map((reason) => (
+                            <button
+                              key={reason}
+                              onClick={() => handleReasonClick(user.owner || user._id, reason)}
+                              disabled={submittingReport}
+                              className="text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            >
+                              {reason}
+                            </button>
+                          ))}
+                          <button
+                            onClick={() => { setReportingUserId(null); setShowCustomInput(false); }}
+                            className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:bg-gray-50 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <button
