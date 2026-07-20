@@ -118,11 +118,76 @@ export default function AcceptableUsePolicy() {
           ))}
         </ul>
 
+        <h3 className="text-lg font-semibold text-slate-800 mt-4">Human Trafficking and Sexual Exploitation</h3>
+        <p className="text-slate-600 leading-relaxed">
+          BaeQuest has a zero-tolerance policy for human trafficking and sexual
+          exploitation. The following are strictly prohibited:
+        </p>
+        <ul className="space-y-3">
+          {[
+            "Using BaeQuest to recruit, harbor, transport, or facilitate the trafficking of any person.",
+            "Posting or sharing content that solicits, promotes, or facilitates sex trafficking or commercial sexual exploitation.",
+            "Using the platform to advertise, arrange, or facilitate prostitution or escort services.",
+            "Coercing, threatening, or deceiving any person into sexual activity or labor.",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-3 text-slate-600">
+              <span className="mt-1 w-2 h-2 rounded-full bg-red-400 shrink-0" />
+              {item}
+            </li>
+          ))}
+        </ul>
+        <p className="text-slate-600 leading-relaxed mt-3">
+          We actively monitor for indicators of trafficking activity on our platform.
+          Any accounts suspected of trafficking-related conduct will be immediately
+          suspended and reported to the National Human Trafficking Hotline
+          (1-888-373-7888) and applicable law enforcement. To report suspected
+          trafficking activity, contact us at{" "}
+          <a href="mailto:support@baequests.com" className="text-primary underline underline-offset-2">
+            support@baequests.com
+          </a>{" "}
+          or call 1-888-373-7888.
+        </p>
+
+        <h3 className="text-lg font-semibold text-slate-800 mt-4">Child Sexual Abuse Material (CSAM)</h3>
+        <p className="text-slate-600 leading-relaxed">
+          BaeQuest strictly prohibits any content that sexually exploits or endangers
+          minors. The following are prohibited:
+        </p>
+        <ul className="space-y-3">
+          {[
+            "Uploading, sharing, or distributing child sexual abuse material (CSAM) of any kind.",
+            "Using the platform to groom, solicit, or exploit minors.",
+            "Creating accounts on behalf of minors or misrepresenting your age to access the platform.",
+            "Sharing or linking to CSAM hosted on external platforms.",
+          ].map((item) => (
+            <li key={item} className="flex items-start gap-3 text-slate-600">
+              <span className="mt-1 w-2 h-2 rounded-full bg-red-400 shrink-0" />
+              {item}
+            </li>
+          ))}
+        </ul>
+        <p className="text-slate-600 leading-relaxed mt-3">
+          Any CSAM discovered on our platform is immediately removed, and the account
+          responsible is permanently banned. We report all confirmed CSAM to the
+          National Center for Missing &amp; Exploited Children (NCMEC) via the
+          CyberTipline at{" "}
+          <a
+            href="https://www.missingkids.org/gethelpnow/cybertipline"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline underline-offset-2"
+          >
+            missingkids.org/cybertipline
+          </a>{" "}
+          and to applicable law enforcement authorities as required by law.
+        </p>
+
         <h3 className="text-lg font-semibold text-slate-800 mt-4">Age Restrictions</h3>
         <p className="text-slate-600 leading-relaxed">
           BaeQuest is intended for users who are 18 years of age or older. Creating
           an account on behalf of a minor, or allowing a minor to use your account,
-          is strictly prohibited.
+          is strictly prohibited. We require all users to confirm they are at least
+          18 years of age during registration.
         </p>
       </section>
 
